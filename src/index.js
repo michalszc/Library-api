@@ -1,6 +1,10 @@
 const { env, port } = require('./config/vars');
 const app = require('./config/express');
 const logger = require('./config/logger');
+const mongoose = require('./config/mongoose');
+
+// open mongoose connection
+mongoose.connect();
 
 // For testing purposes
 app.get('/', (req, res) => {

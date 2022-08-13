@@ -1,5 +1,5 @@
 const { env, port } = require('./config/vars');
-const app = require('./config/app');
+const app = require('./config/express');
 const logger = require('./config/logger');
 
 // For testing purposes

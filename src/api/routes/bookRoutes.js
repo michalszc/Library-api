@@ -9,11 +9,11 @@ const tmp = (req, res) => res.send("NOT IMPLEMENTED YET");
 // GET request for list of all books
 router.get('/', tmp);
 
-// GET request for one book
-router.get('/:id', tmp);
-
 // POST request for creating book
 router.post('/create', tmp);
+
+// GET request for one book
+router.get('/:id', tmp);
 
 // DELETE request to delete book
 router.delete('/:id/delete', tmp);

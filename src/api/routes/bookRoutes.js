@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-const tmp = (req, res) => res.send("NOT IMPLEMENTED YET");
+const express = require('express');
+const router = express.Router();
+const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// BOOK ROUTES ///
 
@@ -20,6 +20,5 @@ router.delete('/:id/delete', tmp);
 
 // GET request to update book
 router.put('/:id/update', tmp);
-
 
 module.exports = router;

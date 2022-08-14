@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const logger = require('./logger');
-const { mongo_uri, env } = require('./vars');
+const { mongo, env } = require('./vars');
 
 // Exit application on error
 mongoose.connection.on('error', (err) => {
@@ -21,7 +21,7 @@ if (env === 'development') {
  */
 exports.connect = () => {
   mongoose
-    .connect(mongo_uri, {
+    .connect(mongo, {
       keepAlive: true
     })
     .then(() => logger.info('Successfully connected to MongoDB'));

@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+/**
+ * Author Schema
+ * @private
+ */
 const AuthorSchema = new mongoose.Schema({
   firstName: {
     type: String,

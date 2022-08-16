@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { genreList, genreDetail } = require('../controllers/genreController');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// GENRE ROUTES ///
@@ -7,13 +8,13 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 // /genres - startpoint of every routes
 
 // GET request for list of all genres
-router.get('/', tmp);
+router.get('/', genreList);
 
 // POST request for creating a genre
 router.post('/create', tmp);
 
 // GET request for one genre
-router.get('/:id', tmp);
+router.get('/:id', genreDetail);
 
 // DELETE request to delete genre
 router.delete('/:id/delete', tmp);

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { genreList, genreDetail, genreCreate, genreDelete } = require('../controllers/genreController');
+const { genreList, genreDetail, genreCreate, genreDelete, genreUpdate } = require('../controllers/genreController');
 const { getGenre } = require('../middlewares/genreMiddleware');
-const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// GENRE ROUTES ///
 
@@ -24,6 +23,6 @@ router.get('/:id', genreDetail);
 router.delete('/:id', genreDelete);
 
 // PATCH request to update genre
-router.patch('/:id', tmp);
+router.patch('/:id', genreUpdate);
 
 module.exports = router;

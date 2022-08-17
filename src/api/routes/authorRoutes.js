@@ -16,9 +16,9 @@ router.post('/create', tmp);
 router.get('/:id', tmp);
 
 // DELETE request to delete author
-router.delete('/:id/delete', tmp);
+router.delete('/:id', tmp);
 
-// PUT request to update author
-router.put('/:id/update', tmp);
+// PATCH request to update author
+router.patch('/:id', tmp);
 
 module.exports = router;

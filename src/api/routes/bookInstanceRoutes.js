@@ -16,9 +16,9 @@ router.post('/create', tmp);
 router.get('/:id', tmp);
 
 // DELETE request to delete book instance
-router.delete('/:id/delete', tmp);
+router.delete('/:id', tmp);
 
-// PUT request to update book instance
-router.put('/:id/update', tmp);
+// PATCH request to update book instance
+router.patch('/:id', tmp);
 
 module.exports = router;

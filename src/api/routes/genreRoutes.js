@@ -1,7 +1,9 @@
 const express = require('express');
+const { validate } = require('express-validation');
 const router = express.Router();
 const { genreList, genreDetail, genreCreate, genreDelete, genreUpdate } = require('../controllers/genreController');
 const { getGenre } = require('../middlewares/genreMiddleware');
+const validators = require('../validations/genreValidation');
 
 /// GENRE ROUTES ///
 
@@ -11,10 +13,13 @@ const { getGenre } = require('../middlewares/genreMiddleware');
 router.get('/', genreList);
 
 // POST request for creating a genre
-router.post('/create', genreCreate);
+router.post('/create', validate(validators.genreCreate), genreCreate);
 
-// Use middleware
-router.use('/:id', getGenre);
+// Use middlewares
+router.route('/:id')
+  .get(validate(validators.genreDetail), getGenre)
+  .delete(validate(validators.genreDelete), getGenre)
+  .patch(validate(validators.genreUpdate), getGenre);
 
 // GET request for one genre
 router.get('/:id', genreDetail);

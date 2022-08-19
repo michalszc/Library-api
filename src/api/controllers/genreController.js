@@ -1,4 +1,5 @@
 const Genre = require('../models/genreModel');
+const status = require('http-status');
 
 // Display list of all Genre.
 exports.genreList = async function (req, res, next) {
@@ -6,7 +7,7 @@ exports.genreList = async function (req, res, next) {
     const genres = await Genre.find().sort([['name', 'ascending']]);
     res.json({ title: 'Genre List', genres: genres.map(({ name }) => name) });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(status.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -15,7 +16,7 @@ exports.genreDetail = async function (req, res, next) {
   try {
     res.json({ title: 'Genre', genre: res.genre.name, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS GENRE
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(status.BAD_REQUEST).json({ message: error.message });
   }
 };
 
@@ -30,9 +31,9 @@ exports.genreCreate = async function (req, res, next) {
       throw Error('Genre already exists');
     }
     const newGenre = await genre.save();
-    res.status(201).json(newGenre);
+    res.status(status.CREATED).json(newGenre);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(status.BAD_REQUEST).json({ message: error.message });
   }
 };
 
@@ -42,7 +43,7 @@ exports.genreDelete = async function (req, res, next) {
     await res.genre.remove();
     res.json({ message: 'Deleted genre' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(status.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -55,6 +56,6 @@ exports.genreUpdate = async function (req, res, next) {
     const updatedGenre = await res.genre.save();
     res.json(updatedGenre);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(status.BAD_REQUEST).json({ message: error.message });
   }
 };

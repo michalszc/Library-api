@@ -1,15 +1,24 @@
+const APIError = require('../errors/api-error');
 const Genre = require('../models/genre-model');
+const status = require('http-status');
 
 exports.getGenre = async function (req, res, next) {
   let genre;
   try {
     genre = await Genre.findById(req.params.id);
-    console.log(req.params, genre);
     if (!genre) {
-      return res.status(404).json({ message: 'Cannot find genre' });
+      throw Error('Cannot find genre');
     }
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.message === 'Cannot find genre') {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
   }
   res.genre = genre;
   next();

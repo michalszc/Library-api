@@ -6,7 +6,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { logs } = require('./vars');
 const routes = require('../api/routes');
-const { ValidationError } = require('express-validation');
+const { handler, converter, notFound } = require('../api/middlewares/error');
 
 /**
 * Express instance
@@ -33,13 +33,13 @@ app.use(cors());
 // mount api routes
 app.use('/', routes);
 
-// handle validation errors
-app.use(function (err, req, res, next) {
-  if (err instanceof ValidationError) {
-    return res.status(err.statusCode).json(err);
-  }
+// if error is not an instanceOf APIError, convert it.
+app.use(converter);
 
-  return res.status(500).json(err);
-});
+// catch 404 and forward to error handler
+app.use(notFound);
+
+// error handler, send stacktrace only during development
+app.use(handler);
 
 module.exports = app;

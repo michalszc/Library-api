@@ -1,9 +1,9 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { genreList, genreDetail, genreCreate, genreDelete, genreUpdate } = require('../controllers/genreController');
-const { getGenre } = require('../middlewares/genreMiddleware');
-const validators = require('../validations/genreValidation');
+const { genreList, genreDetail, genreCreate, genreDelete, genreUpdate } = require('../controllers/genre-controller');
+const { getGenre } = require('../middlewares/genre-middleware');
+const validators = require('../validations/genre-validation');
 
 /// GENRE ROUTES ///
 

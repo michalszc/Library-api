@@ -1,4 +1,4 @@
-const Genre = require('../models/genreModel');
+const Genre = require('../models/genre-model');
 const status = require('http-status');
 
 // Display list of all Genre.

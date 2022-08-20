@@ -1,8 +1,8 @@
 const express = require('express');
-const authorRoutes = require('./authorRoutes');
-const bookRoutes = require('./bookRoutes');
-const bookinstanceRoutes = require('./bookInstanceRoutes');
-const genreRoutes = require('./genreRoutes');
+const authorRoutes = require('./author-routes');
+const bookRoutes = require('./book-routes');
+const bookinstanceRoutes = require('./bookInstance-routes');
+const genreRoutes = require('./genre-routes');
 
 const router = express.Router();
 

@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const { get } = require('lodash/object');
 const { ValidationError } = require('express-validation');
 const APIError = require('../errors/api-error');
 const { env } = require('../../config/vars');
@@ -30,13 +31,14 @@ exports.handler = handler;
 exports.converter = (err, req, res, next) => {
   let convertedError = err;
   if (err instanceof ValidationError) {
+    const validationErrorMessage = get(err, 'details.params[0].message');
     convertedError = new APIError({
-      message: 'Validation Error',
-      errors: err.errors,
-      status: err.status,
+      message: `Validation Error${validationErrorMessage ? ': ' + validationErrorMessage : ''}`,
+      errors: err.error,
+      status: err.statusCode,
       stack: err.stack
     });
-  } else {
+  } else if (!(err instanceof APIError)) {
     convertedError = new APIError({
       message: err.message,
       status: err.status,

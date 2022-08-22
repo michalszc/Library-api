@@ -2,6 +2,10 @@ const APIError = require('../errors/api-error');
 const Genre = require('../models/genre-model');
 const status = require('http-status');
 
+/**
+ * Gets Genre by id passed in route parameters
+ * @public
+ */
 exports.getGenre = async function (req, res, next) {
   let genre;
   try {

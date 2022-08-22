@@ -2,17 +2,23 @@ const Genre = require('../models/genre-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
 
-// Display list of all Genre.
+/**
+ * Display list of all Genre.
+ * @public
+ */
 exports.genreList = async function (req, res, next) {
   try {
     const genres = await Genre.find().sort([['name', 'ascending']]);
-    res.json({ title: 'Genre List', genres: genres.map(({ name }) => name) });
+    res.json(genres.map(({ name }) => name));
   } catch (error) {
     next(error);
   }
 };
 
-// Display details for a specific Genre.
+/**
+ * Display details for a specific Genre.
+ * @public
+ */
 exports.genreDetail = async function (req, res, next) {
   try {
     res.json({ title: 'Genre', genre: res.genre.name, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS GENRE
@@ -25,7 +31,10 @@ exports.genreDetail = async function (req, res, next) {
   }
 };
 
-// Handle Genre create.
+/**
+ * Handle Genre create.
+ * @public
+ */
 exports.genreCreate = async function (req, res, next) {
   const genre = new Genre({
     name: req.body.name
@@ -38,15 +47,22 @@ exports.genreCreate = async function (req, res, next) {
     const newGenre = await genre.save();
     res.status(status.CREATED).json(newGenre);
   } catch (error) {
-    next(new APIError({
-      message: error.message,
-      status: status.BAD_REQUEST,
-      stack: error.stack
-    }));
+    if (error.message === 'Genre already exists') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
   }
 };
 
-// Handle Genre delete.
+/**
+ * Handle Genre delete.
+ * @public
+ */
 exports.genreDelete = async function (req, res, next) {
   try {
     await res.genre.remove();
@@ -56,7 +72,10 @@ exports.genreDelete = async function (req, res, next) {
   }
 };
 
-// Handle Genre update
+/**
+ * Handle Genre update.
+ * @public
+ */
 exports.genreUpdate = async function (req, res, next) {
   if (req.body?.name) {
     res.genre.name = req.body.name;

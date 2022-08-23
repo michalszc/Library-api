@@ -9,7 +9,7 @@ const status = require('http-status');
 exports.genreList = async function (req, res, next) {
   try {
     const genres = await Genre.find().sort([['name', 'ascending']]);
-    res.json(genres.map(({ name }) => name));
+    res.json({ genres: genres.map(({ name }) => name)});
   } catch (error) {
     next(error);
   }
@@ -21,7 +21,7 @@ exports.genreList = async function (req, res, next) {
  */
 exports.genreDetail = async function (req, res, next) {
   try {
-    res.json({ title: 'Genre', genre: res.genre.name, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS GENRE
+    res.json({ genre: res.genre, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS GENRE
   } catch (error) {
     next(new APIError({
       message: error.message,

@@ -8,8 +8,8 @@ const status = require('http-status');
  */
 exports.genreList = async function (req, res, next) {
   try {
-    const genres = await Genre.find().sort([['name', 'ascending']]);
-    res.json({ genres: genres.map(({ name }) => name)});
+    const genres = await Genre.getList();
+    res.json({ genres });
   } catch (error) {
     next(error);
   }

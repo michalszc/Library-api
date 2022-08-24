@@ -18,6 +18,7 @@ const GenreSchema = new mongoose.Schema({
  */
  GenreSchema.method({
   async saveIfNotExists() {
+    console.log(this);
     const one = await Genre.findOne({ name: this.name });
     if (one) {
       throw Error('Genre already exists');
@@ -25,6 +26,16 @@ const GenreSchema = new mongoose.Schema({
     return this.save();
   }
 });
+
+/**
+ * Statics
+ */
+ GenreSchema.static({
+  async getList() {
+    return await this.find()
+      .sort([['name', 'ascending']]);
+  }
+ });
 
 // Virtual for this genre instance URL.
 GenreSchema

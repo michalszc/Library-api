@@ -16,14 +16,31 @@ const validators = require('../validations/genre-validation');
  * @apiName ListGenres
  * @apiGroup Genres
  *
- * @apiSuccess {String[]} genres List of genres
+ * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
  *    "genres": [
- *      "Fantasy",
- *      "Horror",
- *      "Thriller"
+ *      {
+ *        "_id": "62fd5e7e3037984b1b5effb2",
+ *        "name": "Fantasy",
+ *        "__v": 0
+ *      },
+ *      {
+ *        "_id": "62fe03a56c3b6bf22e73f6e0",
+ *        "name": "Horror",
+ *        "__v": 0
+ *      },
+ *      {
+ *        "_id": "63068a86b343e556c192d9a4",
+ *        "name": "Thriller",
+ *        "__v": 0
+ *      },
+ *      {
+ *        "_id": "63052941a306a85f5157d0cc",
+ *        "name": "Western",
+ *        "__v": 0
+ *      }
  *    ]
  *  }
  * 

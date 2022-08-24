@@ -40,11 +40,7 @@ exports.genreCreate = async function (req, res, next) {
     name: req.body.name
   });
   try {
-    const one = await Genre.findOne({ name: req.body.name });
-    if (one) {
-      throw Error('Genre already exists');
-    }
-    const newGenre = await genre.save();
+    const newGenre = await genre.saveIfNotExists();
     res.status(status.CREATED).json(newGenre);
   } catch (error) {
     if (error.message === 'Genre already exists') {
@@ -81,7 +77,7 @@ exports.genreUpdate = async function (req, res, next) {
     res.genre.name = req.body.name;
   }
   try {
-    const updatedGenre = await res.genre.save();
+    const updatedGenre = await res.genre.saveIfNotExists();
     res.json(updatedGenre);
   } catch (error) {
     next(new APIError({

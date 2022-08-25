@@ -56,6 +56,29 @@ exports.genreCreate = async function (req, res, next) {
 };
 
 /**
+ * Handle create many genres.
+ * @public
+ */
+exports.genreCreateMany = async function (req, res, next) {
+  try {
+    await Genre.checkExistence(req.body.names);
+    const arr = req.body.names.map(name => ({ name }));
+    const newGenres = await Genre.insertMany(arr);
+    res.status(status.CREATED).json(newGenres);
+  } catch (error) {
+    if (error.message === 'Genre already exists') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
+  }
+};
+
+/**
  * Handle Genre delete.
  * @public
  */

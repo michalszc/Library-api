@@ -1,7 +1,7 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { genreList, genreDetail, genreCreate, genreDelete, genreUpdate } = require('../controllers/genre-controller');
+const { genreList, genreDetail, genreCreate, genreCreateMany, genreDelete, genreUpdate } = require('../controllers/genre-controller');
 const { getGenre } = require('../middlewares/genre-middleware');
 const validators = require('../validations/genre-validation');
 
@@ -72,7 +72,7 @@ router.get('/', genreList);
  *    "__v": 0
  *  }
  *
- * @apiError BadRequest The server cannot or will not process the request due to validation error or genre existence
+ * @apiError BadRequest The server cannot process the request due to validation error or genre existence
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -91,6 +91,53 @@ router.get('/', genreList);
  *  HTTP/1.1 500 Internal Server Error
  */
 router.post('/create', validate(validators.genreCreate), genreCreate);
+
+/**
+ * @api {POST} /genres/createmany Create many genres
+ * @apiDescription Request for creating many genres
+ * @apiVersion 1.0.0
+ * @apiName CreateManyGenres
+ * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} names Genres names
+ *
+ * @apiSuccess {Object[]} Genres Created genres
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  [
+ *    {
+ *      "name": "Fantasy",
+ *      "_id": "6307cd8fc79812e636963da7",
+ *      "__v": 0
+ *    },
+ *    {
+ *      "name": "Western",
+ *      "_id": "6307cd8fc79812e636963da8",
+ *      "__v": 0
+ *    }
+ *  ]
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or genre existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"names\" does not contain 1 required value(s)",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Genre existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Genre already exists"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/createmany', validate(validators.genreCreateMany), genreCreateMany);
 
 // Use middlewares
 router.route('/:id')

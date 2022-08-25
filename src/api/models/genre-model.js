@@ -18,11 +18,7 @@ const GenreSchema = new mongoose.Schema({
  */
 GenreSchema.method({
   async saveIfNotExists () {
-    console.log(this);
-    const one = await Genre.findOne({ name: this.name });
-    if (one) {
-      throw Error('Genre already exists');
-    }
+    await Genre.checkExistence([this.name]);
     return this.save();
   }
 });
@@ -34,6 +30,11 @@ GenreSchema.static({
   async getList () {
     return await this.find()
       .sort([['name', 'ascending']]);
+  },
+  async checkExistence (names) {
+    if (await Genre.exists({ name: names })) {
+      throw Error('Genre already exists');
+    }
   }
 });
 

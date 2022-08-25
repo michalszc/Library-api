@@ -9,6 +9,13 @@ module.exports = {
     })
   },
 
+  // POST /genres/createmany
+  genreCreateMany: {
+    body: Joi.object({
+      names: Joi.array().items(Joi.string().min(3).max(100).required())
+    })
+  },
+
   // GET /genres/:id
   genreDetail: {
     params: Joi.object({

@@ -43,7 +43,7 @@ const validators = require('../validations/genre-validation');
  *      }
  *    ]
  *  }
- * 
+ *
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -59,11 +59,11 @@ router.get('/', genreList);
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String{3.100}} name=Fantasy Genre name
- * 
+ *
  * @apiSuccess {String} name Name of created genre
  * @apiSuccess {String} _id Id of created genre
  * @apiSuccess {Number} __v versionKey
- * 
+ *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
@@ -71,7 +71,7 @@ router.get('/', genreList);
  *    "_id": "6303e5462019452162263dfa",
  *    "__v": 0
  *  }
- * 
+ *
  * @apiError BadRequest The server cannot or will not process the request due to validation error or genre existence
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
@@ -104,13 +104,13 @@ router.route('/:id')
  * @apiVersion 1.0.0
  * @apiName GetGenre
  * @apiGroup Genres
- * 
+ *
  * @apiParam {String{24}} id Genre id
  * @apiParamExample {json} Request-Example:
  *  {
  *    "id": "62fd5e7e3037984b1b5effb2"
  *  }
- * 
+ *
  * @apiSuccess {Object} genre Requested genre
  * @apiSuccess {String[]} listOfBooks List of books with this genre
  * @apiSuccessExample {json} Success response (example):
@@ -123,7 +123,7 @@ router.route('/:id')
  *    },
  *    "listOfBooks": null
  *  }
- * 
+ *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
@@ -151,20 +151,20 @@ router.get('/:id', genreDetail);
  * @apiVersion 1.0.0
  * @apiName DeleteGenre
  * @apiGroup Genres
- * 
+ *
  * @apiParam {String{24}} id Genre id
  * @apiParamExample {json} Request-Example:
  *  {
  *    "id": "62fd5e7e3037984b1b5effb2"
  *  }
- * 
+ *
  * @apiSuccess {String} message Deleted genre
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
  *     "message": "Deleted genre"
  *  }
- * 
+ *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
@@ -192,20 +192,20 @@ router.delete('/:id', genreDelete);
  * @apiVersion 1.0.0
  * @apiName UpdateGenre
  * @apiGroup Genres
- * 
+ *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String{3.100}} name=Fantasy Genre name
- * 
+ *
  * @apiParam {String{24}} id Genre id
  * @apiParamExample {json} Request-Example:
  *  {
  *    "id": "62fd5e7e3037984b1b5effb2"
  *  }
- * 
+ *
  * @apiSuccess {String} name Name of updated genre
  * @apiSuccess {String} _id Id of updated genre
  * @apiSuccess {Number} __v versionKey
- * 
+ *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -213,7 +213,7 @@ router.delete('/:id', genreDelete);
  *    "_id": "6303e5462019452162263dfa",
  *    "__v": 0
  *  }
- * 
+ *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error

@@ -16,8 +16,8 @@ const GenreSchema = new mongoose.Schema({
 /**
  * Methods
  */
- GenreSchema.method({
-  async saveIfNotExists() {
+GenreSchema.method({
+  async saveIfNotExists () {
     console.log(this);
     const one = await Genre.findOne({ name: this.name });
     if (one) {
@@ -30,12 +30,12 @@ const GenreSchema = new mongoose.Schema({
 /**
  * Statics
  */
- GenreSchema.static({
-  async getList() {
+GenreSchema.static({
+  async getList () {
     return await this.find()
       .sort([['name', 'ascending']]);
   }
- });
+});
 
 // Virtual for this genre instance URL.
 GenreSchema

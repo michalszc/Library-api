@@ -93,7 +93,7 @@ router.get('/', genreList);
 router.post('/create', validate(validators.genreCreate), genreCreate);
 
 /**
- * @api {POST} /genres/createmany Create many genres
+ * @api {POST} /genres/multiple/create Create many genres
  * @apiDescription Request for creating many genres
  * @apiVersion 1.0.0
  * @apiName CreateManyGenres
@@ -137,7 +137,7 @@ router.post('/create', validate(validators.genreCreate), genreCreate);
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
-router.post('/createmany', validate(validators.genreCreateMany), genreCreateMany);
+router.post('/multiple/create', validate(validators.genreCreateMany), genreCreateMany);
 
 // Use middlewares
 router.route('/:id')

@@ -92,6 +92,19 @@ exports.genreDelete = async function (req, res, next) {
 };
 
 /**
+ * Handle delete many genres.
+ * @public
+ */
+exports.genreDeleteMany = async function (req, res, next) {
+  try {
+    const { deletedCount } = await Genre.deleteMany({ _id: req.body.ids });
+    res.json({ message: 'Deleted genres', deletedCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Handle Genre update.
  * @public
  */

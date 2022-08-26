@@ -1,8 +1,8 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { genreList, genreDetail, genreCreate, genreCreateMany, genreDelete, genreUpdate } = require('../controllers/genre-controller');
-const { getGenre } = require('../middlewares/genre-middleware');
+const { genreList, genreDetail, genreCreate, genreCreateMany, genreDelete, genreDeleteMany, genreUpdate } = require('../controllers/genre-controller');
+const { getGenre, checkExistence } = require('../middlewares/genre-middleware');
 const validators = require('../validations/genre-validation');
 
 /// GENRE ROUTES ///
@@ -93,8 +93,8 @@ router.get('/', genreList);
 router.post('/create', validate(validators.genreCreate), genreCreate);
 
 /**
- * @api {POST} /genres/multiple/create Create many genres
- * @apiDescription Request for creating many genres
+ * @api {POST} /genres/multiple/create Create multiple genres
+ * @apiDescription Request for creating multiple genres
  * @apiVersion 1.0.0
  * @apiName CreateManyGenres
  * @apiGroup Genres
@@ -125,7 +125,7 @@ router.post('/create', validate(validators.genreCreate), genreCreate);
  *  HTTP/1.1 400 Bad Request
  *  {
  *    "code": 400,
- *    "message": "Validation Error: body: \"names\" does not contain 1 required value(s)",
+ *    "message": "Validation Error: body: \"names\" must contain at least 1 items",
  *    "errors": "Bad Request"
  *  }
  * @apiErrorExample {json} Genre existence response (example):
@@ -138,6 +138,47 @@ router.post('/create', validate(validators.genreCreate), genreCreate);
  *  HTTP/1.1 500 Internal Server Error
  */
 router.post('/multiple/create', validate(validators.genreCreateMany), genreCreateMany);
+
+/**
+ * @api {DELETE} /genres/multiple Delete multiple genres
+ * @apiDescription Request to delete multiple genres
+ * @apiVersion 1.0.0
+ * @apiName DeleteManyGenre
+ * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} ids Genres ids
+ *
+ *
+ * @apiSuccess {String} message Deleted genres
+ * @apiSuccess {Number} deletedCount Number of deleted genres
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *     "message": "Deleted genres"
+ *     "deletedCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"ids\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find genre"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence, genreDeleteMany);
 
 // Use middlewares
 router.route('/:id')

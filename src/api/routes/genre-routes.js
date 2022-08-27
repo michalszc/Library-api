@@ -85,7 +85,7 @@ router.get('/', genreList);
  *  HTTP/1.1 400 Bad Request
  *  {
  *    "code": 400,
- *    "message": "Genre already exists"
+ *    "message": "Genre(s) with name(s) Fantasy already exist(s)"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -132,7 +132,7 @@ router.post('/create', validate(validators.genreCreate), genreCreate);
  *  HTTP/1.1 400 Bad Request
  *  {
  *    "code": 400,
- *    "message": "Genre already exists"
+ *    "message": "Genre(s) with name(s) Fantasy, Western already exist(s)"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -173,7 +173,7 @@ router.post('/multiple/create', validate(validators.genreCreateMany), genreCreat
  *  HTTP/1.1 404 Not Found
  *  {
  *    "code": 404,
- *    "message": "Cannot find genre"
+ *    "message": "Cannot find genre(s) with id(s) 63091e5e4ec3fbc5c720db4c"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -226,7 +226,7 @@ router.route('/:id')
  *  HTTP/1.1 404 Not Found
  *  {
  *    "code": 404,
- *    "message": "Cannot find genre"
+ *    "message": "Cannot find genre with id 63091e5e4ec3fbc5c720db4c"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -267,7 +267,7 @@ router.get('/:id', genreDetail);
  *  HTTP/1.1 404 Not Found
  *  {
  *    "code": 404,
- *    "message": "Cannot find genre"
+ *    "message": "Cannot find genre with id 63091e5e4ec3fbc5c720db4c"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
@@ -316,7 +316,7 @@ router.delete('/:id', genreDelete);
  *  HTTP/1.1 404 Not Found
  *  {
  *    "code": 404,
- *    "message": "Cannot find genre"
+ *    "message": "Cannot find genre with id 63091e5e4ec3fbc5c720db4c"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error

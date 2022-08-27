@@ -11,10 +11,10 @@ exports.getGenre = async function (req, res, next) {
   try {
     genre = await Genre.findById(req.params.id);
     if (!genre) {
-      throw Error('Cannot find genre');
+      throw Error(`Cannot find genre with id ${req.params.id}`);
     }
   } catch (error) {
-    if (error.message === 'Cannot find genre') {
+    if (error.message.startsWith('Cannot find genre')) {
       return next(new APIError({
         message: error.message,
         status: status.NOT_FOUND,
@@ -34,19 +34,15 @@ exports.getGenre = async function (req, res, next) {
  */
 exports.checkExistence = async function (req, res, next) {
   try {
-    const genres = await Genre.find({ _id: req.body.ids });
-    let allExists;
-    if (Array.isArray(genres)) {
-      const genresIds = genres.map(({ _id }) => _id.toString());
-      allExists = !req.body.ids.every(id => genresIds.includes(id));
-    } else {
-      allExists = req.body.ids > 1 || genres;
-    }
-    if (allExists) {
-      throw Error('Cannot find genre');
+    const genresIds = await Genre.find({ _id: req.body.ids }, { _id: 1, name: 0 })
+      .then(r => r.map(({ _id }) => _id.toString()));
+    console.log(genresIds);
+    const idsNotFound = req.body.ids.filter(id => !genresIds.includes(id));
+    if (idsNotFound.length !== 0) {
+      throw Error(`Cannot find genre(s) with id(s) ${idsNotFound.join()}`);
     }
   } catch (error) {
-    if (error.message === 'Cannot find genre') {
+    if (error.message.startsWith('Cannot find genre')) {
       return next(new APIError({
         message: error.message,
         status: status.NOT_FOUND,

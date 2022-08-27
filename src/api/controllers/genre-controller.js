@@ -43,7 +43,7 @@ exports.genreCreate = async function (req, res, next) {
     const newGenre = await genre.saveIfNotExists();
     res.status(status.CREATED).json(newGenre);
   } catch (error) {
-    if (error.message === 'Genre already exists') {
+    if (error.message.startsWith('Genre(s) with name(s)')) {
       next(new APIError({
         message: error.message,
         status: status.BAD_REQUEST,
@@ -66,7 +66,7 @@ exports.genreCreateMany = async function (req, res, next) {
     const newGenres = await Genre.insertMany(arr);
     res.status(status.CREATED).json(newGenres);
   } catch (error) {
-    if (error.message === 'Genre already exists') {
+    if (error.message.startsWith('Genre(s) with name(s)')) {
       next(new APIError({
         message: error.message,
         status: status.BAD_REQUEST,

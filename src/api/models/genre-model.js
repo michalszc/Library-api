@@ -32,8 +32,10 @@ GenreSchema.static({
       .sort([['name', 'ascending']]);
   },
   async checkExistence (names) {
-    if (await Genre.exists({ name: names })) {
-      throw Error('Genre already exists');
+    const genres = await Genre.find({ name: names }, { _id: 0, name: 1 })
+      .then(res => res.map(({ name }) => name));
+    if (genres.length !== 0) {
+      throw Error(`Genre(s) with name(s) ${genres.join()} already exist(s)`);
     }
   }
 });

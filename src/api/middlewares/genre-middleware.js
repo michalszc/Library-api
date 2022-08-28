@@ -34,10 +34,10 @@ exports.getGenre = async function (req, res, next) {
  */
 exports.checkExistence = async function (req, res, next) {
   try {
-    const genresIds = await Genre.find({ _id: req.body.ids }, { _id: 1, name: 0 })
+    const ids = req.body.ids || req.body.genres.map(({ id }) => id);
+    const genresIds = await Genre.find({ _id: ids }, { _id: 1, name: 0 })
       .then(r => r.map(({ _id }) => _id.toString()));
-    console.log(genresIds);
-    const idsNotFound = req.body.ids.filter(id => !genresIds.includes(id));
+    const idsNotFound = ids.filter(id => !genresIds.includes(id));
     if (idsNotFound.length !== 0) {
       throw Error(`Cannot find genre(s) with id(s) ${idsNotFound.join()}`);
     }

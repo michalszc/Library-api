@@ -23,6 +23,13 @@ module.exports = {
     })
   },
 
+  // DELETE /genres/multiple
+  genreDeleteMany: {
+    body: Joi.object({
+      ids: Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1).required()
+    })
+  },
+
   // DELETE /genres/:id
   genreDelete: {
     params: Joi.object({
@@ -30,10 +37,13 @@ module.exports = {
     })
   },
 
-  // DELETE /genres/multiple
-  genreDeleteMany: {
+  // PATCH /genres/multiple
+  genreUpdateMany: {
     body: Joi.object({
-      ids: Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1).required()
+      genres: Joi.array().items({
+        id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
+        name: Joi.string().min(3).max(100).required()
+      }).min(1).required()
     })
   },
 

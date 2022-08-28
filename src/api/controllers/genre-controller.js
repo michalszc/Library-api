@@ -1,6 +1,7 @@
 const Genre = require('../models/genre-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
+const { get } = require('lodash');
 
 /**
  * Display list of all Genre.
@@ -115,6 +116,32 @@ exports.genreUpdate = async function (req, res, next) {
   try {
     const updatedGenre = await res.genre.saveIfNotExists();
     res.json(updatedGenre);
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
+ * Handle Genre update many.
+ * @public
+ */
+exports.genreUpdateMany = async function (req, res, next) {
+  try {
+    const bulkArr = req.body.genres.map(({ id, name }) => (
+      {
+        updateOne: {
+          filter: { _id: id },
+          update: { name }
+        }
+      }
+    ));
+    const updatedGenres = await Genre.bulkWrite(bulkArr);
+    const updateCount = get(updatedGenres, 'result.nModified', 0);
+    res.json({ genres: req.body.genres, updateCount });
   } catch (error) {
     next(new APIError({
       message: error.message,

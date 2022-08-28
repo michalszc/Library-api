@@ -1,7 +1,16 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { genreList, genreDetail, genreCreate, genreCreateMany, genreDelete, genreDeleteMany, genreUpdate } = require('../controllers/genre-controller');
+const {
+  genreList,
+  genreDetail,
+  genreCreate,
+  genreCreateMany,
+  genreDelete,
+  genreDeleteMany,
+  genreUpdate,
+  genreUpdateMany
+} = require('../controllers/genre-controller');
 const { getGenre, checkExistence } = require('../middlewares/genre-middleware');
 const validators = require('../validations/genre-validation');
 
@@ -143,7 +152,7 @@ router.post('/multiple/create', validate(validators.genreCreateMany), genreCreat
  * @api {DELETE} /genres/multiple Delete multiple genres
  * @apiDescription Request to delete multiple genres
  * @apiVersion 1.0.0
- * @apiName DeleteManyGenre
+ * @apiName DeleteManyGenres
  * @apiGroup Genres
  *
  * @apiHeader {String} Content-Type=application/json
@@ -179,6 +188,56 @@ router.post('/multiple/create', validate(validators.genreCreateMany), genreCreat
  *  HTTP/1.1 500 Internal Server Error
  */
 router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence, genreDeleteMany);
+
+/**
+ * @api {PATCH} /genres/multiple Update multiple genres
+ * @apiDescription Request to update multiple genres
+ * @apiVersion 1.0.0
+ * @apiName UpdateManyGenres
+ * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} genres Genres to update
+ *
+ * @apiSuccess {Object[]} genres Updated genres
+ * @apiSuccess {Number} updateCount Number of updated genres
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "genres": [
+ *      {
+ *        "id": "6307c2cee81191f838834f43",
+ *        "name": "Fantasy"
+ *      },
+ *      {
+ *        "id": "6307c5dbbd3d453ab54914de",
+ *        "name": "Western"
+ *      }
+ *    ],
+ *    "updateCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"genres\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find genre(s) with id(s) 6307c2ceee1191f838834f43"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/multiple', validate(validators.genreUpdateMany), checkExistence, genreUpdateMany);
 
 // Use middlewares
 router.route('/:id')

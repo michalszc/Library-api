@@ -85,8 +85,8 @@ exports.genreCreateMany = async function (req, res, next) {
  */
 exports.genreDelete = async function (req, res, next) {
   try {
-    await res.genre.remove();
-    res.json({ message: 'Deleted genre' });
+    const deletedGenre = await res.genre.remove();
+    res.json({ message: 'Deleted genre', deletedGenre });
   } catch (error) {
     next(error);
   }

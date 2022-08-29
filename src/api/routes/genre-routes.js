@@ -104,7 +104,7 @@ router.get('/', genreList);
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
- router.post('/multiple', validate(validators.genreCreateMany), genreCreateMany);
+router.post('/multiple', validate(validators.genreCreateMany), genreCreateMany);
 
 /**
  * @api {POST} /genres Create a genre
@@ -234,7 +234,7 @@ router.get('/:id', validate(validators.genreDetail), getGenre, genreDetail);
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
- router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence, genreDeleteMany);
+router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence, genreDeleteMany);
 
 /**
  * @api {DELETE} /genres/:id Delete genre
@@ -325,7 +325,7 @@ router.delete('/:id', validate(validators.genreDelete), getGenre, genreDelete);
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
- router.patch('/multiple', validate(validators.genreUpdateMany), checkExistence, genreUpdateMany);
+router.patch('/multiple', validate(validators.genreUpdateMany), checkExistence, genreUpdateMany);
 
 /**
  * @api {PATCH} /genres/:id Update genre

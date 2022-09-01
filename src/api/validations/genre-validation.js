@@ -2,14 +2,14 @@ const { Joi } = require('express-validation');
 
 module.exports = {
 
-  // POST /genres/create
+  // POST /genres/
   genreCreate: {
     body: Joi.object({
       name: Joi.string().min(3).max(100).required()
     })
   },
 
-  // POST /genres/multiple/create
+  // POST /genres/multiple/
   genreCreateMany: {
     body: Joi.object({
       names: Joi.array().items(Joi.string().min(3).max(100)).min(1).required()

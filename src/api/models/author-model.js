@@ -27,12 +27,32 @@ const AuthorSchema = new mongoose.Schema({
 });
 
 /**
+ * Methods
+ */
+AuthorSchema.method({
+  async saveIfNotExists () {
+    await Author.checkExistence(this);
+    return this.save();
+  }
+});
+
+/**
  * Statics
  */
 AuthorSchema.static({
   async getList () {
     return await this.find()
       .sort([['family_name', 'ascending']]);
+  },
+  async checkExistence (author) {
+    if (await Author.exists({
+      firstName: author.firstName,
+      lastName: author.lastName,
+      dateOfBirth: author.dateOfBirth,
+      dateOfDeath: author?.dateOfDeath
+    })) {
+      throw Error('Author already exists');
+    }
   }
 });
 
@@ -47,4 +67,5 @@ AuthorSchema.virtual('url').get(function () {
 });
 
 // Export model.
-module.exports = mongoose.model('Author', AuthorSchema);
+const Author = mongoose.model('Author', AuthorSchema);
+module.exports = Author;

@@ -10,6 +10,13 @@ module.exports = {
       dateOfBirth: Joi.date().max('now').required(),
       dateOfDeath: Joi.date().greater(Joi.ref('dateOfBirth')).max('now')
     })
+  },
+
+  // GET /authors/:id
+  authorDetail: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
   }
 
 };

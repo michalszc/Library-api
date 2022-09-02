@@ -1,7 +1,8 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { authorList, authorCreate } = require('../controllers/author-controller');
+const { authorList, authorCreate, authorDetail } = require('../controllers/author-controller');
+const { getAuthor } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
@@ -99,8 +100,54 @@ router.get('/', authorList);
  */
 router.post('/', validate(validators.authorCreate), authorCreate);
 
-// GET request for one author
-router.get('/:id', tmp);
+/**
+ * @api {GET} /authors/:id Get author
+ * @apiDescription Request for one specific author
+ * @apiVersion 1.0.0
+ * @apiName GetAuthor
+ * @apiGroup Authors
+ *
+ * @apiParam {String{24}} id Author id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {Object} author Requested author
+ * @apiSuccess {String[]} listOfBooks List of books with this author
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "author": {
+ *          "_id": "63111ec1d2c560f45b865478",
+ *          "firstName": "Andrzej",
+ *          "lastName": "Sapkowski",
+ *          "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *          "__v": 0
+ *      },
+ *      "listOfBooks": null
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: params: \"id\" with value \"62fd5e7e3037984b1b5effbg\" fails to match the required pattern: /^[a-fA-F0-9]{24}$/",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find author with id 63111ec1d2c560f45b86547e"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
 
 // DELETE request to delete author
 router.delete('/:id', tmp);

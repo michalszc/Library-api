@@ -41,3 +41,19 @@ exports.authorCreate = async function (req, res, next) {
     }
   }
 };
+
+/**
+ * Display details for a specific Author.
+ * @public
+ */
+exports.authorDetail = async function (req, res, next) {
+  try {
+    res.json({ author: res.author, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS AUTHOR
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};

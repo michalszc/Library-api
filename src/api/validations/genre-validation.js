@@ -2,6 +2,14 @@ const { Joi } = require('express-validation');
 
 module.exports = {
 
+  // GET /genres/
+  genreList: {
+    body: Joi.object({
+      name: Joi.string().allow('').max(100),
+      sort: Joi.array().ordered(Joi.string().valid('_id', 'name'), Joi.string().valid('ascending', 'descending')).length(2)
+    })
+  },
+
   // POST /genres/
   genreCreate: {
     body: Joi.object({

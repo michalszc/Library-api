@@ -25,6 +25,10 @@ const validators = require('../validations/genre-validation');
  * @apiName ListGenres
  * @apiGroup Genres
  *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String} name This field allows to search all genres matching that name.
+ * @apiBody {String[]} sort Sort list of genres. First item is name of field to sort by: _id or name and second one is order: ascending or descending.
+ *
  * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
@@ -53,11 +57,19 @@ const validators = require('../validations/genre-validation');
  *    ]
  *  }
  *
+ * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"sort[0]\" must be one of [_id, name]",
+ *    "errors": "Bad Request"
+ *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
-router.get('/', genreList);
+router.get('/', validate(validators.genreList), genreList);
 
 /**
  * @api {POST} /genres/multiple Create multiple genres

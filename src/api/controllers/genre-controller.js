@@ -4,12 +4,14 @@ const status = require('http-status');
 const { get } = require('lodash');
 
 /**
- * Display list of all Genre.
+ * Display list of genres.
  * @public
  */
 exports.genreList = async function (req, res, next) {
   try {
-    const genres = await Genre.getList();
+    const name = req.body.name || '';
+    const sort = req.body.sort || ['name', 'ascending'];
+    const genres = await Genre.getList({ name, sort });
     res.json({ genres });
   } catch (error) {
     next(error);

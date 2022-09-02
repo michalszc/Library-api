@@ -27,9 +27,10 @@ GenreSchema.method({
  * Statics
  */
 GenreSchema.static({
-  async getList () {
-    return await this.find()
-      .sort([['name', 'ascending']]);
+  async getList ({ name, sort }) {
+    const re = new RegExp(`${name}.*`);
+    return await this.find({ name: re })
+      .sort([sort]);
   },
   async checkExistence (names) {
     const genres = await Genre.find({ name: names }, { _id: 0, name: 1 })

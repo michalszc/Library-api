@@ -22,7 +22,7 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiBody {String} lastName This field allows to search all authors with that last name.
  * @apiBody {Object} dateOfBirth This field allows to search all authors with that date of birth. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
  * @apiBody {Object} dateOfDeath This field allows to search all authors with that date of death. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
- * @apiBody {Object} sort Sort list of authors. Allowed object keys are:  _id, firstName, lastName, dateOfBirth, dateOfDeath. Allowed object values are: ascending, asc, 1, descending, desc, -1.
+ * @apiBody {Object} sort Sort list of authors. Allowed object properties are:  _id, firstName, lastName, dateOfBirth, dateOfDeath. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
  * @apiBody {Number} skip This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} limit This field allows you to limit the number of results. Minimum value 0.
  *

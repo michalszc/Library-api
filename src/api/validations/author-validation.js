@@ -2,6 +2,23 @@ const { Joi } = require('express-validation');
 
 module.exports = {
 
+  // GET /authors/
+  authorList: {
+    body: Joi.object({
+      firstName: Joi.string().allow('').max(100),
+      lastName: Joi.string().allow('').max(100),
+      dateOfBirth: Joi.object().pattern(/e|lt|lte|gt|gte/, Joi.date().max('now')),
+      dateOfDeath: Joi.object().pattern(/e|lt|lte|gt|gte/, Joi.date().max('now')),
+      sort: Joi.object().pattern(/_id|firstName|lastName|dateOfBirth|dateOfDeath/,
+        Joi.alternatives().try(
+          Joi.number().valid(1, -1),
+          Joi.string().valid('ascending', 'asc', 'descending', 'desc')
+        )).min(1),
+      skip: Joi.number().min(0),
+      limit: Joi.number().min(0)
+    })
+  },
+
   // POST /authors/
   authorCreate: {
     body: Joi.object({

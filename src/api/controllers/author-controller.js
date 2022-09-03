@@ -1,6 +1,8 @@
 const Author = require('../models/author-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
+const { get, mapKeys, isNil, has, omit } = require('lodash');
+const { addDays } = require('../utils/date');
 
 /**
  * Display list of all Authors.
@@ -8,7 +10,42 @@ const status = require('http-status');
  */
 exports.authorList = async function (req, res, next) {
   try {
-    const authors = await Author.getList();
+    const options = {
+      firstName: get(req, 'body.firstName', ''),
+      lastName: get(req, 'body.lastName', ''),
+      dateOfBirth: mapKeys(
+        get(req, 'body.dateOfBirth', { lte: new Date().toISOString() }),
+        (_, key) => `$${key}`
+      ),
+      or: [
+        {
+          dateOfDeath: mapKeys(
+            get(req, 'body.dateOfDeath', { lte: new Date().toISOString() }),
+            (_, key) => `$${key}`
+          )
+        }
+      ],
+      sort: get(req, 'body.sort', { firstName: 1 }),
+      skip: get(req, 'body.skip', 0),
+      limit: get(req, 'body.limit', '')
+    };
+    if (has(options.dateOfBirth, '$e')) {
+      options.dateOfBirth = Object.assign(omit(options.dateOfBirth, ['$e']), {
+        $gte: options.dateOfBirth.$e,
+        $lte: addDays(options.dateOfBirth.$e).toISOString()
+      });
+    }
+    if (isNil(get(req, 'body.dateOfDeath'))) {
+      options.or.push({
+        dateOfDeath: undefined
+      });
+    } else if (has(options.or[0].dateOfDeath, '$e')) {
+      options.or[0].dateOfDeath = Object.assign(omit(options.or[0].dateOfDeath, ['$e']), {
+        $gte: options.or[0].dateOfDeath.$e,
+        $lte: addDays(options.or[0].dateOfDeath.$e).toISOString()
+      });
+    }
+    const authors = await Author.getList(options);
     res.json({ authors });
   } catch (error) {
     next(error);

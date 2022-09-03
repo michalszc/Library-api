@@ -40,9 +40,19 @@ AuthorSchema.method({
  * Statics
  */
 AuthorSchema.static({
-  async getList () {
-    return await this.find()
-      .sort([['family_name', 'ascending']]);
+  async getList ({ firstName, lastName, dateOfBirth, or, sort, skip, limit }) {
+    return await this.find({
+      firstName: new RegExp(`${firstName}.*`),
+      lastName: new RegExp(`${lastName}.*`),
+      dateOfBirth,
+      $or: or
+    },
+    null,
+    {
+      sort,
+      skip,
+      limit
+    });
   },
   async checkExistence (author) {
     if (await Author.exists({

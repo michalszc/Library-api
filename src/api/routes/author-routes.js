@@ -17,6 +17,15 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiName ListAuthors
  * @apiGroup Authors
  *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String} firstName This field allows to search all authors with that first name.
+ * @apiBody {String} lastName This field allows to search all authors with that last name.
+ * @apiBody {Object} dateOfBirth This field allows to search all authors with that date of birth. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
+ * @apiBody {Object} dateOfDeath This field allows to search all authors with that date of death. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
+ * @apiBody {Object} sort Sort list of authors. Allowed object keys are:  _id, firstName, lastName, dateOfBirth, dateOfDeath. Allowed object values are: ascending, asc, 1, descending, desc, -1.
+ * @apiBody {Number} skip This field allows to omit first results. Minimum value 0.
+ * @apiBody {Number} limit This field allows you to limit the number of results. Minimum value 0.
+ *
  * @apiSuccess {Object[]} authors List of authors
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
@@ -44,11 +53,19 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  *      ]
  *  }
  *
+ * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"limit\" must be greater than or equal to 0",
+ *    "errors": "Bad Request"
+ *  }
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
-router.get('/', authorList);
+router.get('/', validate(validators.authorList), authorList);
 
 /**
  * @api {POST} /authors Create author
@@ -60,8 +77,8 @@ router.get('/', authorList);
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String{3.100}} firstName=Andrzej  Author first name
  * @apiBody {String{3.100}} lastName=Sapkowski Author last name
- * @apiBody {String} dateOfBirth=06/21/1948 Author date of birth in format MM/DD/YYYY
- * @apiBody {String} dateOfDeath Author date of death in format MM/DD/YYYY
+ * @apiBody {String} dateOfBirth=06/21/1948 Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
  *
  * @apiSuccess {String} firstName First name of created author
  * @apiSuccess {String} lastName Last name of created author

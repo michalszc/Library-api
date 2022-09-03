@@ -6,7 +6,13 @@ module.exports = {
   genreList: {
     body: Joi.object({
       name: Joi.string().allow('').max(100),
-      sort: Joi.array().ordered(Joi.string().valid('_id', 'name'), Joi.string().valid('ascending', 'descending')).length(2)
+      sort: Joi.object().pattern(/_id|name/,
+        Joi.alternatives().try(
+          Joi.number().valid(1, -1),
+          Joi.string().valid('ascending', 'asc', 'descending', 'desc')
+        )).min(1),
+      skip: Joi.number().min(0),
+      limit: Joi.number().min(0)
     })
   },
 

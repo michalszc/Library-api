@@ -27,7 +27,9 @@ const validators = require('../validations/genre-validation');
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String} name This field allows to search all genres matching that name.
- * @apiBody {String[]} sort Sort list of genres. First item is name of field to sort by: _id or name and second one is order: ascending or descending.
+ * @apiBody {Object} sort Sort list of genres. Allowed object properties are:  _id, name. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
+ * @apiBody {Number} skip This field allows to omit first results. Minimum value 0.
+ * @apiBody {Number} limit This field allows you to limit the number of results. Minimum value 0.
  *
  * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):
@@ -63,7 +65,7 @@ const validators = require('../validations/genre-validation');
  *  HTTP/1.1 400 Bad Request
  *  {
  *    "code": 400,
- *    "message": "Validation Error: body: \"sort[0]\" must be one of [_id, name]",
+ *    "message": "Validation Error: body: \"sort.name\" must be one of [1, -1, ascending, asc, descending, desc]",
  *    "errors": "Bad Request"
  *  }
  * @apiErrorExample {json} Internal Server Error response (example):

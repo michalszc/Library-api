@@ -9,8 +9,8 @@ const { get } = require('lodash');
  */
 exports.genreList = async function (req, res, next) {
   try {
-    const name = req.body.name || '';
-    const sort = req.body.sort || ['name', 'ascending'];
+    const name = get(req, 'body.name', '');
+    const sort = get(req, 'body.sort', ['name', 'ascending']);
     const genres = await Genre.getList({ name, sort });
     res.json({ genres });
   } catch (error) {

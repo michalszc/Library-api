@@ -10,6 +10,10 @@ const { addDays } = require('../utils/date');
  */
 exports.authorList = async function (req, res, next) {
   try {
+    const fields = {
+      only: get(req, 'body.only'),
+      omit: get(req, 'body.omit')
+    };
     const options = {
       firstName: get(req, 'body.firstName', ''),
       lastName: get(req, 'body.lastName', ''),
@@ -27,8 +31,20 @@ exports.authorList = async function (req, res, next) {
       ],
       sort: get(req, 'body.sort', { firstName: 1 }),
       skip: get(req, 'body.skip', 0),
-      limit: get(req, 'body.limit', '')
+      limit: get(req, 'body.limit', ''),
+      fields: ['__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath'].reduce((result, key) => {
+        if (fields.only && fields.only.includes(key)) {
+          result[key] = 1;
+        } else if (fields.omit && fields.omit.includes(key)) {
+          result[key] = 0;
+        }
+
+        return result;
+      }, {})
     };
+    if (fields.only && !fields.only.includes('_id')) {
+      options.fields._id = 0;
+    }
     if (has(options.dateOfBirth, '$e')) {
       options.dateOfBirth = Object.assign(omit(options.dateOfBirth, ['$e']), {
         $gte: options.dateOfBirth.$e,

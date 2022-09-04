@@ -15,8 +15,10 @@ module.exports = {
           Joi.string().valid('ascending', 'asc', 'descending', 'desc')
         )).min(1),
       skip: Joi.number().min(0),
-      limit: Joi.number().min(0)
-    })
+      limit: Joi.number().min(0),
+      only: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1)
+    }).oxor('only', 'omit')
   },
 
   // POST /authors/

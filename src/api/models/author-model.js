@@ -40,14 +40,16 @@ AuthorSchema.method({
  * Statics
  */
 AuthorSchema.static({
-  async getList ({ firstName, lastName, dateOfBirth, or, sort, skip, limit }) {
+  async getList ({ firstName, lastName, dateOfBirth, or, sort, skip, limit, fields }) {
     return await this.find({
       firstName: new RegExp(`${firstName}.*`),
       lastName: new RegExp(`${lastName}.*`),
       dateOfBirth,
       $or: or
     },
-    null,
+    {
+      ...fields
+    },
     {
       sort,
       skip,

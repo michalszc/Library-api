@@ -47,9 +47,7 @@ AuthorSchema.static({
       dateOfBirth,
       $or: or
     },
-    {
-      ...fields
-    },
+    fields,
     {
       sort,
       skip,

@@ -9,12 +9,28 @@ const { get } = require('lodash');
  */
 exports.genreList = async function (req, res, next) {
   try {
+    const fields = {
+      only: get(req, 'body.only'),
+      omit: get(req, 'body.omit')
+    };
     const options = {
       name: get(req, 'body.name', ''),
       sort: get(req, 'body.sort', { name: 1 }),
       skip: get(req, 'body.skip', 0),
-      limit: get(req, 'body.limit', '')
+      limit: get(req, 'body.limit', ''),
+      fields: ['__v', '_id', 'name'].reduce((result, key) => {
+        if (fields.only && fields.only.includes(key)) {
+          result[key] = 1;
+        } else if (fields.omit && fields.omit.includes(key)) {
+          result[key] = 0;
+        }
+
+        return result;
+      }, {})
     };
+    if (fields.only && !fields.only.includes('_id')) {
+      options.fields._id = 0;
+    }
     const genres = await Genre.getList(options);
     res.json({ genres });
   } catch (error) {

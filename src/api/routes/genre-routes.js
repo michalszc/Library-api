@@ -30,6 +30,8 @@ const validators = require('../validations/genre-validation');
  * @apiBody {Object} sort Sort list of genres. Allowed object properties are:  _id, name. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
  * @apiBody {Number} skip This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} limit This field allows you to limit the number of results. Minimum value 0.
+ * @apiBody {String[]} only This field allows you to select fields of results. Allowed values: __v, _id, name. It is not allowed to use with "omit" property.
+ * @apiBody {String[]} omit This field allows you to not show some fields in results. Allowed values: __v, _id, name. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):

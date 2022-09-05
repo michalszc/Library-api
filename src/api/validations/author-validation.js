@@ -36,6 +36,13 @@ module.exports = {
     params: Joi.object({
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
     })
+  },
+
+  // DELETE /authors/:id
+  authorDelete: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
   }
 
 };

@@ -110,3 +110,16 @@ exports.authorDetail = async function (req, res, next) {
     }));
   }
 };
+
+/**
+ * Handle Author delete.
+ * @public
+ */
+exports.authorDelete = async function (req, res, next) {
+  try {
+    const deletedAuthor = await res.author.remove();
+    res.json({ message: 'Deleted author', deletedAuthor });
+  } catch (error) {
+    next(error);
+  }
+};

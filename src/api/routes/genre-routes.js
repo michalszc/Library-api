@@ -269,7 +269,12 @@ router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence,
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *     "message": "Deleted genre"
+ *    "message": "Deleted genre",
+ *    "deletedGenre": {
+ *      "_id": "62fd5e7e3037984b1b5effb2",
+ *      "name": "Fantasy",
+ *      "__v": 0
+ *     }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error

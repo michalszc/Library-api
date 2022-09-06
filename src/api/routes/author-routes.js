@@ -1,10 +1,9 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { authorList, authorCreate, authorDetail, authorDelete } = require('../controllers/author-controller');
+const { authorList, authorCreate, authorDetail, authorDelete, authorUpdate } = require('../controllers/author-controller');
 const { getAuthor } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
-const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// AUTHOR ROUTES ///
 
@@ -216,7 +215,60 @@ router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
  */
 router.delete('/:id', validate(validators.authorDelete), getAuthor, authorDelete);
 
-// PATCH request to update author
-router.patch('/:id', tmp);
+/**
+ * @api {PATCH} /authors/:id Update author
+ * @apiDescription Request to update author
+ * @apiVersion 1.0.0
+ * @apiName UpdateAuthor
+ * @apiGroup Authors
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{3.100}} firstName  Author first name
+ * @apiBody {String{3.100}} lastName Author last name
+ * @apiBody {String} dateOfBirth Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
+ *
+ * @apiParam {String{24}} id Author id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {String} firstName First name of created author
+ * @apiSuccess {String} lastName Last name of created author
+ * @apiSuccess {String} dateOfBirth Date of birth of created author
+ * @apiSuccess {String} dateOfDeath Date of death of created author
+ * @apiSuccess {String} _id Id of created author
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "firstName": "Andrzej",
+ *      "lastName": "Sapkowski",
+ *      "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *      "_id": "63111ec1d2c560f45b865478",
+ *      "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or incorrect dates
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Incorrect dates: date of death (Mon Nov 21 1960 00:00:00 GMT+0100 (czas środkowoeuropejski standardowy)) is before date of birth (Mon Feb 10 1997 00:00:00 GMT+0100 (czas środkowoeuropejski standardowy))"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find author with id 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/:id', validate(validators.authorUpdate), getAuthor, authorUpdate);
 
 module.exports = router;

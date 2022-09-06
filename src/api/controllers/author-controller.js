@@ -2,7 +2,7 @@ const Author = require('../models/author-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
 const { get, mapKeys, isNil, has, omit } = require('lodash');
-const { addDays } = require('../utils/date');
+const { addDays, isBefore } = require('../utils/date');
 
 /**
  * Display list of all Authors.
@@ -121,5 +121,38 @@ exports.authorDelete = async function (req, res, next) {
     res.json({ message: 'Deleted author', deletedAuthor });
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * Handle Author update.
+ * @public
+ */
+exports.authorUpdate = async function (req, res, next) {
+  if (req.body?.firstName) {
+    res.author.firstName = req.body.firstName;
+  }
+  if (req.body?.lastName) {
+    res.author.lastName = req.body.lastName;
+  }
+  if (req.body?.dateOfBirth) {
+    res.author.dateOfBirth = req.body.dateOfBirth;
+  }
+  if (req.body?.dateOfDeath) {
+    res.author.dateOfDeath = req.body.dateOfDeath;
+  }
+  try {
+    const { dateOfBirth, dateOfDeath } = res.author;
+    if (dateOfDeath && !isBefore(dateOfBirth, dateOfDeath)) {
+      throw Error(`Incorrect dates: date of death (${dateOfDeath}) is before date of birth (${dateOfBirth})`);
+    }
+    const updatedAuthor = await res.author.saveIfNotExists();
+    res.json(updatedAuthor);
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
   }
 };

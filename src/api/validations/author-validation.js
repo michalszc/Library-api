@@ -43,6 +43,19 @@ module.exports = {
     params: Joi.object({
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
     })
+  },
+
+  // PATCH /authors/:id
+  authorUpdate: {
+    body: Joi.object({
+      firstName: Joi.string().min(3).max(100),
+      lastName: Joi.string().min(3).max(100),
+      dateOfBirth: Joi.date().max('now'),
+      dateOfDeath: Joi.date().max('now')
+    }).min(1),
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
   }
 
 };

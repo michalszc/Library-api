@@ -4,6 +4,7 @@ const router = express.Router();
 const { authorList, authorCreate, authorDetail, authorDelete, authorUpdate } = require('../controllers/author-controller');
 const { getAuthor } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
+const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// AUTHOR ROUTES ///
 
@@ -67,6 +68,9 @@ const validators = require('../validations/author-validation');
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/', validate(validators.authorList), authorList);
+
+// POST request for creating multiple authors
+router.post('/multiple', tmp);
 
 /**
  * @api {POST} /authors Create author
@@ -167,6 +171,9 @@ router.post('/', validate(validators.authorCreate), authorCreate);
  */
 router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
 
+// DELETE request to delete multiple authors
+router.delete('/multiple', tmp);
+
 /**
  * @api {DELETE} /authors/:id Delete author
  * @apiDescription Request to delete author
@@ -214,6 +221,9 @@ router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
  *  HTTP/1.1 500 Internal Server Error
  */
 router.delete('/:id', validate(validators.authorDelete), getAuthor, authorDelete);
+
+// PATCH request to update multiple authors
+router.patch('/multiple', tmp);
 
 /**
  * @api {PATCH} /authors/:id Update author

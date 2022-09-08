@@ -61,7 +61,7 @@ AuthorSchema.static({
       dateOfBirth: author.dateOfBirth,
       dateOfDeath: author?.dateOfDeath
     })) {
-      throw Error('Author already exists');
+      throw Error('Author(s) already exist(s)');
     }
   }
 });

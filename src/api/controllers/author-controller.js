@@ -69,6 +69,47 @@ exports.authorList = async function (req, res, next) {
 };
 
 /**
+ * Display details for a specific Author.
+ * @public
+ */
+exports.authorDetail = async function (req, res, next) {
+  try {
+    res.json({ author: res.author, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS AUTHOR
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
+ * Handle create many authors.
+ * @public
+ */
+exports.authorCreateMany = async function (req, res, next) {
+  try {
+    const authors = req.body.authors;
+    for (const author of authors) {
+      await Author.checkExistence(author);
+    }
+    const newAuthors = await Author.insertMany(authors);
+    res.status(status.CREATED).json({ authors: newAuthors });
+  } catch (error) {
+    if (error.message === 'Author(s) already exist(s)') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
+  }
+};
+
+/**
  * Handle Author create.
  * @public
  */
@@ -83,7 +124,7 @@ exports.authorCreate = async function (req, res, next) {
     const newAuthor = await author.saveIfNotExists();
     res.status(status.CREATED).json(newAuthor);
   } catch (error) {
-    if (error.message === 'Author already exists') {
+    if (error.message === 'Author(s) already exist(s)') {
       next(new APIError({
         message: error.message,
         status: status.BAD_REQUEST,
@@ -92,22 +133,6 @@ exports.authorCreate = async function (req, res, next) {
     } else {
       next(error);
     }
-  }
-};
-
-/**
- * Display details for a specific Author.
- * @public
- */
-exports.authorDetail = async function (req, res, next) {
-  try {
-    res.json({ author: res.author, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS AUTHOR
-  } catch (error) {
-    next(new APIError({
-      message: error.message,
-      status: status.BAD_REQUEST,
-      stack: error.stack
-    }));
   }
 };
 

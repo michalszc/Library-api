@@ -1,7 +1,14 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { authorList, authorCreate, authorDetail, authorDelete, authorUpdate } = require('../controllers/author-controller');
+const {
+  authorList,
+  authorCreate,
+  authorCreateMany,
+  authorDetail,
+  authorDelete,
+  authorUpdate
+} = require('../controllers/author-controller');
 const { getAuthor } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
@@ -69,59 +76,6 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  */
 router.get('/', validate(validators.authorList), authorList);
 
-// POST request for creating multiple authors
-router.post('/multiple', tmp);
-
-/**
- * @api {POST} /authors Create author
- * @apiDescription Request for creating author
- * @apiVersion 1.0.0
- * @apiName CreateAuthor
- * @apiGroup Authors
- *
- * @apiHeader {String} Content-Type=application/json
- * @apiBody {String{3.100}} firstName=Andrzej  Author first name
- * @apiBody {String{3.100}} lastName=Sapkowski Author last name
- * @apiBody {String} dateOfBirth=06/21/1948 Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
- * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
- *
- * @apiSuccess {String} firstName First name of created author
- * @apiSuccess {String} lastName Last name of created author
- * @apiSuccess {String} dateOfBirth Date of birth of created author
- * @apiSuccess {String} dateOfDeath Date of death of created author
- * @apiSuccess {String} _id Id of created author
- * @apiSuccess {Number} __v versionKey
- *
- * @apiSuccessExample {json} Success response (example):
- *  HTTP/1.1 201 Created
- *  {
- *      "firstName": "Andrzej",
- *      "lastName": "Sapkowski",
- *      "dateOfBirth": "1948-06-20T22:00:00.000Z",
- *      "_id": "63111ec1d2c560f45b865478",
- *      "__v": 0
- *  }
- *
- * @apiError BadRequest The server cannot process the request due to validation error or author existence
- * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
- * @apiErrorExample {json} Validation error response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Validation Error: body: \"dateOfBirth\" must be less than or equal to \"now\"",
- *    "errors": "Bad Request"
- *  }
- * @apiErrorExample {json} Genre existence response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Author already exists"
- *  }
- * @apiErrorExample {json} Internal Server Error response (example):
- *  HTTP/1.1 500 Internal Server Error
- */
-router.post('/', validate(validators.authorCreate), authorCreate);
-
 /**
  * @api {GET} /authors/:id Get author
  * @apiDescription Request for one specific author
@@ -170,6 +124,109 @@ router.post('/', validate(validators.authorCreate), authorCreate);
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
+
+/**
+ * @api {POST} /authors/multiple Create multiple authors
+ * @apiDescription Request for creating multiple authors
+ * @apiVersion 1.0.0
+ * @apiName CreateManyAuthors
+ * @apiGroup Authors
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} authors Array of author objects. One object must include firstName, lastName, dateOfBirth and optionally dateOfDeath.
+ *
+ * @apiSuccess {Object[]} authors Created authors
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *      "authors": [
+ *          {
+ *              "firstName": "Andrzej",
+ *              "lastName": "Sapkowski",
+ *              "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *              "_id": "63111ec1d2c560f45b865478",
+ *              "__v": 0
+ *          },
+ *          {
+ *              "firstName": "Stephen",
+ *              "lastName": "King",
+ *              "dateOfBirth": "1947-09-20T22:00:00.000Z",
+ *              "_id": "631a3d4ab51cf67d43309f22",
+ *              "__v": 0
+ *          }
+ *      ]
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or author existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"authors[0].firstName\" is not allowed to be empty",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Author existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Author(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/multiple', validate(validators.authorCreateMany), authorCreateMany);
+
+/**
+ * @api {POST} /authors Create author
+ * @apiDescription Request for creating author
+ * @apiVersion 1.0.0
+ * @apiName CreateAuthor
+ * @apiGroup Authors
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{3.100}} firstName=Andrzej  Author first name
+ * @apiBody {String{3.100}} lastName=Sapkowski Author last name
+ * @apiBody {String} dateOfBirth=06/21/1948 Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
+ *
+ * @apiSuccess {String} firstName First name of created author
+ * @apiSuccess {String} lastName Last name of created author
+ * @apiSuccess {String} dateOfBirth Date of birth of created author
+ * @apiSuccess {String} dateOfDeath Date of death of created author
+ * @apiSuccess {String} _id Id of created author
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *      "firstName": "Andrzej",
+ *      "lastName": "Sapkowski",
+ *      "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *      "_id": "63111ec1d2c560f45b865478",
+ *      "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or author existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"dateOfBirth\" must be less than or equal to \"now\"",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Author existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Author(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/', validate(validators.authorCreate), authorCreate);
 
 // DELETE request to delete multiple authors
 router.delete('/multiple', tmp);

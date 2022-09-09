@@ -6,10 +6,11 @@ const {
   authorCreate,
   authorCreateMany,
   authorDetail,
+  authorDeleteMany,
   authorDelete,
   authorUpdate
 } = require('../controllers/author-controller');
-const { getAuthor } = require('../middlewares/author-middleware');
+const { getAuthor, checkExistence } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
@@ -228,8 +229,46 @@ router.post('/multiple', validate(validators.authorCreateMany), authorCreateMany
  */
 router.post('/', validate(validators.authorCreate), authorCreate);
 
-// DELETE request to delete multiple authors
-router.delete('/multiple', tmp);
+/**
+ * @api {DELETE} /authors/multiple Delete multiple authors
+ * @apiDescription Request to delete multiple authors
+ * @apiVersion 1.0.0
+ * @apiName DeleteManyAuthors
+ * @apiGroup Authors
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} ids Authors ids
+ *
+ *
+ * @apiSuccess {String} message Deleted authors
+ * @apiSuccess {Number} deletedCount Number of deleted authors
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *     "message": "Deleted authors"
+ *     "deletedCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"ids\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find author(s) with id(s) 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.delete('/multiple', validate(validators.authorDeleteMany), checkExistence, authorDeleteMany);
 
 /**
  * @api {DELETE} /authors/:id Delete author

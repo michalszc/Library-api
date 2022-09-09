@@ -27,3 +27,30 @@ exports.getAuthor = async function (req, res, next) {
   res.author = author;
   next();
 };
+
+/**
+ * Check existence of authors with ids passed by body argument
+ * @public
+ */
+exports.checkExistence = async function (req, res, next) {
+  try {
+    const ids = req.body.ids || req.body.authors.map(({ id }) => id);
+    const authorsIds = await Author.find({ _id: ids }, { _id: 1, name: 0 })
+      .then(r => r.map(({ _id }) => _id.toString()));
+    const idsNotFound = ids.filter(id => !authorsIds.includes(id));
+    if (idsNotFound.length !== 0) {
+      throw Error(`Cannot find author(s) with id(s) ${idsNotFound.join()}`);
+    }
+  } catch (error) {
+    if (error.message.startsWith('Cannot find author')) {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
+  }
+  next();
+};

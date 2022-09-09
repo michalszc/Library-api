@@ -137,6 +137,19 @@ exports.authorCreate = async function (req, res, next) {
 };
 
 /**
+ * Handle delete many authors.
+ * @public
+ */
+exports.authorDeleteMany = async function (req, res, next) {
+  try {
+    const { deletedCount } = await Author.deleteMany({ _id: req.body.ids });
+    res.json({ message: 'Deleted authors', deletedCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Handle Author delete.
  * @public
  */

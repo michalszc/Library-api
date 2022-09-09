@@ -28,7 +28,7 @@ module.exports = {
     })
   },
 
-  // POST /genres/multiple/
+  // POST /authors/multiple/
   authorCreateMany: {
     body: Joi.object({
       authors: Joi.array().items(
@@ -49,6 +49,13 @@ module.exports = {
       lastName: Joi.string().min(3).max(100).required(),
       dateOfBirth: Joi.date().max('now').required(),
       dateOfDeath: Joi.date().greater(Joi.ref('dateOfBirth')).max('now')
+    })
+  },
+
+  // DELETE /authors/multiple
+  authorDeleteMany: {
+    body: Joi.object({
+      ids: Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1).required()
     })
   },
 

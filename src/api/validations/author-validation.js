@@ -66,6 +66,19 @@ module.exports = {
     })
   },
 
+  // PATCH /authors/multiple
+  authorUpdateMany: {
+    body: Joi.object({
+      authors: Joi.array().items(Joi.object({
+        id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
+        firstName: Joi.string().min(3).max(100),
+        lastName: Joi.string().min(3).max(100),
+        dateOfBirth: Joi.date().max('now'),
+        dateOfDeath: Joi.date().max('now')
+      }).min(2)).min(1).required()
+    })
+  },
+
   // PATCH /authors/:id
   authorUpdate: {
     body: Joi.object({

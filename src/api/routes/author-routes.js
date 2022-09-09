@@ -8,11 +8,11 @@ const {
   authorDetail,
   authorDeleteMany,
   authorDelete,
+  authorUpdateMany,
   authorUpdate
 } = require('../controllers/author-controller');
 const { getAuthor, checkExistence } = require('../middlewares/author-middleware');
 const validators = require('../validations/author-validation');
-const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// AUTHOR ROUTES ///
 
@@ -318,8 +318,56 @@ router.delete('/multiple', validate(validators.authorDeleteMany), checkExistence
  */
 router.delete('/:id', validate(validators.authorDelete), getAuthor, authorDelete);
 
-// PATCH request to update multiple authors
-router.patch('/multiple', tmp);
+/**
+ * @api {PATCH} /authors/multiple Update multiple authors
+ * @apiDescription Request to update multiple authors
+ * @apiVersion 1.0.0
+ * @apiName UpdateManyAuthors
+ * @apiGroup Authors
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} authors Authors to update. One object must include id and at least one of the following field firstName, lastName, dateOfBirth, dateOfDeath.
+ *
+ * @apiSuccess {Object[]} authors Updated authors
+ * @apiSuccess {Number} updateCount Number of updated authors
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "authors": [
+ *        {
+ *            "firstName": "Andrzej",
+ *            "lastName": "Sapkowski",
+ *        },
+ *        {
+ *            "firstName": "Stephen",
+ *            "lastName": "King",
+ *            "dateOfBirth": "1947-09-20T22:00:00.000Z",
+ *        }
+ *    ].
+ *    "updateCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"authors\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find author(s) with id(s) 6307c2ceee1191f838834f43"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/multiple', validate(validators.authorUpdateMany), checkExistence, authorUpdateMany);
 
 /**
  * @api {PATCH} /authors/:id Update author

@@ -163,6 +163,32 @@ exports.authorDelete = async function (req, res, next) {
 };
 
 /**
+ * Handle Author update many.
+ * @public
+ */
+exports.authorUpdateMany = async function (req, res, next) {
+  try {
+    const bulkArr = req.body.authors.map(({ id, ...update }) => (
+      {
+        updateOne: {
+          filter: { _id: id },
+          update
+        }
+      }
+    ));
+    const updatedAuthors = await Author.bulkWrite(bulkArr);
+    const updateCount = get(updatedAuthors, 'result.nModified', 0);
+    res.json({ authors: req.body.authors, updateCount });
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
  * Handle Author update.
  * @public
  */

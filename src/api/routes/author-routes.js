@@ -26,15 +26,15 @@ const validators = require('../validations/author-validation');
  * @apiGroup Authors
  *
  * @apiHeader {String} Content-Type=application/json
- * @apiBody {String} firstName This field allows to search all authors with that first name.
- * @apiBody {String} lastName This field allows to search all authors with that last name.
- * @apiBody {Object} dateOfBirth This field allows to search all authors with that date of birth. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
- * @apiBody {Object} dateOfDeath This field allows to search all authors with that date of death. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
- * @apiBody {Object} sort Sort list of authors. Allowed object properties are:  _id, firstName, lastName, dateOfBirth, dateOfDeath. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
- * @apiBody {Number} skip This field allows to omit first results. Minimum value 0.
- * @apiBody {Number} limit This field allows you to limit the number of results. Minimum value 0.
- * @apiBody {String[]} only This field allows you to select fields of results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "omit" property.
- * @apiBody {String[]} omit This field allows you to not show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
+ * @apiBody {String} [firstName] This field allows to search all authors with that first name.
+ * @apiBody {String} [lastName] This field allows to search all authors with that last name.
+ * @apiBody {Object} [dateOfBirth] This field allows to search all authors with that date of birth. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
+ * @apiBody {Object} [dateOfDeath] This field allows to search all authors with that date of death. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
+ * @apiBody {Object} [sort] Sort list of authors. Allowed object properties are:  _id, firstName, lastName, dateOfBirth, dateOfDeath. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
+ * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
+ * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
+ * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "omit" property.
+ * @apiBody {String[]} [omit] This field allows you to not show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} authors List of authors
  * @apiSuccessExample {json} Success response (example):
@@ -190,7 +190,7 @@ router.post('/multiple', validate(validators.authorCreateMany), authorCreateMany
  * @apiBody {String{3.100}} firstName=Andrzej  Author first name
  * @apiBody {String{3.100}} lastName=Sapkowski Author last name
  * @apiBody {String} dateOfBirth=06/21/1948 Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
- * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} [dateOfDeath] Author date of death in format YYYY/MM/DD or MM/DD/YYYY
  *
  * @apiSuccess {String} firstName First name of created author
  * @apiSuccess {String} lastName Last name of created author
@@ -377,10 +377,10 @@ router.patch('/multiple', validate(validators.authorUpdateMany), checkExistence,
  * @apiGroup Authors
  *
  * @apiHeader {String} Content-Type=application/json
- * @apiBody {String{3.100}} firstName  Author first name
- * @apiBody {String{3.100}} lastName Author last name
- * @apiBody {String} dateOfBirth Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
- * @apiBody {String} dateOfDeath Author date of death in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String{3.100}} [firstName]  Author first name
+ * @apiBody {String{3.100}} [lastName] Author last name
+ * @apiBody {String} [dateOfBirth] Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} [dateOfDeath] Author date of death in format YYYY/MM/DD or MM/DD/YYYY
  *
  * @apiParam {String{24}} id Author id
  * @apiParamExample {json} Request-Example:

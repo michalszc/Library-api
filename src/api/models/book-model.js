@@ -28,6 +28,33 @@ const BookSchema = new mongoose.Schema({
   }]
 });
 
+/**
+ * Methods
+ */
+BookSchema.method({
+  async saveIfNotExists () {
+    await Book.checkExistence(this);
+    return this.save();
+  }
+});
+
+/**
+ * Statics
+ */
+BookSchema.static({
+  async checkExistence (book) {
+    if (await Book.exists({
+      title: book.title,
+      author: book.author,
+      summary: book.summary,
+      isbn: book.isbn,
+      genre: book?.genre
+    })) {
+      throw Error('Book(s) already exist(s)');
+    }
+  }
+});
+
 // Virtual for this book instance URL.
 BookSchema
   .virtual('url')
@@ -36,4 +63,5 @@ BookSchema
   });
 
 // Export model.
-module.exports = mongoose.model('Book', BookSchema);
+const Book = mongoose.model('Book', BookSchema);
+module.exports = Book;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 /**
  * Book Schema
@@ -42,6 +43,28 @@ BookSchema.method({
  * Statics
  */
 BookSchema.static({
+  async getList ({ title, author, summary, isbn, genre, sort, skip, limit, fields }) {
+    const projection = {
+      title: new RegExp(`${title}.*`),
+      summary: new RegExp(`${summary}.*`),
+      isbn: new RegExp(`${isbn}.*`)
+    };
+    if (author) {
+      projection.author = new ObjectId(author);
+    }
+    if (genre) {
+      projection.genre = new ObjectId(genre);
+    }
+    return await this.find(
+      projection,
+      fields,
+      {
+        sort,
+        skip,
+        limit,
+        populate: ['author', 'genre']
+      });
+  },
   async checkExistence (book) {
     if (await Book.exists({
       title: book.title,

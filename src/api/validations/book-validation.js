@@ -7,10 +7,19 @@ module.exports = {
     body: Joi.object({
       title: Joi.string().min(1).max(100),
       authorId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
+      author: Joi.object({
+        firstName: Joi.string().min(3).max(100),
+        lastName: Joi.string().min(3).max(100),
+        dateOfBirth: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now')),
+        dateOfDeath: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now'))
+      }).min(1),
       summary: Joi.string().min(1).max(500),
       isbn: Joi.string().regex(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/),
       genreId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
-      sort: Joi.object().pattern(/_id|title|author|summary|isbn|genre/,
+      genre: Joi.object({
+        name: Joi.string().min(3).max(100).required()
+      }),
+      sort: Joi.object().pattern(/^_id$|^title$|^author$|^summary$|^isbn$|^genre$/,
         Joi.alternatives().try(
           Joi.number().valid(1, -1),
           Joi.string().valid('ascending', 'asc', 'descending', 'desc')
@@ -19,8 +28,7 @@ module.exports = {
       limit: Joi.number().min(0),
       only: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
       omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1)
-
-    }).oxor('only', 'omit')
+    }).oxor('only', 'omit').oxor('author', 'authorId').oxor('genre', 'genreId')
   },
 
   // POST /books/

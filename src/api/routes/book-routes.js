@@ -19,10 +19,12 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String} [title] This field allows to search all books with that title.
- * @apiBody {String} [authorId] This field allows to search all books with that author ID.
+ * @apiBody {String} [authorId] This field allows to search all books with that author ID. It is not allowed to use with "author" property.
+ * @apiBody {Object} [author] This field allows to search all books with that author. Allowed object properties are: firstName, lastName, dateOfBirth, dateOfDeath. Dates fields are object  with allowed properties:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal) and allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY. It is not allowed to use with "authorId" property.
  * @apiBody {String} [summary] This field allows to search all books with that summary.
  * @apiBody {String} [isbn] This field allows to search all books with that International Standard Book Number
- * @apiBody {String} [genreId] This field allows to search all books with that genre ID.
+ * @apiBody {String} [genreId] This field allows to search all books with that genre ID. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [genre] This field allows to search all books with that genre. Allowed object property is name. It is not allowed to use with "genre" property.
  * @apiBody {Object} [sort] Sort list of authors. Allowed object properties are: _id, title, author, summary, isbn, genre. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
  * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
@@ -70,7 +72,7 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
-router.get('/', bookList);
+router.get('/', validate(validators.bookList), bookList);
 
 /**
  * @api {POST} /books Create book

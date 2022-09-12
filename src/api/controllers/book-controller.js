@@ -1,7 +1,10 @@
+const Author = require('../models/author-model');
 const Book = require('../models/book-model');
+const Genre = require('../models/genre-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
-const { get } = require('lodash');
+const { get, mapKeys, isNil, has, omit } = require('lodash');
+const { addDays } = require('../utils/date');
 
 /**
  * Display list of all Books.
@@ -13,12 +16,18 @@ exports.bookList = async function (req, res, next) {
       only: get(req, 'body.only'),
       omit: get(req, 'body.omit')
     };
+    const author = {
+      id: get(req, 'body.authorId', ''),
+      obj: get(req, 'body.author', '')
+    };
+    const genre = {
+      id: get(req, 'body.genreId', ''),
+      obj: get(req, 'body.genre', '')
+    };
     const options = {
       title: get(req, 'body.title', ''),
-      author: get(req, 'body.authorId', ''),
       summary: get(req, 'body.summary', ''),
       isbn: get(req, 'body.isbn', ''),
-      genre: get(req, 'body.genreId', ''),
       sort: get(req, 'body.sort', { title: 1 }),
       skip: get(req, 'body.skip', 0),
       limit: get(req, 'body.limit', ''),
@@ -32,6 +41,65 @@ exports.bookList = async function (req, res, next) {
         return result;
       }, {})
     };
+    if (author.id) {
+      options.author = author.id;
+    } else if (author.obj) {
+      const authorOptions = {
+        firstName: get(author, 'obj.firstName', ''),
+        lastName: get(author, 'obj.lastName', ''),
+        dateOfBirth: mapKeys(
+          get(author, 'obj.dateOfBirth', { lte: new Date().toISOString() }),
+          (_, key) => `$${key}`
+        ),
+        or: [
+          {
+            dateOfDeath: mapKeys(
+              get(author, 'obj.dateOfDeath', { lte: new Date().toISOString() }),
+              (_, key) => `$${key}`
+            )
+          }
+        ],
+        fields: { _id: 1 },
+        limit: 1
+      };
+      if (has(authorOptions.dateOfBirth, '$e')) {
+        authorOptions.dateOfBirth = Object.assign(omit(authorOptions.dateOfBirth, ['$e']), {
+          $gte: authorOptions.dateOfBirth.$e,
+          $lte: addDays(authorOptions.dateOfBirth.$e).toISOString()
+        });
+      }
+      if (isNil(get(author, 'obj.dateOfDeath'))) {
+        authorOptions.or.push({
+          dateOfDeath: undefined
+        });
+      } else if (has(authorOptions.or[0].dateOfDeath, '$e')) {
+        authorOptions.or[0].dateOfDeath = Object.assign(omit(authorOptions.or[0].dateOfDeath, ['$e']), {
+          $gte: authorOptions.or[0].dateOfDeath.$e,
+          $lte: addDays(authorOptions.or[0].dateOfDeath.$e).toISOString()
+        });
+      }
+      const _id = get(await Author.getList(authorOptions), '[0]._id');
+      if (_id) {
+        options.author = _id;
+      } else {
+        res.json({ books: [] });
+      }
+    }
+    if (genre.id) {
+      options.genre = genre.id;
+    } else if (genre.obj) {
+      const genreOptions = {
+        name: get(genre, 'obj.name', ''),
+        fields: { _id: 1 },
+        limit: 1
+      };
+      const _id = get(await Genre.getList(genreOptions), '[0]._id');
+      if (_id) {
+        options.genre = _id;
+      } else {
+        res.json({ books: [] });
+      }
+    }
     if (fields.only && !fields.only.includes('_id')) {
       options.fields._id = 0;
     }

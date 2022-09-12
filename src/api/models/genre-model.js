@@ -27,7 +27,7 @@ GenreSchema.method({
  * Statics
  */
 GenreSchema.static({
-  async getList ({ name, sort, skip, limit, fields }) {
+  async getList ({ name, sort = { name: 1 }, skip = 0, limit = '', fields = {} }) {
     return await this.find({
       name: new RegExp(`${name}.*`)
     },

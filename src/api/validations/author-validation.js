@@ -7,8 +7,8 @@ module.exports = {
     body: Joi.object({
       firstName: Joi.string().allow('').max(100),
       lastName: Joi.string().allow('').max(100),
-      dateOfBirth: Joi.object().pattern(/e|lt|lte|gt|gte/, Joi.date().max('now')),
-      dateOfDeath: Joi.object().pattern(/e|lt|lte|gt|gte/, Joi.date().max('now')),
+      dateOfBirth: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now')),
+      dateOfDeath: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now')),
       sort: Joi.object().pattern(/_id|firstName|lastName|dateOfBirth|dateOfDeath/,
         Joi.alternatives().try(
           Joi.number().valid(1, -1),

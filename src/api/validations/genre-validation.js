@@ -36,6 +36,10 @@ module.exports = {
   genreDetail: {
     params: Joi.object({
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    }),
+    body: Joi.object({
+      only: Joi.array().items(Joi.string().valid('__v', '_id', 'name')).min(1),
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'name')).min(1)
     })
   },
 

@@ -34,7 +34,7 @@ const validators = require('../validations/author-validation');
  * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
  * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "omit" property.
- * @apiBody {String[]} [omit] This field allows you to not show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} authors List of authors
  * @apiSuccessExample {json} Success response (example):

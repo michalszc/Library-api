@@ -31,7 +31,7 @@ const validators = require('../validations/genre-validation');
  * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
  * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, name. It is not allowed to use with "omit" property.
- * @apiBody {String[]} [omit] This field allows you to not show some fields in results. Allowed values: __v, _id, name. It is not allowed to use with "only" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, name. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):
@@ -170,6 +170,10 @@ router.post('/', validate(validators.genreCreate), genreCreate);
  * @apiVersion 1.0.0
  * @apiName GetGenre
  * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, name. It is not allowed to use with "omit" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, name. It is not allowed to use with "only" property.
  *
  * @apiParam {String{24}} id Genre id
  * @apiParamExample {json} Request-Example:

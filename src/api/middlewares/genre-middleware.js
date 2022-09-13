@@ -1,18 +1,33 @@
 const APIError = require('../errors/api-error');
 const Genre = require('../models/genre-model');
 const status = require('http-status');
+const { get } = require('lodash');
 
 /**
  * Gets Genre by id passed in route parameters
  * @public
  */
 exports.getGenre = async function (req, res, next) {
-  let genre;
+  const only = get(req, 'body.only');
+  const omit = get(req, 'body.omit');
+  const fields = ['__v', '_id', 'name'].reduce((result, key) => {
+    if (only && only.includes(key)) {
+      result[key] = 1;
+    } else if (omit && omit.includes(key)) {
+      result[key] = 0;
+    }
+
+    return result;
+  }, {});
+  if (only && !only.includes('_id')) {
+    fields._id = 0;
+  }
   try {
-    genre = await Genre.findById(req.params.id);
+    const genre = await Genre.findById(req.params.id, fields);
     if (!genre) {
       throw Error(`Cannot find genre with id ${req.params.id}`);
     }
+    res.genre = genre;
   } catch (error) {
     if (error.message.startsWith('Cannot find genre')) {
       return next(new APIError({
@@ -24,7 +39,6 @@ exports.getGenre = async function (req, res, next) {
       return next(error);
     }
   }
-  res.genre = genre;
   next();
 };
 

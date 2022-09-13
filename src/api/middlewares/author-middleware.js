@@ -1,18 +1,33 @@
 const APIError = require('../errors/api-error');
 const Author = require('../models/author-model');
 const status = require('http-status');
+const { get } = require('lodash');
 
 /**
  * Gets Author by id passed in route parameters
  * @public
  */
 exports.getAuthor = async function (req, res, next) {
-  let author;
+  const only = get(req, 'body.only');
+  const omit = get(req, 'body.omit');
+  const fields = ['__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath'].reduce((result, key) => {
+    if (only && only.includes(key)) {
+      result[key] = 1;
+    } else if (omit && omit.includes(key)) {
+      result[key] = 0;
+    }
+
+    return result;
+  }, {});
+  if (only && !only.includes('_id')) {
+    fields._id = 0;
+  }
   try {
-    author = await Author.findById(req.params.id);
+    const author = await Author.findById(req.params.id, fields);
     if (!author) {
       throw Error(`Cannot find author with id ${req.params.id}`);
     }
+    res.author = author;
   } catch (error) {
     if (error.message.startsWith('Cannot find author')) {
       return next(new APIError({
@@ -24,7 +39,6 @@ exports.getAuthor = async function (req, res, next) {
       return next(error);
     }
   }
-  res.author = author;
   next();
 };
 

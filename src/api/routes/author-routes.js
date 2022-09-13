@@ -84,6 +84,10 @@ router.get('/', validate(validators.authorList), authorList);
  * @apiName GetAuthor
  * @apiGroup Authors
  *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "omit" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
+ *
  * @apiParam {String{24}} id Author id
  * @apiParamExample {json} Request-Example:
  *  {

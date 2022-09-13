@@ -56,8 +56,22 @@ exports.getAuthorAndGenre = async function (req, res, next) {
  * @public
  */
 exports.getBook = async function (req, res, next) {
+  const only = get(req, 'body.only');
+  const omit = get(req, 'body.omit');
+  const fields = ['__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre'].reduce((result, key) => {
+    if (only && only.includes(key)) {
+      result[key] = 1;
+    } else if (omit && omit.includes(key)) {
+      result[key] = 0;
+    }
+
+    return result;
+  }, {});
+  if (only && !only.includes('_id')) {
+    fields._id = 0;
+  }
   try {
-    const book = await Book.findById(req.params.id);
+    const book = await Book.findById(req.params.id, fields);
     if (!book) {
       throw Error(`Cannot find book with id ${req.params.id}`);
     }

@@ -29,7 +29,7 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
  * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, title, author, summary, isbn, genre. It is not allowed to use with "omit" property.
- * @apiBody {String[]} [omit] This field allows you to not show some fields in results. Allowed values: __v, _id, title, author, summary, isbn, genre. It is not allowed to use with "only" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, title, author, summary, isbn, genre. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} books List of books
  * @apiSuccessExample {json} Success response (example):
@@ -80,6 +80,10 @@ router.get('/', validate(validators.bookList), bookList);
  * @apiVersion 1.0.0
  * @apiName GetBook
  * @apiGroup Books
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, title, author, summary, isbn, genre. It is not allowed to use with "omit" property.
+ * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, title, author, summary, isbn, genre. It is not allowed to use with "only" property.
  *
  * @apiParam {String{24}} id Book id
  * @apiParamExample {json} Request-Example:

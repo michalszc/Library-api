@@ -35,6 +35,10 @@ module.exports = {
   bookDetail: {
     params: Joi.object({
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    }),
+    body: Joi.object({
+      only: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1)
     })
   },
 

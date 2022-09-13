@@ -122,6 +122,22 @@ exports.bookList = async function (req, res, next) {
 };
 
 /**
+ * Display details for a specific Author.
+ * @public
+ */
+exports.bookDetail = async function (req, res, next) {
+  try {
+    res.json({ book: res.book });
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
  * Handle Book create.
  * @public
  */

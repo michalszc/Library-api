@@ -31,6 +31,13 @@ module.exports = {
     }).oxor('only', 'omit').oxor('author', 'authorId').oxor('genre', 'genreId')
   },
 
+  // GET /books/:id
+  bookDetail: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
+  },
+
   // POST /books/
   bookCreate: {
     body: Joi.object({

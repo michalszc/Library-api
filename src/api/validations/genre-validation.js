@@ -39,7 +39,8 @@ module.exports = {
     }),
     body: Joi.object({
       only: Joi.array().items(Joi.string().valid('__v', '_id', 'name')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'name')).min(1)
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'name')).min(1),
+      showBookList: Joi.bool()
     })
   },
 

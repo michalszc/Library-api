@@ -1,3 +1,4 @@
+const Book = require('../models/book-model');
 const Genre = require('../models/genre-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
@@ -44,7 +45,11 @@ exports.genreList = async function (req, res, next) {
  */
 exports.genreDetail = async function (req, res, next) {
   try {
-    res.json({ genre: res.genre, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS GENRE
+    const result = { genre: res.genre };
+    if (req.body?.showBookList) {
+      result.listOfBooks = await Book.getList({ genre: res.genre._id, fields: { genre: 0 } });
+    }
+    res.json(result);
   } catch (error) {
     next(new APIError({
       message: error.message,

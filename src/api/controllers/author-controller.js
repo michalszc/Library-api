@@ -1,4 +1,5 @@
 const Author = require('../models/author-model');
+const Book = require('../models/book-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
 const { get, mapKeys, isNil, has, omit } = require('lodash');
@@ -74,7 +75,11 @@ exports.authorList = async function (req, res, next) {
  */
 exports.authorDetail = async function (req, res, next) {
   try {
-    res.json({ author: res.author, listOfBooks: null }); // ADD LIST OF BOOKS WITH THIS AUTHOR
+    const result = { author: res.author };
+    if (req.body?.showBookList) {
+      result.listOfBooks = await Book.getList({ author: res.author._id, fields: { author: 0 } });
+    }
+    res.json(result);
   } catch (error) {
     next(new APIError({
       message: error.message,

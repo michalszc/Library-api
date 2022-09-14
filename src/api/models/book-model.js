@@ -43,7 +43,7 @@ BookSchema.method({
  * Statics
  */
 BookSchema.static({
-  async getList ({ title, author, summary, isbn, genre, sort = { title: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList ({ title = '', author = '', summary = '', isbn = '', genre = '', sort = { title: 1 }, skip = 0, limit = '', fields = {} }) {
     const projection = {
       title: new RegExp(`${title}.*`),
       summary: new RegExp(`${summary}.*`),

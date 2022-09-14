@@ -87,6 +87,7 @@ router.get('/', validate(validators.authorList), authorList);
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "omit" property.
  * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
+ * @apiBody {Boolean} [showBookList] This field allows you to show list of books written by that author. Default is false.
  *
  * @apiParam {String{24}} id Author id
  * @apiParamExample {json} Request-Example:

@@ -28,7 +28,8 @@ module.exports = {
     }),
     body: Joi.object({
       only: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1)
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
+      showBookList: Joi.bool()
     })
   },
 

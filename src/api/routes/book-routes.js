@@ -1,7 +1,7 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { bookList, bookDetail, bookCreate } = require('../controllers/book-controller');
+const { bookList, bookDetail, bookCreate, bookDelete } = require('../controllers/book-controller');
 const { getAuthorAndGenre, getBook } = require('../middlewares/book-middleware');
 const validators = require('../validations/book-validation');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
@@ -187,8 +187,57 @@ router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
  */
 router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate);
 
-// DELETE request to delete book
-router.delete('/:id', tmp);
+/**
+ * @api {DELETE} /books/:id Delete book
+ * @apiDescription Request to delete book
+ * @apiVersion 1.0.0
+ * @apiName DeleteBook
+ * @apiGroup Books
+ *
+ * @apiParam {String{24}} id Book id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {String} message Deleted book
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "message": "Deleted book",
+ *    "deletedBook": {
+ *        "_id": "631cb452ba13a425d94af3f5",
+ *        "title": "The Last Wish",
+ *        "author": "63111ec1d2c560f45b865478",
+ *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *        "isbn": "978-0-575-08244-1",
+ *        "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *        ],
+ *        "__v": 0
+ *    }
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: params: \"id\" with value \"62fd5e7e3037984b1b5effbg\" fails to match the required pattern: /^[a-fA-F0-9]{24}$/",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book with id 63111d41a21bf378dcc80c1b"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
 
 // PATCH request to update book
 router.patch('/:id', tmp);

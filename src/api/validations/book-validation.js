@@ -60,6 +60,13 @@ module.exports = {
         name: Joi.string().min(3).max(100).required()
       })
     }).xor('author', 'authorId').oxor('genre', 'genreId')
+  },
+
+  // DELETE /books/:id
+  bookDelete: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
   }
 
 };

@@ -164,3 +164,16 @@ exports.bookCreate = async function (req, res, next) {
     }
   }
 };
+
+/**
+ * Handle Book delete.
+ * @public
+ */
+exports.bookDelete = async function (req, res, next) {
+  try {
+    const deletedBook = await res.book.remove();
+    res.json({ message: 'Deleted book', deletedBook });
+  } catch (error) {
+    next(error);
+  }
+};

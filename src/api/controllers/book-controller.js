@@ -177,3 +177,37 @@ exports.bookDelete = async function (req, res, next) {
     next(error);
   }
 };
+
+/**
+ * Handle Book update.
+ * @public
+ */
+exports.bookUpdate = async function (req, res, next) {
+  const { title, summary, isbn } = req.body;
+  const { author, book, genre } = res;
+  if (title) {
+    book.title = title;
+  }
+  if (author) {
+    book.author = author;
+  }
+  if (summary) {
+    book.summary = summary;
+  }
+  if (isbn) {
+    book.isbn = isbn;
+  }
+  if (genre) {
+    book.genre = genre;
+  }
+  try {
+    const updatedBook = await book.saveIfNotExists();
+    res.json(updatedBook);
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};

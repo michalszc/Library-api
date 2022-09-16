@@ -1,10 +1,9 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { bookList, bookDetail, bookCreate, bookDelete } = require('../controllers/book-controller');
+const { bookList, bookDetail, bookCreate, bookDelete, bookUpdate } = require('../controllers/book-controller');
 const { getAuthorAndGenre, getBook } = require('../middlewares/book-middleware');
 const validators = require('../validations/book-validation');
-const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// BOOK ROUTES ///
 
@@ -201,6 +200,7 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  *  }
  *
  * @apiSuccess {String} message Deleted book
+ * @apiSuccess {Object} deletedBook Object of deleted book
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -239,7 +239,69 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  */
 router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
 
-// PATCH request to update book
-router.patch('/:id', tmp);
+/**
+ * @api {PATCH} /books/:id Update book
+ * @apiDescription Request to update book
+ * @apiVersion 1.0.0
+ * @apiName UpdateBook
+ * @apiGroup Books
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{1.100}} [title]  Title of the book
+ * @apiBody {String{24}} [authorId]  Author id. It is not allowed to use with "author" property.
+ * @apiBody {Object} [author]  Author object must include firstName, lastName, dateOfBirth and optionally dateOfDeath. It is not allowed to use with "authorId" property.
+ * @apiBody {String{1.500}} [summary]  Summary of the book
+ * @apiBody {String{10,13}} [isbn]  International Standard Book Number
+ * @apiBody {String{24}} [genreId]  Genre id. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [genre]  Genre object must include name. It is not allowed to use with "genreId" property.
+ *
+ * @apiParam {String{24}} id Book id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {String{1.100}} title  Title of the book
+ * @apiSuccess {String} author  Author id
+ * @apiSuccess {String{1.500}} summary  Summary of the bookk
+ * @apiSuccess {String{10,13}} isbn  International Standard Book Number
+ * @apiSuccess {String[]} genre  Array of book genres id
+ * @apiSuccess {String} _id Id of created book
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "title": "The Last Wish",
+ *    "author": "63111ec1d2c560f45b865478",
+ *    "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *    "isbn": "978-0-575-08244-1",
+ *    "genre": [
+ *        "62fd5e7e3037984b1b5effb2"
+ *    ],
+ *    "_id": "631cb452ba13a425d94af3f5",
+ *    "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: params: \"id\" with value \"62fd5e7e3037984b1b5effbg\" fails to match the required pattern: /^[a-fA-F0-9]{24}$/",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book with id 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/:id', validate(validators.bookUpdate), getAuthorAndGenre, getBook, bookUpdate);
 
 module.exports = router;

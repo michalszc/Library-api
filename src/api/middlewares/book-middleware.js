@@ -12,7 +12,7 @@ const { get } = require('lodash');
 exports.getAuthorAndGenre = async function (req, res, next) {
   const { authorId, author, genreId, genre } = req.body;
   try {
-    if (authorId && Author.findById(authorId)) {
+    if (authorId && await Author.findById(authorId)) {
       res.author = authorId;
     } else if (author) {
       const id = get(await Author.findOne(author, { _id: 1 }), '_id');
@@ -21,11 +21,11 @@ exports.getAuthorAndGenre = async function (req, res, next) {
       }
     }
 
-    if (!res.author) {
+    if (!res.author && (authorId || author)) {
       throw Error('Cannot find author');
     }
 
-    if (genreId && Genre.findById(genreId)) {
+    if (genreId && await Genre.findById(genreId)) {
       res.genre = genreId;
     } else if (genre) {
       const id = get(await Genre.findOne(genre, { _id: 1 }), '_id');

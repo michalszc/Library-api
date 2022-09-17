@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
+const responseTime = require('response-time');
 const { logs } = require('./vars');
 const routes = require('../api/routes');
 const { handler, converter, notFound } = require('../api/middlewares/error');
@@ -29,6 +30,9 @@ app.use(helmet());
 
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());
+
+// adds a X-Response-Time header to responses
+app.use(responseTime());
 
 // mount api routes
 app.use('/', routes);

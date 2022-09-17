@@ -43,7 +43,7 @@ BookSchema.method({
  * Statics
  */
 BookSchema.static({
-  async getList ({ title = '', author = '', summary = '', isbn = '', genre = '', sort = { title: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList ({ title = '', author = '', summary = '', isbn = '', genre = '', sort = { title: 1 }, skip = 0, limit = '', fields = {}, populate = [] }) {
     const projection = {
       title: new RegExp(`${title}.*`),
       summary: new RegExp(`${summary}.*`),
@@ -62,7 +62,7 @@ BookSchema.static({
         sort,
         skip,
         limit,
-        populate: ['author', 'genre']
+        populate
       });
   },
   async checkExistence (book) {

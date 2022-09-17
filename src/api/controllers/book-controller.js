@@ -3,7 +3,7 @@ const Book = require('../models/book-model');
 const Genre = require('../models/genre-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
-const { get, mapKeys, isNil, has, omit } = require('lodash');
+const { get, mapKeys, isNil, has, omit, capitalize } = require('lodash');
 const { addDays } = require('../utils/date');
 
 /**
@@ -39,7 +39,14 @@ exports.bookList = async function (req, res, next) {
         }
 
         return result;
-      }, {})
+      }, {}),
+      populate: ['author', 'genre'].reduce((result, key) => {
+        if (get(req, `body.show${capitalize(key)}`, false)) {
+          result.push(key);
+        }
+
+        return result;
+      }, [])
     };
     if (author.id) {
       options.author = author.id;

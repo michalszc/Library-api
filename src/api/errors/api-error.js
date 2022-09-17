@@ -11,7 +11,7 @@ class APIError extends Error {
    * @param {number} status - HTTP status code of error.
    * @param {boolean} isPublic - Whether the message should be visible to user or not.
    */
-  constructor ({
+  constructor({
     message,
     errors,
     stack,

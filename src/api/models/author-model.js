@@ -30,7 +30,7 @@ const AuthorSchema = new mongoose.Schema({
  * Methods
  */
 AuthorSchema.method({
-  async saveIfNotExists () {
+  async saveIfNotExists() {
     await Author.checkExistence(this);
     return this.save();
   }
@@ -40,7 +40,11 @@ AuthorSchema.method({
  * Statics
  */
 AuthorSchema.static({
-  async getList ({ firstName, lastName, dateOfBirth, or, sort = { firstName: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList({
+    firstName, lastName, dateOfBirth,
+    or, sort = { firstName: 1 }, skip = 0,
+    limit = '', fields = {}
+  }) {
     return await this.find({
       firstName: new RegExp(`${firstName}.*`),
       lastName: new RegExp(`${lastName}.*`),
@@ -54,7 +58,7 @@ AuthorSchema.static({
       limit
     });
   },
-  async checkExistence (author) {
+  async checkExistence(author) {
     if (await Author.exists({
       firstName: author.firstName,
       lastName: author.lastName,

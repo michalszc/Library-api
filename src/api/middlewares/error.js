@@ -32,7 +32,8 @@ exports.converter = (err, req, res, next) => {
   let convertedError = err;
   if (err instanceof ValidationError) {
     const errorDetails = get(err, 'details', {});
-    const validationErrorMessage = Object.entries(errorDetails).map(([key, value]) => `${key}: ${value.map(({ message }) => message).join()}`);
+    const validationErrorMessage = Object.entries(errorDetails)
+      .map(([key, value]) => `${key}: ${value.map(({ message }) => message).join()}`);
     convertedError = new APIError({
       message: `Validation Error${validationErrorMessage ? ': ' + validationErrorMessage : ''}`,
       errors: err.error,

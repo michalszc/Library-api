@@ -13,6 +13,16 @@
     },
     "rules": {
         "semi": [2, "always"],
-        "no-console": "error"
+        "no-console": "error",
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+        "max-len": ["error", {
+            "code": 115,
+            "ignoreComments": true,
+            "ignoreRegExpLiterals": true
+        }]
     }
 }

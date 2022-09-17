@@ -26,8 +26,10 @@ module.exports = {
         )).min(1),
       skip: Joi.number().min(0),
       limit: Joi.number().min(0),
-      only: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      only: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      omit: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
       showAuthor: Joi.bool(),
       showGenre: Joi.bool()
     }).oxor('only', 'omit').oxor('author', 'authorId').oxor('genre', 'genreId')
@@ -39,8 +41,10 @@ module.exports = {
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
     }),
     body: Joi.object({
-      only: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      only: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      omit: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
       showAuthor: Joi.bool(),
       showGenre: Joi.bool()
     })

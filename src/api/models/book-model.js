@@ -33,7 +33,7 @@ const BookSchema = new mongoose.Schema({
  * Methods
  */
 BookSchema.method({
-  async saveIfNotExists () {
+  async saveIfNotExists() {
     await Book.checkExistence(this);
     return this.save();
   }
@@ -43,7 +43,11 @@ BookSchema.method({
  * Statics
  */
 BookSchema.static({
-  async getList ({ title = '', author = '', summary = '', isbn = '', genre = '', sort = { title: 1 }, skip = 0, limit = '', fields = {}, populate = [] }) {
+  async getList({
+    title = '', author = '', summary = '',
+    isbn = '', genre = '', sort = { title: 1 },
+    skip = 0, limit = '', fields = {}, populate = []
+  }) {
     const projection = {
       title: new RegExp(`${title}.*`),
       summary: new RegExp(`${summary}.*`),
@@ -65,7 +69,7 @@ BookSchema.static({
         populate
       });
   },
-  async checkExistence (book) {
+  async checkExistence(book) {
     if (await Book.exists({
       title: book.title,
       author: book.author,

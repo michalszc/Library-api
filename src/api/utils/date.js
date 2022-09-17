@@ -18,6 +18,6 @@ exports.addDays = function (date, days = 1) {
  * @param {String} date2
  * @returns {boolean} Returns true if the first date is before the second
  */
-exports.isBefore = function isBefore (date1, date2) {
+exports.isBefore = function (date1, date2) {
   return new Date(date1) < new Date(date2);
 };

@@ -16,8 +16,10 @@ module.exports = {
         )).min(1),
       skip: Joi.number().min(0),
       limit: Joi.number().min(0),
-      only: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1)
+      only: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
+      omit: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1)
     }).oxor('only', 'omit')
   },
 
@@ -27,8 +29,10 @@ module.exports = {
       id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
     }),
     body: Joi.object({
-      only: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
+      only: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
+      omit: Joi.array().items(Joi.string()
+        .valid('__v', '_id', 'firstName', 'lastName', 'dateOfBirth', 'dateOfDeath')).min(1),
       showBookList: Joi.bool()
     })
   },

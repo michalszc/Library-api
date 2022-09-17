@@ -17,7 +17,7 @@ const GenreSchema = new mongoose.Schema({
  * Methods
  */
 GenreSchema.method({
-  async saveIfNotExists () {
+  async saveIfNotExists() {
     await Genre.checkExistence([this.name]);
     return this.save();
   }
@@ -27,7 +27,7 @@ GenreSchema.method({
  * Statics
  */
 GenreSchema.static({
-  async getList ({ name, sort = { name: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList({ name, sort = { name: 1 }, skip = 0, limit = '', fields = {} }) {
     return await this.find({
       name: new RegExp(`${name}.*`)
     },
@@ -38,7 +38,7 @@ GenreSchema.static({
       limit
     });
   },
-  async checkExistence (names) {
+  async checkExistence(names) {
     const genres = await Genre.find({ name: names }, { _id: 0, name: 1 })
       .then(res => res.map(({ name }) => name));
     if (genres.length !== 0) {

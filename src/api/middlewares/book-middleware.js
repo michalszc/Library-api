@@ -3,7 +3,7 @@ const Author = require('../models/author-model');
 const Book = require('../models/book-model');
 const Genre = require('../models/genre-model');
 const status = require('http-status');
-const { get } = require('lodash');
+const { get, capitalize } = require('lodash');
 
 /**
  * Get the author ID and genre ID if author and genre exist
@@ -70,8 +70,15 @@ exports.getBook = async function (req, res, next) {
   if (only && !only.includes('_id')) {
     fields._id = 0;
   }
+  const populate = ['author', 'genre'].reduce((result, key) => {
+    if (get(req, `body.show${capitalize(key)}`, false)) {
+      result.push(key);
+    }
+
+    return result;
+  }, []);
   try {
-    const book = await Book.findById(req.params.id, fields);
+    const book = await Book.findById(req.params.id, fields, { populate });
     if (!book) {
       throw Error(`Cannot find book with id ${req.params.id}`);
     }

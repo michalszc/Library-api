@@ -40,7 +40,9 @@ module.exports = {
     }),
     body: Joi.object({
       only: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1)
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'title', 'author', 'summary', 'isbn', 'genre')).min(1),
+      showAuthor: Joi.bool(),
+      showGenre: Joi.bool()
     })
   },
 

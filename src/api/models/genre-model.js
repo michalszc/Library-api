@@ -27,9 +27,10 @@ GenreSchema.method({
  * Statics
  */
 GenreSchema.static({
-  async getList({ name, sort = { name: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList({ name = '', sort = { name: 1 }, skip = 0, limit = '', fields = {}, or = [{}] }) {
     return await this.find({
-      name: new RegExp(`${name}.*`)
+      name: new RegExp(`${name}.*`),
+      $or: or
     },
     fields,
     {

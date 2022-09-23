@@ -145,8 +145,8 @@ router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
  * @apiBody {Object} author  Author object must include firstName, lastName, dateOfBirth and optionally dateOfDeath. It is not allowed to use with "authorId" property.
  * @apiBody {String{1.500}} summary  Summary of the book
  * @apiBody {String{10,13}} isbn  International Standard Book Number
- * @apiBody {String{24}} [genreId]  Genre id. It is not allowed to use with "genre" property.
- * @apiBody {Object} [genre]  Genre object must include name. It is not allowed to use with "genreId" property.
+ * @apiBody {String{24}} [genreId]  Genre id or array of Genre id. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [genre]  Genre object or array of Genre objects. Object must include name property. It is not allowed to use with "genreId" property.
  *
  * @apiSuccess {String{1.100}} title  Title of the book
  * @apiSuccess {String} author  Author id
@@ -256,8 +256,8 @@ router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
  * @apiBody {Object} [author]  Author object must include firstName, lastName, dateOfBirth and optionally dateOfDeath. It is not allowed to use with "authorId" property.
  * @apiBody {String{1.500}} [summary]  Summary of the book
  * @apiBody {String{10,13}} [isbn]  International Standard Book Number
- * @apiBody {String{24}} [genreId]  Genre id. It is not allowed to use with "genre" property.
- * @apiBody {Object} [genre]  Genre object must include name. It is not allowed to use with "genreId" property.
+ * @apiBody {String{24}} [genreId]  Genre id or array of Genre id. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [genre]  Genre object or array of Genre objects. Object must include name property. It is not allowed to use with "genreId" property.
  *
  * @apiParam {String{24}} id Book id
  * @apiParamExample {json} Request-Example:

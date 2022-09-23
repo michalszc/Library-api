@@ -63,10 +63,20 @@ module.exports = {
       }),
       summary: Joi.string().min(1).max(500).required(),
       isbn: Joi.string().regex(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/).required(),
-      genreId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
-      genre: Joi.object({
-        name: Joi.string().min(3).max(100).required()
-      })
+      genreId: Joi.alternatives().try(
+        Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1),
+        Joi.string().regex(/^[a-fA-F0-9]{24}$/)
+      ),
+      genre: Joi.alternatives().try(
+        Joi.array().items(
+          Joi.object({
+            name: Joi.string().min(3).max(100).required()
+          })
+        ).min(1),
+        Joi.object({
+          name: Joi.string().min(3).max(100).required()
+        })
+      )
     }).xor('author', 'authorId').oxor('genre', 'genreId')
   },
 
@@ -93,10 +103,20 @@ module.exports = {
       }),
       summary: Joi.string().min(1).max(500),
       isbn: Joi.string().regex(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/),
-      genreId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
-      genre: Joi.object({
-        name: Joi.string().min(3).max(100).required()
-      })
+      genreId: Joi.alternatives().try(
+        Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1),
+        Joi.string().regex(/^[a-fA-F0-9]{24}$/)
+      ),
+      genre: Joi.alternatives().try(
+        Joi.array().items(
+          Joi.object({
+            name: Joi.string().min(3).max(100).required()
+          })
+        ).min(1),
+        Joi.object({
+          name: Joi.string().min(3).max(100).required()
+        })
+      )
     }).oxor('author', 'authorId').oxor('genre', 'genreId')
   }
 

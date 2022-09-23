@@ -25,8 +25,19 @@ exports.getAuthorAndGenre = async function (req, res, next) {
       throw Error('Cannot find author');
     }
 
-    if (genreId && await Genre.findById(genreId)) {
+    if (genreId && Array.isArray(genreId)) {
+      const ids = genreId.map(id => ({ _id: id }));
+      const grenreIds = await Genre.getList({ or: ids });
+      if (Array.isArray(grenreIds) && grenreIds.length === genreId.length) {
+        res.genre = ids;
+      }
+    } else if (genreId && await Genre.findById(genreId)) {
       res.genre = genreId;
+    } else if (genre && Array.isArray(genre)) {
+      const genres = await Genre.getList({ or: genre });
+      if (Array.isArray(genres) && genres.length === genre.length) {
+        res.genre = genres.map(({ _id }) => _id);
+      }
     } else if (genre) {
       const id = get(await Genre.findOne(genre, { _id: 1 }), '_id');
       if (id) {

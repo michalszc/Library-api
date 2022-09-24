@@ -117,17 +117,6 @@ exports.bookList = async function (req, res, next) {
     if (fields.only && !fields.only.includes('_id')) {
       options.fields._id = 0;
     }
-    if (fields.only) {
-      if (!fields.only.includes('_id')) {
-        options.fields._id = 0;
-      }
-      if (!fields.only.includes('author')) {
-        options.fields.author = 0;
-      }
-      if (!fields.only.includes('genre')) {
-        options.fields.genre = 0;
-      }
-    }
     const books = await Book.getList(options);
     res.json({ books });
   } catch (error) {

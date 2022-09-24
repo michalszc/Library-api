@@ -1,8 +1,15 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { bookList, bookDetail, bookCreate, bookDelete, bookUpdate } = require('../controllers/book-controller');
-const { getAuthorAndGenre, getBook } = require('../middlewares/book-middleware');
+const {
+  bookList,
+  bookDetail,
+  bookCreateMany,
+  bookCreate,
+  bookDelete,
+  bookUpdate
+} = require('../controllers/book-controller');
+const { getAuthorAndGenre, getAuthorAndGenreMultiple, getBook } = require('../middlewares/book-middleware');
 const validators = require('../validations/book-validation');
 
 /// BOOK ROUTES ///
@@ -131,6 +138,59 @@ router.get('/', validate(validators.bookList), bookList);
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
+
+/**
+ * @api {POST} /books/multiple Create multiple books
+ * @apiDescription Request for creating multiple books
+ * @apiVersion 1.0.0
+ * @apiName CreateManyBooks
+ * @apiGroup Books
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} books Array of book objects. One object must include title, author (or authorId), summary, isbn and optionally genre (or genreId).
+ *
+ * @apiSuccess {Object[]} books Created books
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *      "authors": [
+ *          {
+ *              "firstName": "Andrzej",
+ *              "lastName": "Sapkowski",
+ *              "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *              "_id": "63111ec1d2c560f45b865478",
+ *              "__v": 0
+ *          },
+ *          {
+ *              "firstName": "Stephen",
+ *              "lastName": "King",
+ *              "dateOfBirth": "1947-09-20T22:00:00.000Z",
+ *              "_id": "631a3d4ab51cf67d43309f22",
+ *              "__v": 0
+ *          }
+ *      ]
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or book existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"authors[0].firstName\" is not allowed to be empty",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Book existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Book(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/multiple', validate(validators.bookCreateMany), getAuthorAndGenreMultiple, bookCreateMany);
 
 /**
  * @api {POST} /books Create book

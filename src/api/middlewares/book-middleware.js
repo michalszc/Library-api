@@ -3,7 +3,7 @@ const Author = require('../models/author-model');
 const Book = require('../models/book-model');
 const Genre = require('../models/genre-model');
 const status = require('http-status');
-const { get, capitalize } = require('lodash');
+const { get, capitalize, omit } = require('lodash');
 
 /**
  * Get the author ID and genre ID if author and genre exist
@@ -48,6 +48,70 @@ exports.getAuthorAndGenre = async function (req, res, next) {
     if (!res.genre && (genreId || genre)) {
       throw Error('Cannot find genre');
     }
+  } catch (error) {
+    if (error.message.startsWith('Cannot find')) {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
+  }
+  next();
+};
+
+/**
+ * Get the author ID and genre ID for multiple books if author and genre exist
+ * @public
+ */
+exports.getAuthorAndGenreMultiple = async function (req, res, next) {
+  const books_ = req.body.books;
+  try {
+    const books = [];
+    for (const book_ of books_) {
+      const { authorId, author, genreId, genre } = book_;
+      const book = omit(book_, ['authorId', 'author', 'genreId', 'genre']);
+      if (authorId && await Author.findById(authorId)) {
+        book.author = authorId;
+      } else if (author) {
+        const id = get(await Author.findOne(author, { _id: 1 }), '_id');
+        if (id) {
+          book.author = id.toString();
+        }
+      }
+
+      if (!book.author && (authorId || author)) {
+        throw Error('Cannot find author');
+      }
+
+      if (genreId && Array.isArray(genreId)) {
+        const ids = genreId.map(id => ({ _id: id }));
+        const grenreIds = await Genre.getList({ or: ids });
+        if (Array.isArray(grenreIds) && grenreIds.length === genreId.length) {
+          book.genre = ids;
+        }
+      } else if (genreId && await Genre.findById(genreId)) {
+        book.genre = genreId;
+      } else if (genre && Array.isArray(genre)) {
+        const genres = await Genre.getList({ or: genre });
+        if (Array.isArray(genres) && genres.length === genre.length) {
+          book.genre = genres.map(({ _id }) => _id);
+        }
+      } else if (genre) {
+        const id = get(await Genre.findOne(genre, { _id: 1 }), '_id');
+        if (id) {
+          book.genre = id.toString();
+        }
+      }
+
+      if (!book.genre && (genreId || genre)) {
+        throw Error('Cannot find genre');
+      }
+      books.push(book);
+    }
+    res.books = books;
   } catch (error) {
     if (error.message.startsWith('Cannot find')) {
       return next(new APIError({

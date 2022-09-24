@@ -141,6 +141,31 @@ exports.bookDetail = async function (req, res, next) {
 };
 
 /**
+ * Handle create many books.
+ * @public
+ */
+exports.bookCreateMany = async function (req, res, next) {
+  try {
+    const books = res.books;
+    for (const book of books) {
+      await Book.checkExistence(book);
+    }
+    const newBooks = await Book.insertMany(books);
+    res.status(status.CREATED).json({ books: newBooks });
+  } catch (error) {
+    if (error.message === 'Book(s) already exist(s)') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
+  }
+};
+
+/**
  * Handle Book create.
  * @public
  */

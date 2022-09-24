@@ -56,9 +56,12 @@ BookSchema.static({
     if (author) {
       projection.author = new ObjectId(author);
     }
-    if (genre) {
+    if (genre && Array.isArray(genre)) {
+      projection.genre = { $all: genre.map( g => new ObjectId(g)) };
+    } else if (genre) {
       projection.genre = new ObjectId(genre);
     }
+
     return await this.find(
       projection,
       fields,

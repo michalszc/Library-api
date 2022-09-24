@@ -94,6 +94,13 @@ exports.bookList = async function (req, res, next) {
     }
     if (genre.id) {
       options.genre = genre.id;
+    } else if (genre.obj && Array.isArray(genre.obj)) {
+      const genres = await Genre.getList({ or: genre.obj });
+      if (Array.isArray(genres) && genres.length === genre.obj.length) {
+        options.genre = genres.map(({ _id }) => _id);
+      } else {
+        res.json({ books: [] });
+      }
     } else if (genre.obj) {
       const genreOptions = {
         name: get(genre, 'obj.name', ''),

@@ -197,7 +197,7 @@ exports.bookCreate = async function (req, res, next) {
  * Handle delete many books.
  * @public
  */
- exports.bookDeleteMany = async function (req, res, next) {
+exports.bookDeleteMany = async function (req, res, next) {
   try {
     const { deletedCount } = await Book.deleteMany({ _id: req.body.ids });
     res.json({ message: 'Deleted books', deletedCount });
@@ -216,6 +216,32 @@ exports.bookDelete = async function (req, res, next) {
     res.json({ message: 'Deleted book', deletedBook });
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * Handle Book update many.
+ * @public
+ */
+exports.bookUpdateMany = async function (req, res, next) {
+  try {
+    const bulkArr = req.body.books.map(({ id, ...update }) => (
+      {
+        updateOne: {
+          filter: { _id: id },
+          update
+        }
+      }
+    ));
+    const updatedBooks = await Book.bulkWrite(bulkArr);
+    const updateCount = get(updatedBooks, 'result.nModified', 0);
+    res.json({ books: req.body.books, updateCount });
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
   }
 };
 

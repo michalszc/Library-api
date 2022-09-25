@@ -8,6 +8,7 @@ const {
   bookCreate,
   bookDeleteMany,
   bookDelete,
+  bookUpdateMany,
   bookUpdate
 } = require('../controllers/book-controller');
 const {
@@ -302,7 +303,7 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
- router.delete('/multiple', validate(validators.bookDeleteMany), checkExistence, bookDeleteMany);
+router.delete('/multiple', validate(validators.bookDeleteMany), checkExistence, bookDeleteMany);
 
 /**
  * @api {DELETE} /books/:id Delete book
@@ -356,6 +357,55 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  *  HTTP/1.1 500 Internal Server Error
  */
 router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
+
+/**
+ * @api {PATCH} /books/multiple Update multiple books
+ * @apiDescription Request to update multiple books
+ * @apiVersion 1.0.0
+ * @apiName UpdateManyBooks
+ * @apiGroup Books
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} books Books to update. One object must include id and at least one of the following fields title, author (or authorId), summary, isbn and optionally genre (or genreId).
+ *
+ * @apiSuccess {Object[]} books Updated books
+ * @apiSuccess {Number} updateCount Number of updated books
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "books": [{
+ *        "id": "631cb452ba13a425d94af3f5",
+ *        "title": "The Witcher: The Last Wish"
+ *      },
+ *      {
+ *        "id": "631f83bf80077376df36bd7c",
+ *        "title": "The Witcher: Sword of Destiny"
+ *      }
+ *    ],
+ *    "updateCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"books\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book(s) with id(s) 6307c2ceee1191f838834f43"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/multiple', validate(validators.bookUpdateMany), checkExistence, bookUpdateMany);
 
 /**
  * @api {PATCH} /books/:id Update book

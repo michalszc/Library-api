@@ -6,10 +6,16 @@ const {
   bookDetail,
   bookCreateMany,
   bookCreate,
+  bookDeleteMany,
   bookDelete,
   bookUpdate
 } = require('../controllers/book-controller');
-const { getAuthorAndGenre, getAuthorAndGenreMultiple, getBook } = require('../middlewares/book-middleware');
+const {
+  getAuthorAndGenre,
+  getAuthorAndGenreMultiple,
+  getBook,
+  checkExistence
+} = require('../middlewares/book-middleware');
 const validators = require('../validations/book-validation');
 
 /// BOOK ROUTES ///
@@ -256,6 +262,47 @@ router.post('/multiple', validate(validators.bookCreateMany), getAuthorAndGenreM
  *  HTTP/1.1 500 Internal Server Error
  */
 router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate);
+
+/**
+ * @api {DELETE} /books/multiple Delete multiple books
+ * @apiDescription Request to delete multiple books
+ * @apiVersion 1.0.0
+ * @apiName DeleteManyBooks
+ * @apiGroup Books
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} ids Books ids
+ *
+ *
+ * @apiSuccess {String} message Deleted books
+ * @apiSuccess {Number} deletedCount Number of deleted authors
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *     "message": "Deleted books"
+ *     "deletedCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"ids\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book(s) with id(s) 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+ router.delete('/multiple', validate(validators.bookDeleteMany), checkExistence, bookDeleteMany);
 
 /**
  * @api {DELETE} /books/:id Delete book

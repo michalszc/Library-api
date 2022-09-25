@@ -171,3 +171,30 @@ exports.getBook = async function (req, res, next) {
   }
   next();
 };
+
+/**
+ * Check existence of books with ids passed by body argument
+ * @public
+ */
+ exports.checkExistence = async function (req, res, next) {
+  try {
+    const ids = req.body.ids;
+    const booksIds = await Book.find({ _id: ids }, { _id: 1, name: 0 })
+      .then(r => r.map(({ _id }) => _id.toString()));
+    const idsNotFound = ids.filter(id => !booksIds.includes(id));
+    if (idsNotFound.length !== 0) {
+      throw Error(`Cannot find book(s) with id(s) ${idsNotFound.join()}`);
+    }
+  } catch (error) {
+    if (error.message.startsWith('Cannot find book')) {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
+  }
+  next();
+};

@@ -124,6 +124,13 @@ module.exports = {
     }).xor('author', 'authorId').oxor('genre', 'genreId')
   },
 
+  // DELETE /books/multiple
+  bookDeleteMany: {
+    body: Joi.object({
+      ids: Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1).required()
+    })
+  },
+
   // DELETE /books/:id
   bookDelete: {
     params: Joi.object({

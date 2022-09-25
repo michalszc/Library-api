@@ -46,7 +46,7 @@ const validators = require('../validations/book-validation');
  *      "books": [
  *          {
  *          "_id": "631cb452ba13a425d94af3f5",
- *          "title": "The Last Wish",
+ *          "title": "The Witcher: The Last Wish",
  *          "author": {
  *              "_id": "63111ec1d2c560f45b865478",
  *              "firstName": "Andrzej",
@@ -107,7 +107,7 @@ router.get('/', validate(validators.bookList), bookList);
  *  {
  *    "book": {
  *        "_id": "631cb452ba13a425d94af3f5",
- *        "title": "The Last Wish",
+ *        "title": "The Witcher: The Last Wish",
  *        "author": "63111ec1d2c560f45b865478",
  *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
  *        "isbn": "978-0-575-08244-1",
@@ -154,22 +154,29 @@ router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
- *      "authors": [
- *          {
- *              "firstName": "Andrzej",
- *              "lastName": "Sapkowski",
- *              "dateOfBirth": "1948-06-20T22:00:00.000Z",
- *              "_id": "63111ec1d2c560f45b865478",
- *              "__v": 0
- *          },
- *          {
- *              "firstName": "Stephen",
- *              "lastName": "King",
- *              "dateOfBirth": "1947-09-20T22:00:00.000Z",
- *              "_id": "631a3d4ab51cf67d43309f22",
- *              "__v": 0
- *          }
- *      ]
+ *    "books": [{
+ *        "_id": "631cb452ba13a425d94af3f5",
+ *        "title": "The Witcher: The Last Wish",
+ *        "author": "63111ec1d2c560f45b865478",
+ *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *        "isbn": "978-0-575-08244-1",
+ *        "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *        ],
+ *        "__v": 0
+ *      },
+ *      {
+ *        "_id": "631f83bf80077376df36bd7c",
+ *        "title": "The Witcher: Sword of Destiny",
+ *        "author": "63111ec1d2c560f45b865478",
+ *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *        "isbn": "978-0-316-38970-9",
+ *        "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *        ],
+ *        "__v": 0
+ *      }
+ *    ]
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or book existence
@@ -178,7 +185,7 @@ router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
  *  HTTP/1.1 400 Bad Request
  *  {
  *    "code": 400,
- *    "message": "Validation Error: body: \"authors[0].firstName\" is not allowed to be empty",
+ *    "message": "Validation Error: body: \"books[0].title\" is not allowed to be empty",
  *    "errors": "Bad Request"
  *  }
  * @apiErrorExample {json} Book existence response (example):
@@ -219,7 +226,7 @@ router.post('/multiple', validate(validators.bookCreateMany), getAuthorAndGenreM
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
- *  "title": "The Last Wish",
+ *  "title": "The Witcher: The Last Wish",
  *  "author": "63111ec1d2c560f45b865478",
  *  "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
  *  "isbn": "978-0-575-08244-1",
@@ -271,7 +278,7 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  *    "message": "Deleted book",
  *    "deletedBook": {
  *        "_id": "631cb452ba13a425d94af3f5",
- *        "title": "The Last Wish",
+ *        "title": "The Witcher: The Last Wish",
  *        "author": "63111ec1d2c560f45b865478",
  *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
  *        "isbn": "978-0-575-08244-1",
@@ -336,7 +343,7 @@ router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *    "title": "The Last Wish",
+ *    "title": "The Witcher: The Last Wish",
  *    "author": "63111ec1d2c560f45b865478",
  *    "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
  *    "isbn": "978-0-575-08244-1",

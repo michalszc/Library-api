@@ -27,6 +27,24 @@ const BookInstanceSchema = new mongoose.Schema({
   }
 });
 
+/**
+ * Statics
+ */
+BookInstanceSchema.static({
+  async getList({ publisher = '', status = '', sort = { status: 1 }, skip = 0, limit = '', fields = {} }) {
+    return await this.find({
+      publisher: new RegExp(`${publisher}.*`),
+      status: new RegExp(`${status}.*`)
+    },
+    fields,
+    {
+      sort,
+      skip,
+      limit
+    });
+  }
+});
+
 // Virtual for this bookinstance object's URL.
 BookInstanceSchema
   .virtual('url')
@@ -35,4 +53,5 @@ BookInstanceSchema
   });
 
 // Export model.
-module.exports = mongoose.model('BookInstance', BookInstanceSchema);
+const BookInstance = mongoose.model('BookInstance', BookInstanceSchema);
+module.exports = BookInstance;

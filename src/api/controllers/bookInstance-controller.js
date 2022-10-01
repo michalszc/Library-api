@@ -1,4 +1,6 @@
 const BookInstance = require('../models/bookinstance-model');
+const APIError = require('../errors/api-error');
+const status = require('http-status');
 const { get } = require('lodash');
 
 /**
@@ -34,5 +36,32 @@ exports.bookInstanceList = async function (req, res, next) {
     res.json({ bookInsances });
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * Handle book instance create.
+ * @public
+ */
+exports.bookInstanceCreate = async function (req, res, next) {
+  const bookInstance = new BookInstance({
+    book: res.book,
+    publisher: req.body.publisher,
+    status: req.body.status,
+    back: req.body?.back
+  });
+  try {
+    const newBookInstance = await bookInstance.saveIfNotExists();
+    res.status(status.CREATED).json(newBookInstance);
+  } catch (error) {
+    if (error.message === 'Book instance(s) already exist(s)') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
   }
 };

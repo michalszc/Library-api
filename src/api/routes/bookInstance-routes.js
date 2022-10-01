@@ -1,7 +1,8 @@
 const express = require('express');
 const { validate } = require('express-validation');
 const router = express.Router();
-const { bookInstanceList } = require('../controllers/bookInstance-controller');
+const { bookInstanceList, bookInstanceCreate } = require('../controllers/bookInstance-controller');
+const { getBook } = require('../middlewares/bookInstance-middleware');
 const validators = require('../validations/bookInstance-validation');
 const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
@@ -46,8 +47,58 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  */
 router.get('/', validate(validators.bookInstanceList), bookInstanceList);
 
-// POST request for creating book instance
-router.post('/create', tmp);
+/**
+ * @api {POST} /bookinstances Create book instance
+ * @apiDescription Request for creating book instance
+ * @apiVersion 1.0.0
+ * @apiName CreateBookInstance
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
+ * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
+ * @apiBody {String{3.100} publisher Publisher of the book
+ * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
+ * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
+ *
+ *
+ * @apiSuccess {String{24}} book ID of the book
+ * @apiSuccess {String{3.100} publisher Publisher of the book
+ * @apiSuccess {String} status Status of the book
+ * @apiSuccess {String} back Date when the book will be available again
+ * @apiSuccess {String} _id Id of created book instance
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *     "book": "6330168f90a882c473195243",
+ *     "publisher": "Orbit",
+ *     "status": "Available",
+ *     "back": "2022-10-01T17:34:26.282Z",
+ *     "_id": "63387a22c9e5146eae30c150",
+ *     "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or book instance existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"publisher\" is not allowed to be empty",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Book existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Book instance(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceCreate);
 
 // GET request for one book instance
 router.get('/:id', tmp);

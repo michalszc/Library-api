@@ -28,6 +28,16 @@ const BookInstanceSchema = new mongoose.Schema({
 });
 
 /**
+ * Methods
+ */
+BookInstanceSchema.method({
+  async saveIfNotExists() {
+    await BookInstance.checkExistence(this);
+    return this.save();
+  }
+});
+
+/**
  * Statics
  */
 BookInstanceSchema.static({
@@ -42,6 +52,16 @@ BookInstanceSchema.static({
       skip,
       limit
     });
+  },
+  async checkExistence(bookInstance) {
+    if (await BookInstance.exists({
+      book: bookInstance.book,
+      publisher: bookInstance.publisher,
+      status: bookInstance.status,
+      back: bookInstance.back
+    })) {
+      throw Error('Book instance(s) already exist(s)');
+    }
   }
 });
 

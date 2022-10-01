@@ -10,13 +10,11 @@ const { get, omit } = require('lodash');
  * @public
  */
 exports.getBook = async function (req, res, next) {
-  // TO DO
-  // const { authorId, author, genreId, genre } = req.body;
   try {
     const { book, bookId } = req.body;
     if (bookId && await Book.findById(bookId)) {
       res.book = bookId;
-    } else {
+    } else if (book) {
       const { authorId, author, genreId, genre } = book;
       const book2find = omit(book, ['authorId', 'author', 'genreId', 'genre']);
       if (authorId && await Author.findById(authorId)) {
@@ -36,7 +34,7 @@ exports.getBook = async function (req, res, next) {
         const ids = genreId.map(id => ({ _id: id }));
         const grenreIds = await Genre.getList({ or: ids });
         if (Array.isArray(grenreIds) && grenreIds.length === genreId.length) {
-          book2find.genre = ids;
+          book2find.genre = genreId;
         }
       } else if (genreId && await Genre.findById(genreId)) {
         book2find.genre = genreId;

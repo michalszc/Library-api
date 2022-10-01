@@ -1,7 +1,8 @@
 const BookInstance = require('../models/bookinstance-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
-const { get, capitalize } = require('lodash');
+const { get, capitalize, mapKeys, has, omit } = require('lodash');
+const { addDays } = require('../utils/date');
 
 /**
  * Display list of book instances.
@@ -14,8 +15,10 @@ exports.bookInstanceList = async function (req, res, next) {
       omit: get(req, 'body.omit')
     };
     const options = {
+      book: get(res, 'book', ''),
       publisher: get(req, 'body.publisher', ''),
       status: get(req, 'body.status', ''),
+      back: mapKeys(get(req, 'body.back'), (_, key) => `$${key}`),
       sort: get(req, 'body.sort', { status: 1 }),
       skip: get(req, 'body.skip', 0),
       limit: get(req, 'body.limit', ''),
@@ -44,6 +47,14 @@ exports.bookInstanceList = async function (req, res, next) {
     if (fields.only && !fields.only.includes('_id')) {
       options.fields._id = 0;
     }
+
+    if (has(options.back, '$e')) {
+      options.back = Object.assign(omit(options.back, ['$e']), {
+        $gte: options.back.$e,
+        $lte: addDays(options.back.$e).toISOString()
+      });
+    }
+
     const bookInsances = await BookInstance.getList(options);
     res.json({ bookInsances });
   } catch (error) {

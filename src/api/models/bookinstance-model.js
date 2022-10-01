@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const { isEmpty } = require('lodash');
 
 /**
  * Book Instance Schema
@@ -42,21 +44,32 @@ BookInstanceSchema.method({
  */
 BookInstanceSchema.static({
   async getList({
-    publisher = '', status = '', sort = { status: 1 },
-    skip = 0, limit = '', fields = {},
-    populate = []
+    book = '', publisher = '', status = '',
+    back, sort = { status: 1 }, skip = 0,
+    limit = '', fields = {}, populate = []
   }) {
-    return await this.find({
+    const projection = {
       publisher: new RegExp(`${publisher}.*`),
       status: new RegExp(`${status}.*`)
-    },
-    fields,
-    {
-      sort,
-      skip,
-      limit,
-      populate
-    });
+    };
+
+    if (book) {
+      projection.book = new ObjectId(book);
+    }
+
+    if (!isEmpty(back)) {
+      projection.back = back;
+    }
+
+    return await this.find(
+      projection,
+      fields,
+      {
+        sort,
+        skip,
+        limit,
+        populate
+      });
   },
   async checkExistence(bookInstance) {
     if (await BookInstance.exists({

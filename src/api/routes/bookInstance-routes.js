@@ -18,8 +18,11 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiGroup BookInstances
  *
  * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{24}} [bookId] This field allows to search all book instances with that book ID. It is not allowed to use with "book" property.
+ * @apiBody {Object} [book] This field allows to search all book instances with that book. Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "bookId" property.
  * @apiBody {String} [publisher] This field allows to search all book instances with that publisher.
  * @apiBody {String} [status] This field allows to search all book instances with that status.
+ * @apiBody {Object} [back] This field allows to search all book instances with date when the book will be available again. Allowed object properties are:  e (equal), gt (grather than), gte (grather than or equal), lt (less than), lte (less than or equal). Allowed properties values are dates in format YYYY/MM/DD or MM/DD/YYYY.
  * @apiBody {Object} [sort] Sort list of book instances. Allowed object properties are:  _id, book, publisher, status, back. Allowed properties values are: ascending, asc, 1, descending, desc, -1.
  * @apiBody {Number} [skip] This field allows to omit first results. Minimum value 0.
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
@@ -48,7 +51,7 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiErrorExample {json} Internal Server Error response (example):
  *  HTTP/1.1 500 Internal Server Error
  */
-router.get('/', validate(validators.bookInstanceList), bookInstanceList);
+router.get('/', validate(validators.bookInstanceList), getBook, bookInstanceList);
 
 /**
  * @api {POST} /bookinstances Create book instance

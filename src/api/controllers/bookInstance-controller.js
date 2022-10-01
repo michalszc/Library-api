@@ -1,7 +1,7 @@
 const BookInstance = require('../models/bookinstance-model');
 const APIError = require('../errors/api-error');
 const status = require('http-status');
-const { get } = require('lodash');
+const { get, capitalize } = require('lodash');
 
 /**
  * Display list of book instances.
@@ -27,7 +27,19 @@ exports.bookInstanceList = async function (req, res, next) {
         }
 
         return result;
-      }, {})
+      }, {}),
+      populate: ['book', 'author', 'genre'].reduce((result, key) => {
+        if (get(req, `body.show${capitalize(key)}`, false)) {
+          if (result.length === 0) {
+            result.push({ path: 'book' });
+          }
+          if (['author', 'genre'].includes(key)) {
+            ((result[0]?.populate) || (result[0].populate = [])).push({ path: key });
+          }
+        }
+
+        return result;
+      }, [])
     };
     if (fields.only && !fields.only.includes('_id')) {
       options.fields._id = 0;

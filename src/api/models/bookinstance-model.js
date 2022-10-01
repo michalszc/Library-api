@@ -41,7 +41,11 @@ BookInstanceSchema.method({
  * Statics
  */
 BookInstanceSchema.static({
-  async getList({ publisher = '', status = '', sort = { status: 1 }, skip = 0, limit = '', fields = {} }) {
+  async getList({
+    publisher = '', status = '', sort = { status: 1 },
+    skip = 0, limit = '', fields = {},
+    populate = []
+  }) {
     return await this.find({
       publisher: new RegExp(`${publisher}.*`),
       status: new RegExp(`${status}.*`)
@@ -50,7 +54,8 @@ BookInstanceSchema.static({
     {
       sort,
       skip,
-      limit
+      limit,
+      populate
     });
   },
   async checkExistence(bookInstance) {

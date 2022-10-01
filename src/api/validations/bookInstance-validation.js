@@ -13,7 +13,10 @@ module.exports = {
       skip: Joi.number().min(0),
       limit: Joi.number().min(0),
       only: Joi.array().items(Joi.string().valid('__v', '_id', 'book', 'publisher', 'status', 'back')).min(1),
-      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'book', 'publisher', 'status', 'back')).min(1)
+      omit: Joi.array().items(Joi.string().valid('__v', '_id', 'book', 'publisher', 'status', 'back')).min(1),
+      showBook: Joi.bool(),
+      showAuthor: Joi.bool(),
+      showGenre: Joi.bool()
     })
   },
 

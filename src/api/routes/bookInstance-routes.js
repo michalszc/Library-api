@@ -25,6 +25,9 @@ const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
  * @apiBody {Number} [limit] This field allows you to limit the number of results. Minimum value 0.
  * @apiBody {String[]} [only] This field allows you to select fields of results. Allowed values: __v, _id, book, publisher, status, back. It is not allowed to use with "omit" property.
  * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, book, publisher, status, back. It is not allowed to use with "only" property.
+ * @apiBody {Boolean} [showBook] This field allows you to show the book's object. If this field is not passed or value is false, it only shows the book  ID.
+ * @apiBody {Boolean} [showAuthor] This field allows you to show the author's object. It also set showBook to true. If this field is not passed or value is false, it only shows the author ID.
+ * @apiBody {Boolean} [showGenre] This field allows you to show the genre object. It also set showBook to true. If this field is not passed or the value is false, it only shows the genre ID.
  *
  * @apiSuccess {Object[]} genres List of genres
  * @apiSuccessExample {json} Success response (example):

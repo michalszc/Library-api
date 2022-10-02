@@ -52,6 +52,22 @@ module.exports = {
     }).oxor('book', 'bookId')
   },
 
+  // GET /bookinstances/:id
+  bookInstanceDetail: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    }),
+    body: Joi.object({
+      only: Joi.array()
+        .items(Joi.string().valid('__v', '_id', 'book', 'publisher', 'status', 'back')).min(1),
+      omit: Joi.array()
+        .items(Joi.string().valid('__v', '_id', 'book', 'publisher', 'status', 'back')).min(1),
+      showBook: Joi.bool(),
+      showAuthor: Joi.bool(),
+      showGenre: Joi.bool()
+    })
+  },
+
   // POST /bookinstances/
   bookInstanceCreate: {
     body: Joi.object({

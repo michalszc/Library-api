@@ -63,6 +63,22 @@ exports.bookInstanceList = async function (req, res, next) {
 };
 
 /**
+ * Display details for a specific book instance.
+ * @public
+ */
+exports.bookInstanceDetail = async function (req, res, next) {
+  try {
+    res.json({ bookInstance: res.bookInstance });
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
  * Handle book instance create.
  * @public
  */

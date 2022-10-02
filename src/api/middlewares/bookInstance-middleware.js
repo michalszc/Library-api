@@ -1,9 +1,10 @@
 const APIError = require('../errors/api-error');
 const Author = require('../models/author-model');
 const Book = require('../models/book-model');
+const BookInstance = require('../models/bookinstance-model');
 const Genre = require('../models/genre-model');
 const status = require('http-status');
-const { get, omit } = require('lodash');
+const { get, omit, capitalize } = require('lodash');
 
 /**
  * Get book ID if book exist
@@ -66,6 +67,57 @@ exports.getBook = async function (req, res, next) {
     if (!res.book && (book || bookId)) {
       throw Error('Cannot find book');
     }
+  } catch (error) {
+    if (error.message.startsWith('Cannot find')) {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
+  }
+  next();
+};
+
+/**
+ * Gets Book instance by id passed in route parameters
+ * @public
+ */
+exports.getBookInstance = async function (req, res, next) {
+  const only = get(req, 'body.only');
+  const omit = get(req, 'body.omit');
+  const fields = ['__v', '_id', 'book', 'publisher', 'status', 'back'].reduce((result, key) => {
+    if (only && only.includes(key)) {
+      result[key] = 1;
+    } else if (omit && omit.includes(key)) {
+      result[key] = 0;
+    }
+
+    return result;
+  }, {});
+  if (only && !only.includes('_id')) {
+    fields._id = 0;
+  }
+  const populate = ['book', 'author', 'genre'].reduce((result, key) => {
+    if (get(req, `body.show${capitalize(key)}`, false)) {
+      if (result.length === 0) {
+        result.push({ path: 'book' });
+      }
+      if (['author', 'genre'].includes(key)) {
+        ((result[0]?.populate) || (result[0].populate = [])).push({ path: key });
+      }
+    }
+
+    return result;
+  }, []);
+  try {
+    const bookInstance = await BookInstance.findById(req.params.id, fields, { populate });
+    if (!bookInstance) {
+      throw Error(`Cannot find book instance with id ${req.params.id}`);
+    }
+    res.bookInstance = bookInstance;
   } catch (error) {
     if (error.message.startsWith('Cannot find')) {
       return next(new APIError({

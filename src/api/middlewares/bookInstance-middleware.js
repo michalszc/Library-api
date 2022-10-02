@@ -61,9 +61,10 @@ exports.getBook = async function (req, res, next) {
       }), '[0]._id');
       if (book2findId) {
         res.book = book2findId;
-      } else {
-        throw Error('Cannot find book');
       }
+    }
+    if (!res.book && (book || bookId)) {
+      throw Error('Cannot find book');
     }
   } catch (error) {
     if (error.message.startsWith('Cannot find')) {

@@ -159,7 +159,7 @@ exports.getBook = async function (req, res, next) {
     }
     res.book = book;
   } catch (error) {
-    if (error.message.startsWith('Cannot find author')) {
+    if (error.message.startsWith('Cannot find')) {
       return next(new APIError({
         message: error.message,
         status: status.NOT_FOUND,

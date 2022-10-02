@@ -125,7 +125,7 @@ exports.bookList = async function (req, res, next) {
 };
 
 /**
- * Display details for a specific Author.
+ * Display details for a specific Book.
  * @public
  */
 exports.bookDetail = async function (req, res, next) {

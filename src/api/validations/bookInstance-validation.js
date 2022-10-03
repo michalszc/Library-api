@@ -104,6 +104,13 @@ module.exports = {
       status: Joi.string().valid('Available', 'Maintenance', 'Loaned', 'Reserved').required(),
       back: Joi.date().min('now')
     }).xor('book', 'bookId').oxor('author', 'authorId').oxor('genre', 'genreId')
+  },
+
+  // DELETE /bookinstances/:id
+  bookInstanceDelete: {
+    params: Joi.object({
+      id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
+    })
   }
 
 };

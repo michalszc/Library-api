@@ -104,3 +104,16 @@ exports.bookInstanceCreate = async function (req, res, next) {
     }
   }
 };
+
+/**
+ * Handle Book instance delete.
+ * @public
+ */
+exports.bookInstanceDelete = async function (req, res, next) {
+  try {
+    const deletedBookInstance = await res.bookInstance.remove();
+    res.json({ message: 'Deleted book instance', deletedBookInstance });
+  } catch (error) {
+    next(error);
+  }
+};

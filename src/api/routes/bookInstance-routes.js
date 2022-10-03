@@ -4,7 +4,8 @@ const router = express.Router();
 const {
   bookInstanceList,
   bookInstanceDetail,
-  bookInstanceCreate
+  bookInstanceCreate,
+  bookInstanceDelete
 } = require('../controllers/bookInstance-controller');
 const { getBook, getBookInstance } = require('../middlewares/bookInstance-middleware');
 const validators = require('../validations/bookInstance-validation');
@@ -135,12 +136,11 @@ router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceC
  *  HTTP/1.1 200 OK
  *  {
  *    "bookInstance": {
- *      "_id": "633875e93bf6b5c22a95b97a",
+ *      "_id": "63387a22c9e5146eae30c150",
  *      "book": "6330168f90a882c473195243",
  *      "publisher": "Orbit",
  *      "status": "Available",
  *      "back": "2022-10-01T17:34:26.282Z",
- *      "_id": "63387a22c9e5146eae30c150",
  *      "__v": 0
  *    }
  *  }
@@ -166,8 +166,55 @@ router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceC
  */
 router.get('/:id', validate(validators.bookInstanceDetail), getBookInstance, bookInstanceDetail);
 
-// DELETE request to delete book instance
-router.delete('/:id', tmp);
+/**
+ * @api {DELETE} /bookinstances/:id Delete book instance
+ * @apiDescription Request to delete book
+ * @apiVersion 1.0.0
+ * @apiName DeleteBookInstance
+ * @apiGroup BookInstances
+ *
+ * @apiParam {String{24}} id Book instance id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {String} message Deleted book instance
+ * @apiSuccess {Object} deletedBook Object of deleted book instance
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "message": "Deleted book instance",
+ *    "deletedBookInstance": {
+ *      "_id": "63387a22c9e5146eae30c150",
+ *      "book": "6330168f90a882c473195243",
+ *      "publisher": "Orbit",
+ *      "status": "Available",
+ *      "back": "2022-10-01T17:34:26.282Z",
+ *      "__v": 0
+ *    }
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: params: \"id\" with value \"62fd5e7e3037984b1b5effbg\" fails to match the required pattern: /^[a-fA-F0-9]{24}$/",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book instance with id 63111ec1d2c560f45b86547e"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.delete('/:id', validate(validators.bookInstanceDelete), getBookInstance, bookInstanceDelete);
 
 // PATCH request to update book instance
 router.patch('/:id', tmp);

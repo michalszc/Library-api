@@ -5,11 +5,11 @@ const {
   bookInstanceList,
   bookInstanceDetail,
   bookInstanceCreate,
-  bookInstanceDelete
+  bookInstanceDelete,
+  bookInstanceUpdate
 } = require('../controllers/bookInstance-controller');
 const { getBook, getBookInstance } = require('../middlewares/bookInstance-middleware');
 const validators = require('../validations/bookInstance-validation');
-const tmp = (req, res) => res.send('NOT IMPLEMENTED YET');
 
 /// BOOKINSTANCE ROUTES ///
 
@@ -216,7 +216,63 @@ router.get('/:id', validate(validators.bookInstanceDetail), getBookInstance, boo
  */
 router.delete('/:id', validate(validators.bookInstanceDelete), getBookInstance, bookInstanceDelete);
 
-// PATCH request to update book instance
-router.patch('/:id', tmp);
+/**
+ * @api {PATCH} /bookinstances/:id Update book instance
+ * @apiDescription Request to update book instance
+ * @apiVersion 1.0.0
+ * @apiName UpdateBookInstance
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
+ * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
+ * @apiBody {String{3.100} publisher Publisher of the book
+ * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
+ * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
+ *
+ * @apiParam {String{24}} id Book id
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *    "id": "62fd5e7e3037984b1b5effb2"
+ *  }
+ *
+ * @apiSuccess {String{24}} book ID of the book
+ * @apiSuccess {String{3.100} publisher Publisher of the book
+ * @apiSuccess {String} status Status of the book
+ * @apiSuccess {String} back Date when the book will be available again
+ * @apiSuccess {String} _id Id of created book instance
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *     "book": "6330168f90a882c473195243",
+ *     "publisher": "Orbit",
+ *     "status": "Available",
+ *     "back": "2022-10-01T17:34:26.282Z",
+ *     "_id": "63387a22c9e5146eae30c150",
+ *     "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: params: \"id\" with value \"62fd5e7e3037984b1b5effbg\" fails to match the required pattern: /^[a-fA-F0-9]{24}$/",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book instance with id 63111ec1d2c560f45b86547e"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/:id', validate(validators.bookInstanceUpdate), getBook, getBookInstance, bookInstanceUpdate);
 
 module.exports = router;

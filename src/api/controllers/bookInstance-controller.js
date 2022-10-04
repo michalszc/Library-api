@@ -117,3 +117,34 @@ exports.bookInstanceDelete = async function (req, res, next) {
     next(error);
   }
 };
+
+/**
+ * Handle Book instance update.
+ * @public
+ */
+exports.bookInstanceUpdate = async function (req, res, next) {
+  const { publisher, status: bookInstanceStatus, back } = req.body;
+  const { bookInstance, book } = res;
+  if (book) {
+    bookInstance.book = book;
+  }
+  if (publisher) {
+    bookInstance.publisher = publisher;
+  }
+  if (bookInstanceStatus) {
+    bookInstance.status = bookInstanceStatus;
+  }
+  if (back) {
+    bookInstance.back = back;
+  }
+  try {
+    const updatedBookInstance = await bookInstance.saveIfNotExists();
+    res.json(updatedBookInstance);
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};

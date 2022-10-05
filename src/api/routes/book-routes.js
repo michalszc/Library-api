@@ -276,7 +276,7 @@ router.post('/', validate(validators.bookCreate), getAuthorAndGenre, bookCreate)
  *
  *
  * @apiSuccess {String} message Deleted books
- * @apiSuccess {Number} deletedCount Number of deleted authors
+ * @apiSuccess {Number} deletedCount Number of deleted books
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {

@@ -5,10 +5,11 @@ const {
   bookInstanceList,
   bookInstanceDetail,
   bookInstanceCreate,
+  bookInstanceDeleteMany,
   bookInstanceDelete,
   bookInstanceUpdate
 } = require('../controllers/bookInstance-controller');
-const { getBook, getBookInstance } = require('../middlewares/bookInstance-middleware');
+const { getBook, getBookInstance, checkExistence } = require('../middlewares/bookInstance-middleware');
 const validators = require('../validations/bookInstance-validation');
 
 /// BOOKINSTANCE ROUTES ///
@@ -165,6 +166,47 @@ router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceC
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/:id', validate(validators.bookInstanceDetail), getBookInstance, bookInstanceDetail);
+
+/**
+ * @api {DELETE} /bookinstances/multiple Delete multiple book instances
+ * @apiDescription Request to delete multiple book instances
+ * @apiVersion 1.0.0
+ * @apiName DeleteManyBookInstances
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} ids Book instances ids
+ *
+ *
+ * @apiSuccess {String} message Deleted book instances
+ * @apiSuccess {Number} deletedCount Number of deleted book instances
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *     "message": "Deleted book instances"
+ *     "deletedCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"ids\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book instance(s) with id(s) 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.delete('/multiple', validate(validators.bookInstanceDeleteMany), checkExistence, bookInstanceDeleteMany);
 
 /**
  * @api {DELETE} /bookinstances/:id Delete book instance

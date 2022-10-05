@@ -131,3 +131,30 @@ exports.getBookInstance = async function (req, res, next) {
   }
   next();
 };
+
+/**
+ * Check existence of book instances with ids passed by body argument
+ * @public
+ */
+exports.checkExistence = async function (req, res, next) {
+  try {
+    const ids = req.body.ids;
+    const bookInstancesIds = await BookInstance.find({ _id: ids }, { _id: 1, name: 0 })
+      .then(r => r.map(({ _id }) => _id.toString()));
+    const idsNotFound = ids.filter(id => !bookInstancesIds.includes(id));
+    if (idsNotFound.length !== 0) {
+      throw Error(`Cannot find book instance(s) with id(s) ${idsNotFound.join()}`);
+    }
+  } catch (error) {
+    if (error.message.startsWith('Cannot find book instance')) {
+      return next(new APIError({
+        message: error.message,
+        status: status.NOT_FOUND,
+        stack: error.stack
+      }));
+    } else {
+      return next(error);
+    }
+  }
+  next();
+};

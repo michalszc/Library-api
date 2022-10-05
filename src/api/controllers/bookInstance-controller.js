@@ -106,6 +106,19 @@ exports.bookInstanceCreate = async function (req, res, next) {
 };
 
 /**
+ * Handle delete many book instances.
+ * @public
+ */
+exports.bookInstanceDeleteMany = async function (req, res, next) {
+  try {
+    const { deletedCount } = await BookInstance.deleteMany({ _id: req.body.ids });
+    res.json({ message: 'Deleted book instances', deletedCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Handle Book instance delete.
  * @public
  */

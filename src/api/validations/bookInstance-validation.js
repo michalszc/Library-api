@@ -7,7 +7,7 @@ module.exports = {
     body: Joi.object({
       bookId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
       book: Joi.object({
-        title: Joi.string().min(1).max(100).required(),
+        title: Joi.string().min(1).max(100),
         authorId: Joi.string().regex(/^[a-fA-F0-9]{24}$/),
         author: Joi.object({
           firstName: Joi.string().min(3).max(100).required(),
@@ -15,10 +15,9 @@ module.exports = {
           dateOfBirth: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now')).required(),
           dateOfDeath: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date().max('now'))
         }).min(1),
-        summary: Joi.string().min(1).max(500).required(),
+        summary: Joi.string().min(1).max(500),
         isbn: Joi.string()
-          .regex(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/)
-          .required(),
+          .regex(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/),
         genreId: Joi.alternatives().try(
           Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1),
           Joi.string().regex(/^[a-fA-F0-9]{24}$/)
@@ -33,7 +32,7 @@ module.exports = {
             name: Joi.string().min(3).max(100).required()
           })
         )
-      }).xor('author', 'authorId').oxor('genre', 'genreId'),
+      }).min(1).oxor('author', 'authorId').oxor('genre', 'genreId'),
       publisher: Joi.string().min(3).max(100),
       status: Joi.string().valid('Available', 'Maintenance', 'Loaned', 'Reserved'),
       back: Joi.object().pattern(/^e$|^lt$|^lte$|^gt$|^gte$/, Joi.date()),
@@ -104,6 +103,13 @@ module.exports = {
       status: Joi.string().valid('Available', 'Maintenance', 'Loaned', 'Reserved').required(),
       back: Joi.date().min('now')
     }).xor('book', 'bookId')
+  },
+
+  // DELETE /bookinstances/multiple
+  bookInstanceDeleteMany: {
+    body: Joi.object({
+      ids: Joi.array().items(Joi.string().regex(/^[a-fA-F0-9]{24}$/)).min(1).required()
+    })
   },
 
   // DELETE /bookinstances/:id

@@ -138,7 +138,7 @@ exports.getBookInstance = async function (req, res, next) {
  */
 exports.checkExistence = async function (req, res, next) {
   try {
-    const ids = req.body.ids;
+    const ids = req.body.ids || req.body.bookInstances.map(({ id }) => id);
     const bookInstancesIds = await BookInstance.find({ _id: ids }, { _id: 1, name: 0 })
       .then(r => r.map(({ _id }) => _id.toString()));
     const idsNotFound = ids.filter(id => !bookInstancesIds.includes(id));

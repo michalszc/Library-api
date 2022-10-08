@@ -132,6 +132,32 @@ exports.bookInstanceDelete = async function (req, res, next) {
 };
 
 /**
+ * Handle Book instance update many.
+ * @public
+ */
+exports.bookInstanceUpdateMany = async function (req, res, next) {
+  try {
+    const bulkArr = req.body.bookInstances.map(({ id, ...update }) => (
+      {
+        updateOne: {
+          filter: { _id: id },
+          update
+        }
+      }
+    ));
+    const updatedBookInstances = await BookInstance.bulkWrite(bulkArr);
+    const updateCount = get(updatedBookInstances, 'result.nModified', 0);
+    res.json({ bookInstances: req.body.bookInstances, updateCount });
+  } catch (error) {
+    next(new APIError({
+      message: error.message,
+      status: status.BAD_REQUEST,
+      stack: error.stack
+    }));
+  }
+};
+
+/**
  * Handle Book instance update.
  * @public
  */

@@ -7,6 +7,7 @@ const {
   bookInstanceCreate,
   bookInstanceDeleteMany,
   bookInstanceDelete,
+  bookInstanceUpdateMany,
   bookInstanceUpdate
 } = require('../controllers/bookInstance-controller');
 const { getBook, getBookInstance, checkExistence } = require('../middlewares/bookInstance-middleware');
@@ -257,6 +258,56 @@ router.delete('/multiple', validate(validators.bookInstanceDeleteMany), checkExi
  *  HTTP/1.1 500 Internal Server Error
  */
 router.delete('/:id', validate(validators.bookInstanceDelete), getBookInstance, bookInstanceDelete);
+
+/**
+ * @api {PATCH} /bookinstances/multiple Update multiple book instances
+ * @apiDescription Request to update multiple book instances
+ * @apiVersion 1.0.0
+ * @apiName UpdateManyBookInstances
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} bookInstances Book instances to update. One object must include id and at least one of the following fields book (or bookId), publisher, status, back.
+ *
+ * @apiSuccess {Object[]} bookInstances Updated book instances
+ * @apiSuccess {Number} updateCount Number of updated book instances
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "bookInstances": [
+ *      {
+ *        "id": "633dc60d223aa222257c957d",
+ *        "publisher": "Orbit"
+ *      },
+ *      {
+ *        "id": "633dc60c223aa222257c9577",
+ *        "publisher": "Orbit"
+ *      }
+ *    ],
+ *    "updateCount": 2
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"bookInstances[0].id\" is required",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Incorrect id error response (example):
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *    "code": 404,
+ *    "message": "Cannot find book instance(s) with id(s) 63091e5e4ec3fbc5c720db4c"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.patch('/multiple', validate(validators.bookInstanceUpdateMany), checkExistence, bookInstanceUpdateMany);
 
 /**
  * @api {PATCH} /bookinstances/:id Update book instance

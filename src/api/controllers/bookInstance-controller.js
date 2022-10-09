@@ -79,6 +79,31 @@ exports.bookInstanceDetail = async function (req, res, next) {
 };
 
 /**
+ * Handle create many book instances.
+ * @public
+ */
+exports.bookInstanceCreateMany = async function (req, res, next) {
+  try {
+    const bookInstances = res.bookInstances;
+    for (const bookInstance of bookInstances) {
+      await BookInstance.checkExistence(bookInstance);
+    }
+    const newBookInstances = await BookInstance.insertMany(bookInstances);
+    res.status(status.CREATED).json({ bookInstances: newBookInstances });
+  } catch (error) {
+    if (error.message === 'Book instance(s) already exist(s)') {
+      next(new APIError({
+        message: error.message,
+        status: status.BAD_REQUEST,
+        stack: error.stack
+      }));
+    } else {
+      next(error);
+    }
+  }
+};
+
+/**
  * Handle book instance create.
  * @public
  */

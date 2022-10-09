@@ -4,13 +4,19 @@ const router = express.Router();
 const {
   bookInstanceList,
   bookInstanceDetail,
+  bookInstanceCreateMany,
   bookInstanceCreate,
   bookInstanceDeleteMany,
   bookInstanceDelete,
   bookInstanceUpdateMany,
   bookInstanceUpdate
 } = require('../controllers/bookInstance-controller');
-const { getBook, getBookInstance, checkExistence } = require('../middlewares/bookInstance-middleware');
+const {
+  getBookMultiple,
+  getBook,
+  getBookInstance,
+  checkExistence
+} = require('../middlewares/bookInstance-middleware');
 const validators = require('../validations/bookInstance-validation');
 
 /// BOOKINSTANCE ROUTES ///
@@ -59,59 +65,6 @@ const validators = require('../validations/bookInstance-validation');
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/', validate(validators.bookInstanceList), getBook, bookInstanceList);
-
-/**
- * @api {POST} /bookinstances Create book instance
- * @apiDescription Request for creating book instance
- * @apiVersion 1.0.0
- * @apiName CreateBookInstance
- * @apiGroup BookInstances
- *
- * @apiHeader {String} Content-Type=application/json
- * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
- * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
- * @apiBody {String{3.100} publisher Publisher of the book
- * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
- * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
- *
- *
- * @apiSuccess {String{24}} book ID of the book
- * @apiSuccess {String{3.100} publisher Publisher of the book
- * @apiSuccess {String} status Status of the book
- * @apiSuccess {String} back Date when the book will be available again
- * @apiSuccess {String} _id Id of created book instance
- * @apiSuccess {Number} __v versionKey
- *
- * @apiSuccessExample {json} Success response (example):
- *  HTTP/1.1 201 Created
- *  {
- *     "book": "6330168f90a882c473195243",
- *     "publisher": "Orbit",
- *     "status": "Available",
- *     "back": "2022-10-01T17:34:26.282Z",
- *     "_id": "63387a22c9e5146eae30c150",
- *     "__v": 0
- *  }
- *
- * @apiError BadRequest The server cannot process the request due to validation error or book instance existence
- * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
- * @apiErrorExample {json} Validation error response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Validation Error: body: \"publisher\" is not allowed to be empty",
- *    "errors": "Bad Request"
- *  }
- * @apiErrorExample {json} Book existence response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Book instance(s) already exist(s)"
- *  }
- * @apiErrorExample {json} Internal Server Error response (example):
- *  HTTP/1.1 500 Internal Server Error
- */
-router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceCreate);
 
 /**
  * @api {GET} /bookinstances/:id Get book instance
@@ -167,6 +120,114 @@ router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceC
  *  HTTP/1.1 500 Internal Server Error
  */
 router.get('/:id', validate(validators.bookInstanceDetail), getBookInstance, bookInstanceDetail);
+
+/**
+ * @api {POST} /bookinstances/multiple Create multiple book instances
+ * @apiDescription Request for creating multiple book instances
+ * @apiVersion 1.0.0
+ * @apiName CreateManyBookInstances
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {Object[]} bookInstances Array of book objects. One object must include id,  book (or bookId), publisher, status and optionally back.
+ *
+ * @apiSuccess {Object[]} bookInstances Created book instances
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *    "bookInstances": [
+ *      {
+ *          "book": "63237c1c3c5be131031920f1",
+ *          "publisher": "Orbit",
+ *          "status": "Available",
+ *          "_id": "6342fd21ece87313c996bd56",
+ *          "back": "2022-10-09T16:56:01.059Z",
+ *          "__v": 0
+ *      },
+ *      {
+ *          "book": "631f83cb80077376df36bd7f",
+ *          "publisher": "Orbit",
+ *          "status": "Available",
+ *          "_id": "6342fd21ece87313c996bd57",
+ *          "back": "2022-10-09T16:56:01.060Z",
+ *          "__v": 0
+ *      }
+ *    ]
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or book instance existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"bookInstances[0].publisher\" is required",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Book existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Book instance(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/multiple', validate(validators.bookInstanceCreateMany), getBookMultiple, bookInstanceCreateMany);
+
+/**
+ * @api {POST} /bookinstances Create book instance
+ * @apiDescription Request for creating book instance
+ * @apiVersion 1.0.0
+ * @apiName CreateBookInstance
+ * @apiGroup BookInstances
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
+ * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
+ * @apiBody {String{3.100} publisher Publisher of the book
+ * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
+ * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
+ *
+ *
+ * @apiSuccess {String{24}} book ID of the book
+ * @apiSuccess {String{3.100} publisher Publisher of the book
+ * @apiSuccess {String} status Status of the book
+ * @apiSuccess {String} back Date when the book will be available again
+ * @apiSuccess {String} _id Id of created book instance
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *     "book": "6330168f90a882c473195243",
+ *     "publisher": "Orbit",
+ *     "status": "Available",
+ *     "back": "2022-10-01T17:34:26.282Z",
+ *     "_id": "63387a22c9e5146eae30c150",
+ *     "__v": 0
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or book instance existence
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"publisher\" is not allowed to be empty",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Book existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Book instance(s) already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/', validate(validators.bookInstanceCreate), getBook, bookInstanceCreate);
 
 /**
  * @api {DELETE} /bookinstances/multiple Delete multiple book instances

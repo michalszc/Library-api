@@ -186,13 +186,13 @@ router.post('/multiple', validate(validators.bookInstanceCreateMany), getBookMul
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
  * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
- * @apiBody {String{3.100} publisher Publisher of the book
+ * @apiBody {String{3.100}} publisher Publisher of the book
  * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
  * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
  *
  *
  * @apiSuccess {String{24}} book ID of the book
- * @apiSuccess {String{3.100} publisher Publisher of the book
+ * @apiSuccess {String{3.100}} publisher Publisher of the book
  * @apiSuccess {String} status Status of the book
  * @apiSuccess {String} back Date when the book will be available again
  * @apiSuccess {String} _id Id of created book instance
@@ -380,7 +380,7 @@ router.patch('/multiple', validate(validators.bookInstanceUpdateMany), checkExis
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String{24}} bookId ID of the book. It is not allowed to use with "book" property.
  * @apiBody {Object} book Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
- * @apiBody {String{3.100} publisher Publisher of the book
+ * @apiBody {String{3.100}} publisher Publisher of the book
  * @apiBody {String} status Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
  * @apiBody {String} back=2022/12/12 Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
  *
@@ -391,7 +391,7 @@ router.patch('/multiple', validate(validators.bookInstanceUpdateMany), checkExis
  *  }
  *
  * @apiSuccess {String{24}} book ID of the book
- * @apiSuccess {String{3.100} publisher Publisher of the book
+ * @apiSuccess {String{3.100}} publisher Publisher of the book
  * @apiSuccess {String} status Status of the book
  * @apiSuccess {String} back Date when the book will be available again
  * @apiSuccess {String} _id Id of created book instance

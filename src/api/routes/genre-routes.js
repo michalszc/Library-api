@@ -34,6 +34,10 @@ const validators = require('../validations/genre-validation');
  * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, name. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} genres List of genres
+ * @apiSuccess {String} genres[_id] Id of genre
+ * @apiSuccess {String} genres[name] Name of genre
+ * @apiSuccess {Number} genres[__v] versionKey
+ *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -85,7 +89,10 @@ router.get('/', validate(validators.genreList), genreList);
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {String[]} names Genres names
  *
- * @apiSuccess {Object[]} Genres Created genres
+ * @apiSuccess {Object[]} genres Created genres
+ * @apiSuccess {String} genres[_id] Id of created genre
+ * @apiSuccess {String} genres[name] Name of created genre
+ * @apiSuccess {Number} genres[__v] versionKey
  *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
@@ -183,7 +190,17 @@ router.post('/', validate(validators.genreCreate), genreCreate);
  *  }
  *
  * @apiSuccess {Object} genre Requested genre
- * @apiSuccess {String[]} listOfBooks List of books with this genre
+ * @apiSuccess {String} genres[_id] Id of genre
+ * @apiSuccess {String} genres[name] Name of genre
+ * @apiSuccess {Number} genres[__v] versionKey
+ * @apiSuccess {Object[]} listOfBooks List of books with this genre
+ * @apiSuccess {String} listOfBooks[_id] Id of book
+ * @apiSuccess {String{1.100}} listOfBooks[title]  Title of the book
+ * @apiSuccess {String} listOfBooks[author] Author id
+ * @apiSuccess {String{1.500}} listOfBooks[summary]  Summary of the bookk
+ * @apiSuccess {String{10,13}} listOfBooks[isbn]  International Standard Book Number
+ * @apiSuccess {Number} listOfBooks[__v] versionKey
+ *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -192,7 +209,14 @@ router.post('/', validate(validators.genreCreate), genreCreate);
  *      "name": "Fantasy",
  *      "__v": 0
  *    },
- *    "listOfBooks": null
+ *    "listOfBooks": [{
+ *       "_id": "63301675b39f89e97d14db2b",
+ *       "title": "The Witcher: Sword of Destiny",
+ *       "author": "63111ec1d2c560f45b865478",
+ *       "summary": "Geralt of Rivia is a Witcher, a man whose magic powers andifelong training have made him a brilliant fighter and a mercilessssassin. Yet he is no ordinary killer: he hunts the vile fiends thatavage the land and attack the innocent. But not everything monstroulooking is evil; not everything fair is good . . . and in every fairy talehere is a grain of truth.",
+ *       "isbn": "9780316389709",
+ *       "__v": 0
+ *     }]
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error
@@ -271,6 +295,10 @@ router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence,
  *  }
  *
  * @apiSuccess {String} message Deleted genre
+ * @apiSuccess {Object} deletedGenre Deleted genre
+ * @apiSuccess {String} deletedGenre[_id] Id of deleted genre
+ * @apiSuccess {String} deletedGenre[name] Name of deleted genre
+ * @apiSuccess {Number} deletedGenre[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -312,8 +340,12 @@ router.delete('/:id', validate(validators.genreDelete), getGenre, genreDelete);
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {Object[]} genres Genres to update
+ * @apiSuccess {String} genres[_id] Id of genre
+ * @apiSuccess {String} genres[name] New genre name
  *
  * @apiSuccess {Object[]} genres Updated genres
+ * @apiSuccess {String} genres[_id] Id of genre
+ * @apiSuccess {String} genres[name] Name of updated genre
  * @apiSuccess {Number} updateCount Number of updated genres
  *
  * @apiSuccessExample {json} Success response (example):

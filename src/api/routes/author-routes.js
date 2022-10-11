@@ -37,6 +37,12 @@ const validators = require('../validations/author-validation');
  * @apiBody {String[]} [omit] This field allows you not to show some fields in results. Allowed values: __v, _id, firstName, lastName, dateOfBirth, dateOfDeath. It is not allowed to use with "only" property.
  *
  * @apiSuccess {Object[]} authors List of authors
+ * @apiSuccess {String} authors[_id] Id of author
+ * @apiSuccess {String{3.100}} authors[firstName] First Name of author
+ * @apiSuccess {String{3.100}} authors[lastName] Last Name of author
+ * @apiSuccess {String} authors[dateOfBirth] Date of birth of author
+ * @apiSuccess {String} [authors[dateOfDeath]] Date of death of author
+ *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -96,7 +102,19 @@ router.get('/', validate(validators.authorList), authorList);
  *  }
  *
  * @apiSuccess {Object} author Requested author
+ * @apiSuccess {String} author[_id] Id of author
+ * @apiSuccess {String{3.100}} author[firstName] First Name of author
+ * @apiSuccess {String{3.100}} author[lastName] Last Name of author
+ * @apiSuccess {String} author[dateOfBirth] Date of birth of author
+ * @apiSuccess {String} [author[dateOfDeath]] Date of death of author
+ * @apiSuccess {Number} author[__v] versionKey
  * @apiSuccess {String[]} listOfBooks List of books with this author
+ * @apiSuccess {String} listOfBooks[_id] Id of book
+ * @apiSuccess {String{1.100}} listOfBooks[title]  Title of the book
+ * @apiSuccess {String{1.500}} listOfBooks[summary]  Summary of the bookk
+ * @apiSuccess {String{10,13}} listOfBooks[isbn]  International Standard Book Number
+ * @apiSuccess {String} listOfBooks[genre] Array with genre ids
+ * @apiSuccess {Number} listOfBooks[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -139,9 +157,19 @@ router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
  * @apiGroup Authors
  *
  * @apiHeader {String} Content-Type=application/json
- * @apiBody {Object[]} authors Array of author objects. One object must include firstName, lastName, dateOfBirth and optionally dateOfDeath.
+ * @apiBody {Object[]} authors Array of author objects.
+ * @apiBody {String{3.100}} authors[firstName]  Author first name
+ * @apiBody {String{3.100}} authors[lastName] Author last name
+ * @apiBody {String} authors[dateOfBirth] Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} [authors[dateOfDeath]] Author date of death in format YYYY/MM/DD or MM/DD/YYYY
  *
  * @apiSuccess {Object[]} authors Created authors
+ * @apiSuccess {String} authors[_id] Id of created author
+ * @apiSuccess {String{3.100}} authors[firstName] First Name of created author
+ * @apiSuccess {String{3.100}} authors[lastName] Last Name of created author
+ * @apiSuccess {String} authors[dateOfBirth] Date of birth of created author
+ * @apiSuccess {String} [authors[dateOfDeath]] Date of death of created author
+ * @apiSuccess {Number} authors[__v] versionKey
  *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
@@ -289,6 +317,13 @@ router.delete('/multiple', validate(validators.authorDeleteMany), checkExistence
  *  }
  *
  * @apiSuccess {String} message Deleted author
+ * @apiSuccess {Object[]} deletedAuthor Deleted author
+ * @apiSuccess {String} deletedAuthor[_id] Id of deleted author
+ * @apiSuccess {String{3.100}} deletedAuthor[firstName] First Name of deleted author
+ * @apiSuccess {String{3.100}} deletedAuthor[lastName] Last Name of deleted author
+ * @apiSuccess {String} deletedAuthor[dateOfBirth] Date of birth of deleted author
+ * @apiSuccess {String} [deletedAuthor[dateOfDeath]] Date of death of deleted author
+ * @apiSuccess {Number} deletedAuthor[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -332,8 +367,18 @@ router.delete('/:id', validate(validators.authorDelete), getAuthor, authorDelete
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {Object[]} authors Authors to update. One object must include id and at least one of the following field firstName, lastName, dateOfBirth, dateOfDeath.
+ * @apiBody {String{24}} authors[id] Author id
+ * @apiBody {String{3.100}} [authors[firstName]]  Author first name
+ * @apiBody {String{3.100}} [authors[lastName]] Author last name
+ * @apiBody {String} [authors[dateOfBirth]] Author date of birth in format YYYY/MM/DD or MM/DD/YYYY
+ * @apiBody {String} [authors[dateOfDeath]] Author date of death in format YYYY/MM/DD or MM/DD/YYYY
  *
  * @apiSuccess {Object[]} authors Updated authors
+ * @apiSuccess {String} authors[_id] Id of updated author
+ * @apiSuccess {String{3.100}} [authors[firstName]] First Name of updated author
+ * @apiSuccess {String{3.100}} [authors[lastName]] Last Name of updated author
+ * @apiSuccess {String} [authors[dateOfBirth]] Date of birth of updated author
+ * @apiSuccess {String} [authors[dateOfDeath]] Date of death of updated author
  * @apiSuccess {Number} updateCount Number of updated authors
  *
  * @apiSuccessExample {json} Success response (example):

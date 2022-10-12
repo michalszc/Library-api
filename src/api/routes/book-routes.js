@@ -47,6 +47,13 @@ const validators = require('../validations/book-validation');
  * @apiBody {Boolean} [showGenre] This field allows you to show the genre object. If this field is not passed or the value is false, it only shows the genre ID.
  *
  * @apiSuccess {Object[]} books List of books
+ * @apiSuccess {String{1.100}} books[title]  Title of the book
+ * @apiSuccess {String|Object} books[author]  Author object or id
+ * @apiSuccess {String{1.500}} books[summary]  Summary of the book
+ * @apiSuccess {String{10,13}} books[isbn]  International Standard Book Number
+ * @apiSuccess {String[]|Object[]} books[genre]  Array of genres id or genres objects
+ * @apiSuccess {String} books[_id] Id of book
+ * @apiSuccess {Number} books[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -109,6 +116,13 @@ router.get('/', validate(validators.bookList), bookList);
  *  }
  *
  * @apiSuccess {Object} book Requested book
+ * @apiSuccess {String{1.100}} book[title]  Title of the book
+ * @apiSuccess {String|Object} book[author]  Author object or id
+ * @apiSuccess {String{1.500}} book[summary]  Summary of the book
+ * @apiSuccess {String{10,13}} book[isbn]  International Standard Book Number
+ * @apiSuccess {String[]|Object[]} book[genre]  Array of genres id or genres objects
+ * @apiSuccess {String} book[_id] Id of book
+ * @apiSuccess {Number} book[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -154,10 +168,23 @@ router.get('/:id', validate(validators.bookDetail), getBook, bookDetail);
  * @apiGroup Books
  *
  * @apiHeader {String} Content-Type=application/json
- * @apiBody {Object[]} books Array of book objects. One object must include title, author (or authorId), summary, isbn and optionally genre (or genreId).
+ * @apiBody {Object[]} books Array of book objects.
+ * @apiBody {String{1.100}} books[title]  Title of the book
+ * @apiBody {String{24}} books[authorId]  Author id. It is not allowed to use with "author" property.
+ * @apiBody {Object} books[author]  Author object must include firstName, lastName, dateOfBirth and optionally dateOfDeath. It is not allowed to use with "authorId" property.
+ * @apiBody {String{1.500}} books[summary]  Summary of the book
+ * @apiBody {String{10,13}} books[isbn]  International Standard Book Number
+ * @apiBody {String{24}} [books[genreId]]  Genre id or array of Genre id. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [books[genre]]  Genre object or array of Genre objects. Object must include name property. It is not allowed to use with "genreId" property.
  *
  * @apiSuccess {Object[]} books Created books
- *
+ * @apiSuccess {String{1.100}} books[title]  Title of the book
+ * @apiSuccess {String|Object} books[author]  Author object or id
+ * @apiSuccess {String{1.500}} books[summary]  Summary of the book
+ * @apiSuccess {String{10,13}} books[isbn]  International Standard Book Number
+ * @apiSuccess {String[]|Object[]} [books[genre]]  Array of genres id or genres objects
+ * @apiSuccess {String} books[_id] Id of created book
+ * @apiSuccess {Number} books[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
@@ -229,7 +256,6 @@ router.post('/multiple', validate(validators.bookCreateMany), getAuthorAndGenreM
  * @apiSuccess {String[]} genre  Array of book genres id
  * @apiSuccess {String} _id Id of created book
  * @apiSuccess {Number} __v versionKey
- *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
@@ -320,6 +346,13 @@ router.delete('/multiple', validate(validators.bookDeleteMany), checkExistence, 
  *
  * @apiSuccess {String} message Deleted book
  * @apiSuccess {Object} deletedBook Object of deleted book
+ * @apiSuccess {String{1.100}} deletedBook[title]  Title of the book
+ * @apiSuccess {String} deletedBook[author]  Author id
+ * @apiSuccess {String{1.500}} deletedBook[summary]  Summary of the bookk
+ * @apiSuccess {String{10,13}} deletedBook[isbn]  International Standard Book Number
+ * @apiSuccess {String[]} [deletedBook[genre]]  Array of book genres id
+ * @apiSuccess {String} deletedBook[_id] Id of the book
+ * @apiSuccess {Number} deletedBook[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -367,10 +400,22 @@ router.delete('/:id', validate(validators.bookDelete), getBook, bookDelete);
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {Object[]} books Books to update. One object must include id and at least one of the following fields title, author (or authorId), summary, isbn and optionally genre (or genreId).
+ * @apiBody {String{1.100}} [books[title]]  Title of the book
+ * @apiBody {String{24}} [books[authorId]]  Author id. It is not allowed to use with "author" property.
+ * @apiBody {Object} [books[author]]  Author object must include firstName, lastName, dateOfBirth and optionally dateOfDeath. It is not allowed to use with "authorId" property.
+ * @apiBody {String{1.500}} [books[summary]]  Summary of the book
+ * @apiBody {String{10,13}} [books[isbn]]  International Standard Book Number
+ * @apiBody {String{24}} [books[genreId]]  Genre id or array of Genre id. It is not allowed to use with "genre" property.
+ * @apiBody {Object} [books[genre]]  Genre object or array of Genre objects. Object must include name property. It is not allowed to use with "genreId" property.
  *
  * @apiSuccess {Object[]} books Updated books
+ * @apiSuccess {String{1.100}} [books[title]]  Title of the book
+ * @apiSuccess {String} [books[author]]  Author id
+ * @apiSuccess {String{1.500}} [books[summary]]  Summary of the bookk
+ * @apiSuccess {String{10,13}} [books[isbn]]  International Standard Book Number
+ * @apiSuccess {String[]} [books[genre]]  Array of book genres id
+ * @apiSuccess {String} books[id] Id of the book
  * @apiSuccess {Number} updateCount Number of updated books
- *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -434,9 +479,8 @@ router.patch('/multiple', validate(validators.bookUpdateMany), checkExistence, b
  * @apiSuccess {String{1.500}} summary  Summary of the bookk
  * @apiSuccess {String{10,13}} isbn  International Standard Book Number
  * @apiSuccess {String[]} genre  Array of book genres id
- * @apiSuccess {String} _id Id of created book
+ * @apiSuccess {String} _id Id of the book
  * @apiSuccess {Number} __v versionKey
- *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {

@@ -45,7 +45,13 @@ const validators = require('../validations/bookInstance-validation');
  * @apiBody {Boolean} [showAuthor] This field allows you to show the author's object. It also set showBook to true. If this field is not passed or value is false, it only shows the author ID.
  * @apiBody {Boolean} [showGenre] This field allows you to show the genre object. It also set showBook to true. If this field is not passed or the value is false, it only shows the genre ID.
  *
- * @apiSuccess {Object[]} genres List of genres
+ * @apiSuccess {Object[]} bookInsances List of book instances
+ * @apiSuccess {String{24}|Object} bookInsances[book] ID of the book or book object
+ * @apiSuccess {String{3.100}} bookInsances[publisher] Publisher of the book
+ * @apiSuccess {String} bookInsances[status] Status of the book
+ * @apiSuccess {String} bookInsances[back] Date when the book will be available again
+ * @apiSuccess {String} bookInsances[_id] Id of book instance
+ * @apiSuccess {Number} bookInsances[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -87,6 +93,12 @@ router.get('/', validate(validators.bookInstanceList), getBook, bookInstanceList
  *  }
  *
  * @apiSuccess {Object} bookInstance Requested book instance
+ * @apiSuccess {String{24}|Object} bookInsances[book] ID of the book or book object
+ * @apiSuccess {String{3.100}} bookInsances[publisher] Publisher of the book
+ * @apiSuccess {String} bookInsances[status] Status of the book
+ * @apiSuccess {String} bookInsances[back] Date when the book will be available again
+ * @apiSuccess {String} bookInsances[_id] Id of book instance
+ * @apiSuccess {Number} bookInsances[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -129,10 +141,20 @@ router.get('/:id', validate(validators.bookInstanceDetail), getBookInstance, boo
  * @apiGroup BookInstances
  *
  * @apiHeader {String} Content-Type=application/json
- * @apiBody {Object[]} bookInstances Array of book objects. One object must include id,  book (or bookId), publisher, status and optionally back.
+ * @apiBody {Object[]} bookInstances Array of book objects.
+ * @apiBody {String{24}} bookInstances[bookId] ID of the book. It is not allowed to use with "book" property.
+ * @apiBody {Object} bookInstances[book] Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
+ * @apiBody {String{3.100}} bookInstances[publisher] Publisher of the book
+ * @apiBody {String} bookInstances[status] Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
+ * @apiBody {String} bookInstances[back] Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
  *
  * @apiSuccess {Object[]} bookInstances Created book instances
- *
+ * @apiSuccess {String{24}} bookInsances[book] ID of the book
+ * @apiSuccess {String{3.100}} bookInsances[publisher] Publisher of the book
+ * @apiSuccess {String} bookInsances[status] Status of the book
+ * @apiSuccess {String} bookInsances[back] Date when the book will be available again
+ * @apiSuccess {String} bookInsances[_id] Id of created book instance
+ * @apiSuccess {Number} bookInsances[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
@@ -197,7 +219,6 @@ router.post('/multiple', validate(validators.bookInstanceCreateMany), getBookMul
  * @apiSuccess {String} back Date when the book will be available again
  * @apiSuccess {String} _id Id of created book instance
  * @apiSuccess {Number} __v versionKey
- *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
@@ -285,6 +306,12 @@ router.delete('/multiple', validate(validators.bookInstanceDeleteMany), checkExi
  *
  * @apiSuccess {String} message Deleted book instance
  * @apiSuccess {Object} deletedBook Object of deleted book instance
+ * @apiSuccess {String{24}} deletedBook[book] ID of the book
+ * @apiSuccess {String{3.100}} deletedBook[publisher] Publisher of the book
+ * @apiSuccess {String} deletedBook[status] Status of the book
+ * @apiSuccess {String} deletedBook[back] Date when the book will be available again
+ * @apiSuccess {String} deletedBook[_id] Id of deleted book instance
+ * @apiSuccess {Number} deletedBook[__v] versionKey
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
@@ -329,10 +356,20 @@ router.delete('/:id', validate(validators.bookInstanceDelete), getBookInstance, 
  *
  * @apiHeader {String} Content-Type=application/json
  * @apiBody {Object[]} bookInstances Book instances to update. One object must include id and at least one of the following fields book (or bookId), publisher, status, back.
+ * @apiBody {String{24}} [bookInstances[bookId]] ID of the book. It is not allowed to use with "book" property.
+ * @apiBody {Object} [bookInstances[book]] Book object must include title, author (or authorId), summary, isbn and optionally genre (or genreId). It is not allowed to use with "book" property.
+ * @apiBody {String{3.100}} [bookInstances[publisher]] Publisher of the book
+ * @apiBody {String} [bookInstances[status]] Status of the book. Allowed values are: Available, Maintenance, Loaned, Reserved.
+ * @apiBody {String} [bookInstances[back]] Date when the book will be available again in format YYYY/MM/DD or MM/DD/YYYY.
  *
  * @apiSuccess {Object[]} bookInstances Updated book instances
+ * @apiSuccess {String{24}} [bookInsances[book]] ID of the book
+ * @apiSuccess {String{3.100}} [bookInsances[publisher]] Publisher of the book
+ * @apiSuccess {String} [bookInsances[status]] Status of the book
+ * @apiSuccess {String} [bookInsances[back]] Date when the book will be available again
+ * @apiSuccess {String} bookInsances[_id] Id of created book instance
+ * @apiSuccess {Number} bookInsances[__v] versionKey
  * @apiSuccess {Number} updateCount Number of updated book instances
- *
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {

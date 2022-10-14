@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const logger = require('./logger');
 const { mongo, env } = require('./vars');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
 // Exit application on error
 mongoose.connection.on('error', (err) => {
@@ -19,9 +20,17 @@ if (env === 'development') {
  * @returns {object} Mongoose connection
  * @public
  */
-exports.connect = () => {
+exports.connect = async () => {
+  let uri = mongo;
+
+  if (env === 'test') {
+    // mocking instance of the MongoDB database
+    const mongodb = await MongoMemoryServer.create();
+    uri = mongodb.getUri();
+  }
+
   mongoose
-    .connect(mongo, {
+    .connect(uri, {
       keepAlive: true
     })
     .then(() => logger.info('Successfully connected to MongoDB'));

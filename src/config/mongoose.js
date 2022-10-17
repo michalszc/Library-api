@@ -22,10 +22,10 @@ if (env === 'development') {
  */
 exports.connect = async () => {
   let uri = mongo;
-
+  let mongodb;
   if (env === 'test') {
     // mocking instance of the MongoDB database
-    const mongodb = await MongoMemoryServer.create();
+    mongodb = await MongoMemoryServer.create();
     uri = mongodb.getUri();
   }
 
@@ -34,5 +34,5 @@ exports.connect = async () => {
       keepAlive: true
     })
     .then(() => logger.info('Successfully connected to MongoDB'));
-  return mongoose.connection;
+  return { connection: mongoose, mongodb };
 };

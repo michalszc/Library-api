@@ -1,4 +1,4 @@
-const { describe, expect, test, beforeAll } = require('@jest/globals');
+const { describe, expect, test, beforeAll, afterAll } = require('@jest/globals');
 const app = require('../../src/config/express');
 const supertest = require('supertest');
 const mongoose = require('../../src/config/mongoose');
@@ -6,8 +6,13 @@ const Genre = require('../../src/api/models/genre-model');
 const request = supertest(app);
 
 describe('GENRE ROUTES', () => {
+  let mongodb, connection;
   beforeAll(async () => {
-    await mongoose.connect();
+    ({ connection, mongodb } = await mongoose.connect());
+  });
+  afterAll(async () => {
+    await mongodb.stop();
+    await connection.disconnect();
   });
   describe('List genres', () => {
     const genres = [
@@ -120,6 +125,82 @@ describe('GENRE ROUTES', () => {
             expect(Object.hasOwn(genre, 'name')).toBe(true);
             expect(Object.hasOwn(genre, '__v')).toBe(false);
           });
+          return done();
+        });
+    });
+  });
+  describe('Get genre', () => {
+    let _id;
+    const genreName = 'Biography';
+    beforeAll(async () => {
+      const genre = new Genre({
+        name: genreName
+      });
+      await genre.save();
+      _id = genre._id.toString();
+    });
+    test('should return genre', (done) => {
+      request
+        .get(`/genres/${_id}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('genre');
+          expect(res.body.genre).toHaveProperty('name');
+          expect(res.body.genre.name).toBe(genreName);
+          return done();
+        });
+    });
+    test('should return genre with list of books in this genre', (done) => {
+      request
+        .get(`/genres/${_id}`)
+        .send({
+          showBookList: true
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('genre');
+          expect(res.body.genre).toHaveProperty('name');
+          expect(res.body.genre.name).toBe(genreName);
+          expect(res.body).toHaveProperty('listOfBooks');
+          expect(res.body.listOfBooks).toStrictEqual([]);
+          return done();
+        });
+    });
+    test('should return genre with only _id field', (done) => {
+      request
+        .get(`/genres/${_id}`)
+        .send({
+          only: ['_id']
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('genre');
+          expect(Object.hasOwn(res.body.genre, '_id')).toBe(true);
+          expect(Object.hasOwn(res.body.genre, 'name')).toBe(false);
+          expect(Object.hasOwn(res.body.genre, '__v')).toBe(false);
+          return done();
+        });
+    });
+    test('should return genre with omitted _id and __v field', (done) => {
+      request
+        .get(`/genres/${_id}`)
+        .send({
+          omit: ['_id', '__v']
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('genre');
+          expect(Object.hasOwn(res.body.genre, '_id')).toBe(false);
+          expect(Object.hasOwn(res.body.genre, 'name')).toBe(true);
+          expect(Object.hasOwn(res.body.genre, '__v')).toBe(false);
           return done();
         });
     });

@@ -11,8 +11,8 @@ describe('GENRE ROUTES', () => {
     ({ connection, mongodb } = await mongoose.connect());
   });
   afterAll(async () => {
-    await mongodb.stop();
     await connection.disconnect();
+    await mongodb.stop();
   });
   describe('List genres', () => {
     const genres = [
@@ -23,6 +23,9 @@ describe('GENRE ROUTES', () => {
     ];
     beforeAll(() => {
       Genre.insertMany(genres);
+    });
+    afterAll(async () => {
+      await Genre.deleteMany({});
     });
     test('should return full list of genres', (done) => {
       request
@@ -138,6 +141,9 @@ describe('GENRE ROUTES', () => {
       });
       await genre.save();
       _id = genre._id.toString();
+    });
+    afterAll(async () => {
+      await Genre.deleteMany({});
     });
     test('should return genre', (done) => {
       request

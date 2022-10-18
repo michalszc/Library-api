@@ -33,6 +33,10 @@ exports.connect = async () => {
     .connect(uri, {
       keepAlive: true
     })
-    .then(() => logger.info('Successfully connected to MongoDB'));
+    .then(() => {
+      if (env !== 'test') {
+        logger.info('Successfully connected to MongoDB');
+      }
+    });
   return { connection: mongoose, mongodb };
 };

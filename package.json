@@ -9,8 +9,8 @@
     "eslint": "eslint ./src/ ./tests/ --ignore-path .gitignore",
     "eslint:fix": "eslint ./src/ ./tests/ --ignore-path .gitignore --fix",
     "docs": "apidoc -i src -o docs",
-    "test": "cross-env NODE_ENV=test jest ./tests --testTimeout=15000",
-    "test:watch": "cross-env NODE_ENV=test jest ./tests --watch --testTimeout=15000"
+    "test": "cross-env NODE_ENV=test jest ./tests --testTimeout=10000",
+    "test:watch": "cross-env NODE_ENV=test jest ./tests --watch --testTimeout=10000"
   },
   "repository": {
     "type": "git",

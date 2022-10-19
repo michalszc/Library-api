@@ -21,8 +21,8 @@ describe('GENRE ROUTES', () => {
       { name: 'Thriller' },
       { name: 'Western' }
     ];
-    beforeAll(() => {
-      Genre.insertMany(genres);
+    beforeAll(async () => {
+      await Genre.insertMany(genres);
     });
     afterAll(async () => {
       await Genre.deleteMany({});
@@ -207,6 +207,106 @@ describe('GENRE ROUTES', () => {
           expect(Object.hasOwn(res.body.genre, '_id')).toBe(false);
           expect(Object.hasOwn(res.body.genre, 'name')).toBe(true);
           expect(Object.hasOwn(res.body.genre, '__v')).toBe(false);
+          return done();
+        });
+    });
+  });
+  describe('Create genre', () => {
+    test('should properly create a genre', (done) => {
+      const name = 'Fantasy';
+      request
+        .post('/genres')
+        .send({
+          name
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('name');
+          expect(res.body.name).toBe(name);
+          expect(res.body).toHaveProperty('_id');
+          expect(res.body).toHaveProperty('__v');
+          return done();
+        });
+    });
+    test('should not create a genre because it already exists', (done) => {
+      const name = 'Fantasy';
+      request
+        .post('/genres')
+        .send({
+          name
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Genre(s) with name(s) Fantasy already exist(s)');
+          return done();
+        });
+    });
+    test('should not create a genre due to empty name', (done) => {
+      const name = '';
+      request
+        .post('/genres')
+        .send({
+          name
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Validation Error: body: "name" is not allowed to be empty');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create a genre due to too short length of name', (done) => {
+      const name = 'xx';
+      request
+        .post('/genres')
+        .send({
+          name
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "name" length must be at least 3 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create a genre due to too long length of name', (done) => {
+      const name = 'x'.repeat(101);
+      request
+        .post('/genres')
+        .send({
+          name
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "name" length must be less than or equal to 100 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
           return done();
         });
     });

@@ -212,6 +212,9 @@ describe('GENRE ROUTES', () => {
     });
   });
   describe('Create genre', () => {
+    afterAll(async () => {
+      await Genre.deleteMany({});
+    });
     test('should properly create a genre', (done) => {
       const name = 'Fantasy';
       request
@@ -309,6 +312,71 @@ describe('GENRE ROUTES', () => {
           expect(res.body.errors).toBe('Bad Request');
           return done();
         });
+    });
+    describe('Delete genre', () => {
+      let _id;
+      const genreName = 'Fantasy';
+      beforeAll(async () => {
+        const genre = new Genre({
+          name: genreName
+        });
+        await genre.save();
+        _id = genre._id.toString();
+      });
+      afterAll(async () => {
+        await Genre.deleteMany({});
+      });
+      test('should properly delete genre', (done) => {
+        request
+          .delete(`/genres/${_id}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then(res => {
+            expect(res.body).toHaveProperty('message');
+            expect(res.body.message).toBe('Deleted genre');
+            expect(res.body).toHaveProperty('deletedGenre');
+            expect(res.body.deletedGenre).toHaveProperty('_id');
+            expect(res.body.deletedGenre._id).toBe(_id);
+            expect(res.body.deletedGenre).toHaveProperty('name');
+            expect(res.body.deletedGenre.name).toBe(genreName);
+            expect(res.body.deletedGenre).toHaveProperty('__v');
+            return done();
+          });
+      });
+      test('should not delete genre because that genre no longer exists ', (done) => {
+        request
+          .delete(`/genres/${_id}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .then(res => {
+            expect(res.body).toHaveProperty('code');
+            expect(res.body.code).toBe(404);
+            expect(res.body).toHaveProperty('message');
+            expect(res.body.message)
+              .toBe(`Cannot find genre with id ${_id}`);
+            return done();
+          });
+      });
+      test('should not delete genre due to validation error ', (done) => {
+        const invalidId = '62fd5e7e3037984b1b5effbg';
+        request
+          .delete(`/genres/${invalidId}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .then(res => {
+            expect(res.body).toHaveProperty('code');
+            expect(res.body.code).toBe(400);
+            expect(res.body).toHaveProperty('message');
+            expect(res.body.message) // eslint-disable-next-line max-len
+              .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
+            expect(res.body).toHaveProperty('errors');
+            expect(res.body.errors).toBe('Bad Request');
+            return done();
+          });
+      });
     });
   });
 });

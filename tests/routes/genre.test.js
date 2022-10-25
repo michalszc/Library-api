@@ -314,6 +314,112 @@ describe('GENRE ROUTES', () => {
         });
     });
   });
+  describe('Create mulitple genres', () => {
+    afterAll(async () => {
+      await Genre.deleteMany({});
+    });
+    test('should properly create multiple genres', (done) => {
+      const names = ['Fantasy', 'Horror', 'Western', 'Thriller'];
+      request
+        .post('/genres/multiple')
+        .send({
+          names
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toBeInstanceOf(Array);
+          res.body.forEach((genre, i) => {
+            expect(genre).toHaveProperty('name');
+            expect(genre.name).toBe(names[i]);
+            expect(genre).toHaveProperty('_id');
+            expect(genre).toHaveProperty('__v');
+          });
+          return done();
+        });
+    });
+    test('should not create multiple genres because they already exist', (done) => {
+      const names = ['Fantasy', 'Horror', 'Western', 'Thriller'];
+      request
+        .post('/genres/multiple')
+        .send({
+          names
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe(`Genre(s) with name(s) ${names.join()} already exist(s)`);
+          return done();
+        });
+    });
+    test('should not create multiple genres due to empty names', (done) => {
+      const names = [];
+      request
+        .post('/genres/multiple')
+        .send({
+          names
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Validation Error: body: "names" must contain at least 1 items');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create multiple genres due to too short length of name', (done) => {
+      const names = ['xx'];
+      request
+        .post('/genres/multiple')
+        .send({
+          names
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "names[0]" length must be at least 3 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create multiple genres due to too long length of name', (done) => {
+      const names = ['x'.repeat(101)];
+      request
+        .post('/genres/multiple')
+        .send({
+          names
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "names[0]" length must be less than or equal to 100 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
   describe('Delete genre', () => {
     let _id;
     const genreName = 'Fantasy';

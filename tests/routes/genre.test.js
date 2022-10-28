@@ -648,4 +648,96 @@ describe('GENRE ROUTES', () => {
         });
     });
   });
+  describe('Update multiple genres', () => {
+    const ids = [];
+    beforeAll(async () => {
+      const genres = await Genre.insertMany([
+        { name: 'Fantasy' },
+        { name: 'Horror' },
+        { name: 'Thriller' },
+        { name: 'Western' }
+      ]);
+      genres.forEach(({ _id, name }) => {
+        ids.push({ _id, name });
+      });
+    });
+    afterAll(async () => {
+      await Genre.deleteMany({});
+    });
+    test('should not update multiple genres', (done) => {
+      request
+        .patch('/genres/multiple')
+        .send({
+          genres: ids.map(({ _id, name }) => ({ id: _id, name }))
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('updateCount');
+          expect(res.body.updateCount).toBe(0);
+          return done();
+        });
+    });
+    test('should properly update multiple genres', (done) => {
+      request
+        .patch('/genres/multiple')
+        .send({
+          genres: ids.map(({ _id, name }) => ({ id: _id, name: name + '_' }))
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('genres');
+          res.body.genres.forEach(({ name }, i) => {
+            expect(name).not.toBe(ids[i].name);
+          });
+          expect(res.body).toHaveProperty('updateCount');
+          expect(res.body.updateCount).toBe(ids.length);
+          return done();
+        });
+    });
+    test('should not multiple genres due to validation error ', (done) => {
+      request
+        .patch('/genres/multiple')
+        .send({
+          genres: []
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "genres" must contain at least 1 items');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not multiple genres because cannot find genre', (done) => {
+      const genres = ids.map(({ _id, name }) =>
+        ({ id: _id.toString().replace(/[a-c]/, 'd'), name: name + '_' })
+      );
+      request
+        .patch('/genres/multiple')
+        .send({
+          genres
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(404);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe(`Cannot find genre(s) with id(s) ${genres.map(({ id }) => id).join()}`);
+          return done();
+        });
+    });
+  });
 });

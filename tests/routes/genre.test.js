@@ -105,9 +105,9 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res.body.genres).toHaveLength(genres.length);
           res.body.genres.forEach((genre) => {
-            expect(Object.hasOwn(genre, '_id')).toBe(true);
-            expect(Object.hasOwn(genre, 'name')).toBe(false);
-            expect(Object.hasOwn(genre, '__v')).toBe(false);
+            expect(genre).toHaveProperty('_id');
+            expect(genre).not.toHaveProperty('name');
+            expect(genre).not.toHaveProperty('__v');
           });
           return done();
         });
@@ -124,9 +124,9 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res.body.genres).toHaveLength(genres.length);
           res.body.genres.forEach((genre) => {
-            expect(Object.hasOwn(genre, '_id')).toBe(false);
-            expect(Object.hasOwn(genre, 'name')).toBe(true);
-            expect(Object.hasOwn(genre, '__v')).toBe(false);
+            expect(genre).not.toHaveProperty('_id');
+            expect(genre).toHaveProperty('name');
+            expect(genre).not.toHaveProperty('__v');
           });
           return done();
         });
@@ -187,9 +187,9 @@ describe('GENRE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('genre');
-          expect(Object.hasOwn(res.body.genre, '_id')).toBe(true);
-          expect(Object.hasOwn(res.body.genre, 'name')).toBe(false);
-          expect(Object.hasOwn(res.body.genre, '__v')).toBe(false);
+          expect(res.body.genre).toHaveProperty('_id');
+          expect(res.body.genre).not.toHaveProperty('name');
+          expect(res.body.genre).not.toHaveProperty('__v');
           return done();
         });
     });
@@ -204,9 +204,9 @@ describe('GENRE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('genre');
-          expect(Object.hasOwn(res.body.genre, '_id')).toBe(false);
-          expect(Object.hasOwn(res.body.genre, 'name')).toBe(true);
-          expect(Object.hasOwn(res.body.genre, '__v')).toBe(false);
+          expect(res.body.genre).not.toHaveProperty('_id');
+          expect(res.body.genre).toHaveProperty('name');
+          expect(res.body.genre).not.toHaveProperty('__v');
           return done();
         });
     });

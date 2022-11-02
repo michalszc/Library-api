@@ -125,7 +125,26 @@ router.get('/', validate(validators.authorList), authorList);
  *          "dateOfBirth": "1948-06-20T22:00:00.000Z",
  *          "__v": 0
  *      },
- *      "listOfBooks": null
+ *      "listOfBooks": [{
+ *        "_id": "631cb452ba13a425d94af3f5",
+ *        "title": "The Last Wish",
+ *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *        "isbn": "978-0-575-08244-1",
+ *        "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *        ],
+ *        "__v": 0
+ *      },
+ *      {
+ *        "_id": "63301675b39f89e97d14db2b",
+ *        "title": "The Witcher: Sword of Destiny",
+ *        "summary": "Geralt of Rivia is a Witcher, a man whose magic powers andifelong training have made him a brilliant fighter and a mercilessssassin. Yet he is no ordinary killer: he hunts the vile fiends thatavage the land and attack the innocent. But not everything monstroulooking is evil; not everything fair is good . . . and in every fairy talehere is a grain of truth.",
+ *        "isbn": "9780316389709",
+ *        "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *        ],
+ *        "__v": 0
+ *      }]
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error

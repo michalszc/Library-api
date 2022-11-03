@@ -157,4 +157,101 @@ describe('AUTHOR ROUTES', () => {
         });
     });
   });
+  describe('Get author', () => {
+    let _id;
+    const author = {
+      firstName: 'Isaac',
+      lastName: 'Asimov',
+      dateOfBirth: '1920-01-01T22:00:00.000Z',
+      dateOfDeath: '1992-04-05T22:00:00.000Z'
+    };
+    beforeAll(async () => {
+      const _author = new Author(author);
+      await _author.save();
+      _id = _author._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should return specific author', (done) => {
+      request
+        .get(`/authors/${_id}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('author');
+          expect(res.body.author).toHaveProperty('firstName');
+          expect(res.body.author.firstName).toBe(author.firstName);
+          expect(res.body.author).toHaveProperty('lastName');
+          expect(res.body.author.lastName).toBe(author.lastName);
+          expect(res.body.author).toHaveProperty('dateOfBirth');
+          expect(res.body.author.dateOfBirth).toBe(author.dateOfBirth);
+          expect(res.body.author).toHaveProperty('dateOfDeath');
+          expect(res.body.author.dateOfDeath).toBe(author.dateOfDeath);
+          expect(res.body).not.toHaveProperty('listOfBooks');
+          return done();
+        });
+    });
+    test('should return author with list of books written by this author', (done) => {
+      request
+        .get(`/authors/${_id}`)
+        .send({
+          showBookList: true
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('author');
+          expect(res.body).toHaveProperty('listOfBooks');
+          expect(res.body.listOfBooks).toStrictEqual([]);
+          return done();
+        });
+    });
+    test('should return author with only _id field', (done) => {
+      request
+        .get(`/authors/${_id}`)
+        .send({
+          only: ['_id']
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('author');
+          expect(res.body.author).toHaveProperty('_id');
+          expect(res.body.author).not.toHaveProperty('__v');
+          expect(res.body.author).not.toHaveProperty('firstName');
+          expect(res.body.author).not.toHaveProperty('lastName');
+          expect(res.body.author).not.toHaveProperty('dateOfBirth');
+          expect(res.body.author).not.toHaveProperty('dateOfDeath');
+          expect(res.body.author).not.toHaveProperty('dateOfDeath');
+          expect(res.body).not.toHaveProperty('listOfBooks');
+          return done();
+        });
+    });
+    test('should return author with omitted _id and __v field', (done) => {
+      request
+        .get(`/authors/${_id}`)
+        .send({
+          omit: ['_id', '__v']
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('author');
+          expect(res.body.author).not.toHaveProperty('_id');
+          expect(res.body.author).not.toHaveProperty('__v');
+          expect(res.body.author).toHaveProperty('firstName');
+          expect(res.body.author).toHaveProperty('lastName');
+          expect(res.body.author).toHaveProperty('dateOfBirth');
+          expect(res.body.author).toHaveProperty('dateOfDeath');
+          expect(res.body.author).toHaveProperty('dateOfDeath');
+          expect(res.body).not.toHaveProperty('listOfBooks');
+          return done();
+        });
+    });
+  });
 });

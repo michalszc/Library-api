@@ -254,4 +254,140 @@ describe('AUTHOR ROUTES', () => {
         });
     });
   });
+  describe('Create author', () => {
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should properly create author', (done) => {
+      const author = {
+        firstName: 'mockFirstName',
+        lastName: 'mockLastName',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      };
+      request
+        .post('/authors')
+        .send({
+          ...author
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('firstName');
+          expect(res.body.firstName).toBe(author.firstName);
+          expect(res.body).toHaveProperty('lastName');
+          expect(res.body.lastName).toBe(author.lastName);
+          expect(res.body).toHaveProperty('dateOfBirth');
+          expect(res.body.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
+          expect(res.body).toHaveProperty('dateOfDeath');
+          expect(res.body.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
+          expect(res.body).toHaveProperty('_id');
+          expect(res.body._id).not.toBeNull();
+          expect(res.body).toHaveProperty('__v');
+          expect(res.body.__v).not.toBeNull();
+          return done();
+        });
+    });
+    test('should not create author because it already exists', (done) => {
+      const author = {
+        firstName: 'mockFirstName',
+        lastName: 'mockLastName',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      };
+      request
+        .post('/authors')
+        .send({
+          ...author
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Author(s) already exist(s)');
+          return done();
+        });
+    });
+    test('should not create author due to empty firstName', (done) => {
+      const author = {
+        firstName: '',
+        lastName: 'mockLastName',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      };
+      request
+        .post('/authors')
+        .send({
+          ...author
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Validation Error: body: "firstName" is not allowed to be empty');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create author due to too short length of firstName', (done) => {
+      const author = {
+        firstName: 'xx',
+        lastName: 'mockLastName',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      };
+      request
+        .post('/authors')
+        .send({
+          ...author
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "firstName" length must be at least 3 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create author due to too long length of firstName', (done) => {
+      const author = {
+        firstName: 'x'.repeat(101),
+        lastName: 'mockLastName',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      };
+      request
+        .post('/authors')
+        .send({
+          ...author
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "firstName" length must be less than or equal to 100 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
 });

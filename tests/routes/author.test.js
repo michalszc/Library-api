@@ -390,4 +390,78 @@ describe('AUTHOR ROUTES', () => {
         });
     });
   });
+  describe('Delete author', () => {
+    let _id;
+    const author = {
+      firstName: 'mockFirstName',
+      lastName: 'mockLastName',
+      dateOfBirth: '1954/10/14',
+      dateOfDeath: '2004/04/22'
+    };
+    beforeAll(async () => {
+      const _author = new Author(author);
+      await _author.save();
+      _id = _author._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should properly delete author', (done) => {
+      request
+        .delete(`/authors/${_id}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Deleted author');
+          expect(res.body).toHaveProperty('deletedAuthor');
+          expect(res.body.deletedAuthor).toHaveProperty('_id');
+          expect(res.body.deletedAuthor._id).toBe(_id);
+          expect(res.body.deletedAuthor).toHaveProperty('firstName');
+          expect(res.body.deletedAuthor.firstName).toBe(author.firstName);
+          expect(res.body.deletedAuthor).toHaveProperty('lastName');
+          expect(res.body.deletedAuthor.lastName).toBe(author.lastName);
+          expect(res.body.deletedAuthor).toHaveProperty('dateOfBirth');
+          expect(res.body.deletedAuthor.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
+          expect(res.body.deletedAuthor).toHaveProperty('dateOfDeath');
+          expect(res.body.deletedAuthor.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
+          expect(res.body.deletedAuthor).toHaveProperty('__v');
+          return done();
+        });
+    });
+    test('should not delete author because that author no longer exists ', (done) => {
+      request
+        .delete(`/authors/${_id}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(404);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe(`Cannot find author with id ${_id}`);
+          return done();
+        });
+    });
+    test('should not delete author due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      request
+        .delete(`/authors/${invalidId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
 });

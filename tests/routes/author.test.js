@@ -464,4 +464,104 @@ describe('AUTHOR ROUTES', () => {
         });
     });
   });
+  describe('Update author', () => {
+    let _id;
+    const author = {
+      firstName: 'mockFirstName',
+      lastName: 'mockLastName',
+      dateOfBirth: '1954/10/14',
+      dateOfDeath: '2004/04/22'
+    };
+    beforeAll(async () => {
+      const _author = new Author(author);
+      await _author.save();
+      _id = _author._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should not update author', (done) => {
+      request
+        .patch(`/authors/${_id}`)
+        .send({
+          firstName: author.firstName
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Author(s) already exist(s)');
+          return done();
+        });
+    });
+    test('should properly update author', (done) => {
+      const firstName = 'new';
+      request
+        .patch(`/authors/${_id}`)
+        .send({
+          firstName
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('firstName');
+          expect(res.body.firstName).not.toBe(author.firstName);
+          expect(res.body.firstName).toBe(firstName);
+          expect(res.body).toHaveProperty('lastName');
+          expect(res.body.lastName).toBe(author.lastName);
+          expect(res.body).toHaveProperty('dateOfBirth');
+          expect(res.body.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
+          expect(res.body).toHaveProperty('dateOfDeath');
+          expect(res.body.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
+          expect(res.body).not.toHaveProperty('listOfBooks');
+          return done();
+        });
+    });
+    test('should not update author due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      const firstName = 'new';
+      request
+        .patch(`/authors/${invalidId}`)
+        .send({
+          firstName
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not update author because cannot find author', (done) => {
+      const notFoundId = '63091e5e4ec3fbc5c720db4c';
+      const firstName = 'new';
+      request
+        .patch(`/authors/${notFoundId}`)
+        .send({
+          firstName
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(404);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe(`Cannot find author with id ${notFoundId}`);
+          return done();
+        });
+    });
+  });
 });

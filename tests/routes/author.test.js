@@ -4,6 +4,7 @@ const supertest = require('supertest');
 const mongoose = require('../../src/config/mongoose');
 const Author = require('../../src/api/models/author-model');
 const request = supertest(app);
+const { has } = require('lodash');
 
 describe('AUTHOR ROUTES', () => {
   let mongodb, connection;
@@ -384,6 +385,177 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe('Validation Error: body: "firstName" length must be less than or equal to 100 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
+  describe('Create mulitple authors', () => {
+    const authors = [
+      {
+        firstName: 'mockFirstName1',
+        lastName: 'mockLastName1',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      },
+      {
+        firstName: 'mockFirstName2',
+        lastName: 'mockLastName2',
+        dateOfBirth: '1984/08/15'
+      },
+      {
+        firstName: 'mockFirstName3',
+        lastName: 'mockLastName3',
+        dateOfBirth: '1882/04/09',
+        dateOfDeath: '1945/10/12'
+      }
+    ];
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should properly create multiple authors', (done) => {
+      request
+        .post('/authors/multiple')
+        .send({
+          authors
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('authors');
+          expect(res.body.authors).toBeInstanceOf(Array);
+          res.body.authors.forEach((author, i) => {
+            expect(author).toHaveProperty('firstName');
+            expect(author.firstName).toBe(authors.at(i).firstName);
+            expect(author).toHaveProperty('lastName');
+            expect(author.lastName).toBe(authors.at(i).lastName);
+            expect(author).toHaveProperty('dateOfBirth');
+            expect(author.dateOfBirth).toBe(new Date(authors.at(i).dateOfBirth).toISOString());
+            if (has(authors.at(i), 'dateOfDeath')) {
+              expect(author).toHaveProperty('dateOfDeath');
+              expect(author.dateOfDeath).toBe(new Date(authors.at(i).dateOfDeath).toISOString());
+            }
+            expect(author).toHaveProperty('_id');
+            expect(author._id).not.toBeNull();
+            expect(author).toHaveProperty('__v');
+            expect(author.__v).not.toBeNull();
+          });
+          return done();
+        });
+    });
+    test('should not create multiple authors because they already exist', (done) => {
+      request
+        .post('/authors/multiple')
+        .send({
+          authors
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Author(s) already exist(s)');
+          return done();
+        });
+    });
+    test('should not create multiple authors due to empty firstName', (done) => {
+      const authors = [
+        {
+          firstName: '',
+          lastName: 'mockLastName1',
+          dateOfBirth: '1954/10/14',
+          dateOfDeath: '2004/04/22'
+        },
+        {
+          firstName: '',
+          lastName: 'mockLastName2',
+          dateOfBirth: '1984/08/15'
+        }
+      ];
+      request
+        .post('/authors/multiple')
+        .send({
+          authors
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe('Validation Error: body: "authors[0].firstName" is not allowed to be empty');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create multiple authors due to too short length of firstName', (done) => {
+      const authors = [
+        {
+          firstName: 'xx',
+          lastName: 'mockLastName1',
+          dateOfBirth: '1954/10/14',
+          dateOfDeath: '2004/04/22'
+        },
+        {
+          firstName: 'xx',
+          lastName: 'mockLastName2',
+          dateOfBirth: '1984/08/15'
+        }
+      ];
+      request
+        .post('/authors/multiple')
+        .send({
+          authors
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "authors[0].firstName" length must be at least 3 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create multiple authors due to too long length of firstName', (done) => {
+      const authors = [
+        {
+          firstName: 'x'.repeat(101),
+          lastName: 'mockLastName1',
+          dateOfBirth: '1954/10/14',
+          dateOfDeath: '2004/04/22'
+        },
+        {
+          firstName: 'x'.repeat(101),
+          lastName: 'mockLastName2',
+          dateOfBirth: '1984/08/15'
+        }
+      ];
+      request
+        .post('/authors/multiple')
+        .send({
+          authors
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe('Validation Error: body: "authors[0].firstName" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
           return done();

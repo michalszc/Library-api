@@ -636,6 +636,91 @@ describe('AUTHOR ROUTES', () => {
         });
     });
   });
+  describe('Delete multiple authors', () => {
+    const authors = [
+      {
+        firstName: 'mockFirstName1',
+        lastName: 'mockLastName1',
+        dateOfBirth: '1954/10/14',
+        dateOfDeath: '2004/04/22'
+      },
+      {
+        firstName: 'mockFirstName2',
+        lastName: 'mockLastName2',
+        dateOfBirth: '1984/08/15'
+      },
+      {
+        firstName: 'mockFirstName3',
+        lastName: 'mockLastName3',
+        dateOfBirth: '1882/04/09',
+        dateOfDeath: '1945/10/12'
+      }
+    ];
+    const ids = [];
+    beforeAll(async () => {
+      const authors_ = await Author.insertMany(authors);
+      authors_.forEach(({ _id }) => {
+        ids.push(_id);
+      });
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+    });
+    test('should properly delete multiple authors', (done) => {
+      request
+        .delete('/authors/multiple')
+        .send({
+          ids
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Deleted authors');
+          expect(res.body).toHaveProperty('deletedCount');
+          expect(res.body.deletedCount).toBe(ids.length);
+          return done();
+        });
+    });
+    test('should not delete authors because that authors no longer exist ', (done) => {
+      request
+        .delete('/authors/multiple')
+        .send({
+          ids
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(404);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe(`Cannot find author(s) with id(s) ${ids.join()}`);
+          return done();
+        });
+    });
+    test('should not delete authors due to validation error ', (done) => {
+      request
+        .delete('/authors/multiple')
+        .send({
+          ids: []
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "ids" must contain at least 1 items');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
   describe('Update author', () => {
     let _id;
     const author = {

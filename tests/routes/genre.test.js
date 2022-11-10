@@ -698,7 +698,7 @@ describe('GENRE ROUTES', () => {
           return done();
         });
     });
-    test('should not multiple genres due to validation error ', (done) => {
+    test('should not update multiple genres due to validation error ', (done) => {
       request
         .patch('/genres/multiple')
         .send({
@@ -718,7 +718,7 @@ describe('GENRE ROUTES', () => {
           return done();
         });
     });
-    test('should not multiple genres because cannot find genre', (done) => {
+    test('should not update multiple genres because cannot find genre', (done) => {
       const genres = ids.map(({ _id, name }) =>
         ({ id: _id.toString().replace(/[a-c]/, 'd'), name: name + '_' })
       );

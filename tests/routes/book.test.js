@@ -395,4 +395,211 @@ describe('BOOK ROUTES', () => {
         });
     });
   });
+  describe('Create book', () => {
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    let authorId;
+    const genre = { name: 'Fantasy' };
+    let genreId;
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      authorId = _author._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly create book', (done) => {
+      const book = {
+        title: 'title 1',
+        authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genreId: [
+          genreId
+        ]
+      };
+      request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('title');
+          expect(res.body.title).toBe(book.title);
+          expect(res.body).toHaveProperty('author');
+          expect(res.body.author).toBe(book.authorId);
+          expect(res.body).toHaveProperty('summary');
+          expect(res.body.summary).toBe(book.summary);
+          expect(res.body).toHaveProperty('isbn');
+          expect(res.body.isbn).toBe(book.isbn);
+          expect(res.body).toHaveProperty('genre');
+          expect(res.body.genre).toMatchObject(book.genreId);
+          expect(res.body).toHaveProperty('_id');
+          expect(res.body._id).not.toBeNull();
+          expect(res.body).toHaveProperty('__v');
+          expect(res.body.__v).not.toBeNull();
+          return done();
+        });
+    });
+    test('should properly create book with author and genre passed as objects', async () => {
+      await Book.deleteMany({});
+      const book = {
+        title: 'title 1',
+        author,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genre
+        ]
+      };
+      await request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('title');
+          expect(res.body.title).toBe(book.title);
+          expect(res.body).toHaveProperty('author');
+          expect(res.body.author).toBe(authorId);
+          expect(res.body).toHaveProperty('summary');
+          expect(res.body.summary).toBe(book.summary);
+          expect(res.body).toHaveProperty('isbn');
+          expect(res.body.isbn).toBe(book.isbn);
+          expect(res.body).toHaveProperty('genre');
+          expect(res.body.genre).toMatchObject([genreId]);
+          expect(res.body).toHaveProperty('_id');
+          expect(res.body._id).not.toBeNull();
+          expect(res.body).toHaveProperty('__v');
+          expect(res.body.__v).not.toBeNull();
+        });
+    });
+    test('should not create book because it already exists', (done) => {
+      const book = {
+        title: 'title 1',
+        authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genreId: [
+          genreId
+        ]
+      };
+      request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Book(s) already exist(s)');
+          return done();
+        });
+    });
+    test('should not create book due to empty title', (done) => {
+      const book = {
+        title: '',
+        authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genreId: [
+          genreId
+        ]
+      };
+      request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Validation Error: body: "title" is not allowed to be empty');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create book due to too long length of title', (done) => {
+      const book = {
+        title: 'x'.repeat(101),
+        authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genreId: [
+          genreId
+        ]
+      };
+      request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe('Validation Error: body: "title" length must be less than or equal to 100 characters long');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+    test('should not create book due to invalid isbn', (done) => {
+      const book = {
+        title: 'title 1',
+        authorId,
+        summary: 'something 1',
+        isbn: 'xx',
+        genreId: [
+          genreId
+        ]
+      };
+      request
+        .post('/books')
+        .send({
+          ...book
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe('Validation Error: body: "isbn" with value "xx" fails to match the required pattern: /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/');
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
 });

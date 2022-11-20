@@ -602,4 +602,99 @@ describe('BOOK ROUTES', () => {
         });
     });
   });
+  describe('Delete book', () => {
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    let authorId;
+    const genre = { name: 'Fantasy' };
+    let genreId;
+    let book;
+    let bookId;
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      bookId = _book._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly delete book', (done) => {
+      request
+        .delete(`/books/${bookId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toBe('Deleted book');
+          expect(res.body).toHaveProperty('deletedBook',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: book.title,
+              author: authorId,
+              summary: book.summary,
+              isbn: book.isbn,
+              genre: [
+                genreId
+              ],
+              __v: expect.any(Number)
+            })
+          );
+          return done();
+        });
+    });
+    test('should not delete book because that book no longer exists ', (done) => {
+      request
+        .delete(`/books/${bookId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(404);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message)
+            .toBe(`Cannot find book with id ${bookId}`);
+          return done();
+        });
+    });
+    test('should not delete book due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      request
+        .delete(`/books/${invalidId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toHaveProperty('code');
+          expect(res.body.code).toBe(400);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message) // eslint-disable-next-line max-len
+            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
+          expect(res.body).toHaveProperty('errors');
+          expect(res.body.errors).toBe('Bad Request');
+          return done();
+        });
+    });
+  });
 });

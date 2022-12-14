@@ -697,4 +697,130 @@ describe('BOOK ROUTES', () => {
         });
     });
   });
+  describe('Update book', () => {
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    let authorId;
+    const genre = { name: 'Fantasy' };
+    let genreId;
+    let book;
+    let bookId;
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      bookId = _book._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should not update book', (done) => {
+      request
+        .patch(`/books/${bookId}`)
+        .send({
+          title: book.title
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Book(s) already exist(s)'
+            })
+          );
+          return done();
+        });
+    });
+    test('should properly update book', (done) => {
+      const newTitle = 'newTitle';
+      request
+        .patch(`/books/${bookId}`)
+        .send({
+          title: newTitle
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: newTitle,
+              author: authorId,
+              summary: book.summary,
+              isbn: book.isbn,
+              genre: [
+                genreId
+              ],
+              __v: expect.any(Number)
+            })
+          );
+          return done();
+        });
+    });
+    test('should not update book due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      const newTitle = 'newTitle';
+      request
+        .patch(`/books/${invalidId}`)
+        .send({
+          title: newTitle
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            })
+          );
+          return done();
+        });
+    });
+    test('should not update book because cannot find book', (done) => {
+      const notFoundId = '63091e5e4ec3fbc5c720db4c';
+      const newTitle = 'newTitle';
+      request
+        .patch(`/books/${notFoundId}`)
+        .send({
+          title: newTitle
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404, // eslint-disable-next-line max-len
+              message: `Cannot find book with id ${notFoundId}`
+            })
+          );
+          return done();
+        });
+    });
+  });
 });

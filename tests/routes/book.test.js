@@ -943,6 +943,149 @@ describe('BOOK ROUTES', () => {
         });
     });
   });
+  describe('Delete multiple books', () => {
+    const bookIds = [];
+    const authors = [
+      {
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      },
+      {
+        firstName: 'Isaac',
+        lastName: 'Asimov',
+        dateOfBirth: '1920-01-01T22:00:00.000Z',
+        dateOfDeath: '1992-04-05T22:00:00.000Z'
+      },
+      {
+        firstName: 'Patrick',
+        lastName: 'Rothfuss',
+        dateOfBirth: '1973-06-05T23:00:00.000Z'
+      }
+    ];
+    const authorIds = [];
+    const genres = [
+      { name: 'Fantasy' },
+      { name: 'Horror' },
+      { name: 'Thriller' },
+      { name: 'Western' }
+    ];
+    const genreIds = [];
+    let books;
+    beforeAll(async () => {
+      const _genres = await Genre.insertMany(genres);
+      _genres.forEach(({ _id }) => {
+        genreIds.push(_id.toString());
+      });
+      const _authors = await Author.insertMany(authors);
+      _authors.forEach(({ _id }) => {
+        authorIds.push(_id.toString());
+      });
+      books = [
+        {
+          title: 'title 1',
+          author: authorIds[0],
+          summary: 'something 1',
+          isbn: '978-0-575-08244-1',
+          genre: [
+            genreIds[0], genreIds[1]
+          ]
+        },
+        {
+          title: 'title 2',
+          author: authorIds[1],
+          summary: 'something 2',
+          isbn: '978-0-575-08244-2',
+          genre: [
+            genreIds[2], genreIds[3]
+          ]
+        },
+        {
+          title: 'title 3',
+          author: authorIds[2],
+          summary: 'something 3',
+          isbn: '978-0-575-08244-3',
+          genre: [genreIds[0]]
+        },
+        {
+          title: 'title 4',
+          author: authorIds[0],
+          summary: 'something 4',
+          isbn: '978-0-575-08244-1',
+          genre: [
+            genreIds[1], genreIds[2]
+          ]
+        }
+      ];
+      const _books = await Book.insertMany(books);
+      _books.forEach(({ _id }) => {
+        bookIds.push(_id.toString());
+      });
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly delete multiple books', (done) => {
+      request
+        .delete('/books/multiple')
+        .send({
+          ids: bookIds
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              message: 'Deleted books',
+              deletedCount: bookIds.length
+            })
+          );
+          return done();
+        });
+    });
+    test('should not delete books because that books no longer exist ', (done) => {
+      request
+        .delete('/books/multiple')
+        .send({
+          ids: bookIds
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find book(s) with id(s) ${bookIds.join()}`
+            })
+          );
+          return done();
+        });
+    });
+    test('should not delete books due to validation error ', (done) => {
+      request
+        .delete('/books/multiple')
+        .send({
+          ids: []
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "ids" must contain at least 1 items',
+              errors: 'Bad Request'
+            })
+          );
+          return done();
+        });
+    });
+  });
   describe('Update book', () => {
     const author = {
       firstName: 'Ben',

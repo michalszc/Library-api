@@ -602,6 +602,252 @@ describe('BOOK ROUTES', () => {
         });
     });
   });
+  describe('Create mulitple books', () => {
+    const authors = [
+      {
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      },
+      {
+        firstName: 'Isaac',
+        lastName: 'Asimov',
+        dateOfBirth: '1920-01-01T22:00:00.000Z',
+        dateOfDeath: '1992-04-05T22:00:00.000Z'
+      },
+      {
+        firstName: 'Patrick',
+        lastName: 'Rothfuss',
+        dateOfBirth: '1973-06-05T23:00:00.000Z'
+      }
+    ];
+    const authorIds = [];
+    const genres = [
+      { name: 'Fantasy' },
+      { name: 'Horror' },
+      { name: 'Thriller' },
+      { name: 'Western' }
+    ];
+    const genreIds = [];
+    let books;
+    beforeAll(async () => {
+      const _genres = await Genre.insertMany(genres);
+      _genres.forEach(({ _id }) => {
+        genreIds.push(_id.toString());
+      });
+      const _authors = await Author.insertMany(authors);
+      _authors.forEach(({ _id }) => {
+        authorIds.push(_id.toString());
+      });
+      books = [
+        {
+          title: 'title 1',
+          authorId: authorIds[0],
+          summary: 'something 1',
+          isbn: '978-0-575-08244-1',
+          genreId: [
+            genreIds[0], genreIds[1]
+          ]
+        },
+        {
+          title: 'title 2',
+          authorId: authorIds[1],
+          summary: 'something 2',
+          isbn: '978-0-575-08244-2',
+          genreId: [
+            genreIds[2], genreIds[3]
+          ]
+        },
+        {
+          title: 'title 3',
+          authorId: authorIds[2],
+          summary: 'something 3',
+          isbn: '978-0-575-08244-3'
+        },
+        {
+          title: 'title 4',
+          authorId: authorIds[0],
+          summary: 'something 4',
+          isbn: '978-0-575-08244-1',
+          genreId: [
+            genreIds[1], genreIds[2]
+          ]
+        }
+      ];
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly create multiple books', (done) => {
+      request
+        .post('/books/multiple')
+        .send({
+          books
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('books');
+          expect(res.body.books).toBeInstanceOf(Array);
+          res.body.books.forEach((book, i) => {
+            expect(book).toStrictEqual(
+              expect.objectContaining({
+                _id: expect.any(String),
+                title: books.at(i).title,
+                author: books.at(i).authorId,
+                summary: books.at(i).summary,
+                isbn: books.at(i).isbn,
+                genre: books.at(i).genreId ?? [],
+                __v: expect.any(Number)
+              })
+            );
+          });
+          return done();
+        });
+    });
+    test('should not create multiple books because they already exist', (done) => {
+      request
+        .post('/books/multiple')
+        .send({
+          books
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Book(s) already exist(s)'
+            })
+          );
+          return done();
+        });
+    });
+    test('should not create multiple books due to empty title', (done) => {
+      const books = [
+        {
+          title: '',
+          authorId: authorIds[0],
+          summary: 'something 5',
+          isbn: '978-0-575-08244-5',
+          genreId: [
+            genreIds[0], genreIds[1]
+          ]
+        },
+        {
+          title: '',
+          authorId: authorIds[1],
+          summary: 'something 6',
+          isbn: '978-0-575-08244-6',
+          genreId: [
+            genreIds[2], genreIds[3]
+          ]
+        }
+      ];
+      request
+        .post('/books/multiple')
+        .send({
+          books
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "books[0].title" is not allowed to be empty',
+              errors: 'Bad Request'
+            })
+          );
+          return done();
+        });
+    });
+    test('should not create multiple books due to too long length of title', (done) => {
+      const books = [
+        {
+          title: 'x'.repeat(101),
+          authorId: authorIds[0],
+          summary: 'something 5',
+          isbn: '978-0-575-08244-5',
+          genreId: [
+            genreIds[0], genreIds[1]
+          ]
+        },
+        {
+          title: 'x'.repeat(101),
+          authorId: authorIds[1],
+          summary: 'something 6',
+          isbn: '978-0-575-08244-6',
+          genreId: [
+            genreIds[2], genreIds[3]
+          ]
+        }
+      ];
+      request
+        .post('/books/multiple')
+        .send({
+          books
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "books[0].title" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            })
+          );
+          return done();
+        });
+    });
+    test('should not create multiple books due to invalid isbn', (done) => {
+      const books = [
+        {
+          title: 'title 5',
+          authorId: authorIds[0],
+          summary: 'something 5',
+          isbn: 'xx',
+          genreId: [
+            genreIds[0], genreIds[1]
+          ]
+        },
+        {
+          title: 'title 6',
+          authorId: authorIds[1],
+          summary: 'something 6',
+          isbn: 'xx',
+          genreId: [
+            genreIds[2], genreIds[3]
+          ]
+        }
+      ];
+      request
+        .post('/books/multiple')
+        .send({
+          books
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "books[0].isbn" with value "xx" fails to match the required pattern: /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/',
+              errors: 'Bad Request'
+            })
+          );
+          return done();
+        });
+    });
+  });
   describe('Delete book', () => {
     const author = {
       firstName: 'Ben',

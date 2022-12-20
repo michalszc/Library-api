@@ -55,8 +55,8 @@ exports.bookInstanceList = async function (req, res, next) {
       });
     }
 
-    const bookInsances = await BookInstance.getList(options);
-    res.json({ bookInsances });
+    const bookInstances = await BookInstance.getList(options);
+    res.json({ bookInstances });
   } catch (error) {
     next(error);
   }

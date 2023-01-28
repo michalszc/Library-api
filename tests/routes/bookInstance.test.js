@@ -6,6 +6,7 @@ const Author = require('../../src/api/models/author-model');
 const Book = require('../../src/api/models/book-model');
 const BookInstance = require('../../src/api/models/bookinstance-model');
 const Genre = require('../../src/api/models/genre-model');
+const { addDays } = require('../../src/api/utils/date');
 const request = supertest(app);
 
 describe('BOOKINSTANCE ROUTES', () => {
@@ -407,6 +408,214 @@ describe('BOOKINSTANCE ROUTES', () => {
           expect(res.body).toMatchObject({
             code: 404,
             message: `Cannot find book instance with id ${notFoundId}`
+          });
+
+          return done();
+        });
+    });
+  });
+  describe('Create book instance', () => {
+    let bookId;
+    let book;
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    const genre = { name: 'Fantasy' };
+    const bookInstance = {
+      publisher: 'Publisher',
+      status: 'Loaned',
+      back: addDays(new Date(), 10).toISOString()
+    };
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      const genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      const authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      bookId = _book._id.toString();
+      bookInstance.bookId = bookId;
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await BookInstance.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly create book instance', (done) => {
+      request
+        .post('/bookinstances')
+        .send({
+          ...bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            _id: expect.any(String),
+            book: bookInstance.bookId,
+            publisher: bookInstance.publisher,
+            status: bookInstance.status,
+            back: bookInstance.back,
+            __v: expect.any(Number)
+          });
+
+          return done();
+        });
+    });
+    test('should properly create book instance with book passed as object', (done) => {
+      const bookInstance = {
+        book: {
+          ...book,
+          authorId: book.author,
+          author: undefined,
+          genreId: book.genre,
+          genre: undefined
+        },
+        publisher: 'Publisher',
+        status: 'Loaned',
+        back: addDays(new Date(), 10).toISOString()
+      };
+      request
+        .post('/bookinstances')
+        .send({
+          ...bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            _id: expect.any(String),
+            book: bookId,
+            publisher: bookInstance.publisher,
+            status: bookInstance.status,
+            back: bookInstance.back,
+            __v: expect.any(Number)
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instance because it already exists', (done) => {
+      request
+        .post('/bookinstances')
+        .send({
+          ...bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Book instance(s) already exist(s)'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instance due to empty publisher', (done) => {
+      const _bookInstance = {
+        ...bookInstance,
+        publisher: ''
+      };
+      request
+        .post('/bookinstances')
+        .send({
+          ..._bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Validation Error: body: "publisher" is not allowed to be empty',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instance due to too long length of publisher', (done) => {
+      const _bookInstance = {
+        ...bookInstance,
+        publisher: 'x'.repeat(101)
+      };
+      request
+        .post('/bookinstances')
+        .send({
+          ..._bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400, // eslint-disable-next-line max-len
+            message: 'Validation Error: body: "publisher" length must be less than or equal to 100 characters long',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instance due to invalid status', (done) => {
+      const _bookInstance = {
+        ...bookInstance,
+        status: 'test'
+      };
+      request
+        .post('/bookinstances')
+        .send({
+          ..._bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Validation Error: body: "status" must be one of [Available, Maintenance, Loaned, Reserved]',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instance due to invalid date', (done) => {
+      const _bookInstance = {
+        ...bookInstance,
+        back: addDays(new Date(), -2)
+      };
+      request
+        .post('/bookinstances')
+        .send({
+          ..._bookInstance
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Validation Error: body: "back" must be greater than or equal to "now"',
+            errors: 'Bad Request'
           });
 
           return done();

@@ -622,4 +622,223 @@ describe('BOOKINSTANCE ROUTES', () => {
         });
     });
   });
+  describe('Create mulitple book instances', () => {
+    let bookId;
+    let book;
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    const genre = { name: 'Fantasy' };
+    const bookInstances = [];
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      const genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      const authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      bookId = _book._id.toString();
+      bookInstances.push({
+        bookId,
+        publisher: 'Publisher',
+        status: 'Available',
+        back: addDays(new Date(), 1).toISOString()
+      });
+      bookInstances.push({
+        bookId,
+        publisher: 'Publisher',
+        status: 'Maintenance',
+        back: addDays(new Date(), 20).toISOString()
+      });
+      bookInstances.push({
+        bookId,
+        publisher: 'Publisher',
+        status: 'Loaned',
+        back: addDays(new Date(), 3).toISOString()
+      });
+      bookInstances.push({
+        bookId,
+        publisher: 'Publisher',
+        status: 'Reserved',
+        back: addDays(new Date(), 100).toISOString()
+      });
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await BookInstance.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly create multiple book instances', (done) => {
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .then(res => {
+          expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
+          res.body.bookInstances.forEach((bookInstance, i) => {
+            expect(bookInstance).toStrictEqual(
+              expect.objectContaining({
+                _id: expect.any(String),
+                book: bookInstances.at(i).bookId,
+                publisher: bookInstances.at(i).publisher,
+                status: bookInstances.at(i).status,
+                back: expect.any(String),
+                __v: expect.any(Number)
+              })
+            );
+          });
+
+          return done();
+        });
+    });
+    test('should not create multiple book instances because they already exist', (done) => {
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Book instance(s) already exist(s)'
+          });
+
+          return done();
+        });
+    });
+    test('should not create multiple book instances due to empty publisher', (done) => {
+      const _bookInstances = [
+        ...bookInstances,
+        {
+          bookId: bookInstances.at(0).bookId,
+          publisher: '',
+          status: bookInstances.at(0).status,
+          back: bookInstances.at(0).back
+        }
+      ];
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Validation Error: body: "bookInstances[4].publisher" is not allowed to be empty',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create multiple books due to too long length of title', (done) => {
+      const _bookInstances = [
+        ...bookInstances,
+        {
+          bookId: bookInstances.at(0).bookId,
+          publisher: 'x'.repeat(101),
+          status: bookInstances.at(0).status,
+          back: bookInstances.at(0).back
+        }
+      ];
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400, // eslint-disable-next-line max-len
+            message: 'Validation Error: body: "bookInstances[4].publisher" length must be less than or equal to 100 characters long',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instances due to invalid status', (done) => {
+      const _bookInstances = [
+        ...bookInstances,
+        {
+          bookId: bookInstances.at(0).bookId,
+          publisher: bookInstances.at(0).publisher,
+          status: 'test',
+          back: bookInstances.at(0).back
+        }
+      ];
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400, // eslint-disable-next-line max-len
+            message: 'Validation Error: body: "bookInstances[4].status" must be one of [Available, Maintenance, Loaned, Reserved]',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+    test('should not create book instances due to invalid date', (done) => {
+      const _bookInstances = [
+        ...bookInstances,
+        {
+          bookId: bookInstances.at(0).bookId,
+          publisher: bookInstances.at(0).publisher,
+          status: bookInstances.at(0).status,
+          back: addDays(new Date(), -2)
+        }
+      ];
+      request
+        .post('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400,
+            message: 'Validation Error: body: "bookInstances[4].back" must be greater than or equal to "now"',
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+  });
 });

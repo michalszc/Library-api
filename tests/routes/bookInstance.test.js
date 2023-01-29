@@ -841,4 +841,104 @@ describe('BOOKINSTANCE ROUTES', () => {
         });
     });
   });
+  describe('Delete book instance', () => {
+    let bookInstance;
+    let bookInstanceId;
+    let book;
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    const genre = { name: 'Fantasy' };
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      const genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      const authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      const bookId = _book._id.toString();
+      bookInstance = {
+        book: bookId,
+        publisher: 'Publisher',
+        status: 'Loaned',
+        back: new Date('2020-04-19').toISOString()
+      };
+      const _bookInstance = new BookInstance(bookInstance);
+      await _bookInstance.save();
+      bookInstanceId = _bookInstance._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await BookInstance.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should properly delete book instance', (done) => {
+      request
+        .delete(`/bookInstances/${bookInstanceId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            message: 'Deleted book instance',
+            deletedBookInstance: {
+              _id: expect.any(String),
+              book: bookInstance.book,
+              publisher: bookInstance.publisher,
+              status: bookInstance.status,
+              back: bookInstance.back,
+              __v: expect.any(Number)
+            }
+          });
+
+          return done();
+        });
+    });
+    test('should not delete book instance because that book no longer exists ', (done) => {
+      request
+        .delete(`/bookInstances/${bookInstanceId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 404,
+            message: `Cannot find book instance with id ${bookInstanceId}`
+          });
+
+          return done();
+        });
+    });
+    test('should not delete book instance due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      request
+        .delete(`/bookInstances/${invalidId}`)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res.body).toMatchObject({
+            code: 400, // eslint-disable-next-line max-len
+            message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+            errors: 'Bad Request'
+          });
+
+          return done();
+        });
+    });
+  });
 });

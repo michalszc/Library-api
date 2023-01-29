@@ -23,6 +23,7 @@
             "code": 115,
             "ignoreComments": true,
             "ignoreRegExpLiterals": true
-        }]
+        }],
+        "newline-before-return": "error"
     }
 }

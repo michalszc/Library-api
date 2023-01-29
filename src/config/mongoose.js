@@ -38,5 +38,6 @@ exports.connect = async () => {
         logger.info('Successfully connected to MongoDB');
       }
     });
+
   return { connection: mongoose, mongodb };
 };

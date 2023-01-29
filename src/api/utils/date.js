@@ -8,6 +8,7 @@
  */
 exports.addDays = function (date, days = 1) {
   const d = new Date(date);
+
   return new Date(d.getTime() + 86400000 * days);
 };
 

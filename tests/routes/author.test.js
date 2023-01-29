@@ -59,6 +59,7 @@ describe('AUTHOR ROUTES', () => {
               expect(authors.at(i)).not.toHaveProperty('dateOfDeath');
             }
           });
+
           return done();
         });
     });
@@ -74,6 +75,7 @@ describe('AUTHOR ROUTES', () => {
         .then(res => {
           expect(res.body.authors).toHaveLength(1);
           expect(res.body.authors[0].firstName).toBe('Ben');
+
           return done();
         });
     });
@@ -91,6 +93,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.authors).toHaveLength(2);
           expect(res.body.authors[0].firstName).toBe(authors.at(1).firstName);
           expect(res.body.authors[1].firstName).toBe(authors.at(2).firstName);
+
           return done();
         });
     });
@@ -111,6 +114,7 @@ describe('AUTHOR ROUTES', () => {
           res.body.authors.forEach(({ firstName }, i) => {
             expect(firstName).toBe(reversedAuthors.at(i).firstName);
           });
+
           return done();
         });
     });
@@ -133,6 +137,7 @@ describe('AUTHOR ROUTES', () => {
             expect(author).not.toHaveProperty('dateOfDeath');
             expect(author).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -154,6 +159,7 @@ describe('AUTHOR ROUTES', () => {
             expect(author).toHaveProperty('dateOfBirth');
             expect(author).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -191,6 +197,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.author).toHaveProperty('dateOfDeath');
           expect(res.body.author.dateOfDeath).toBe(author.dateOfDeath);
           expect(res.body).not.toHaveProperty('listOfBooks');
+
           return done();
         });
     });
@@ -207,6 +214,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('author');
           expect(res.body).toHaveProperty('listOfBooks');
           expect(res.body.listOfBooks).toStrictEqual([]);
+
           return done();
         });
     });
@@ -229,6 +237,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.author).not.toHaveProperty('dateOfDeath');
           expect(res.body.author).not.toHaveProperty('dateOfDeath');
           expect(res.body).not.toHaveProperty('listOfBooks');
+
           return done();
         });
     });
@@ -251,6 +260,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.author).toHaveProperty('dateOfDeath');
           expect(res.body.author).toHaveProperty('dateOfDeath');
           expect(res.body).not.toHaveProperty('listOfBooks');
+
           return done();
         });
     });
@@ -287,6 +297,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body._id).not.toBeNull();
           expect(res.body).toHaveProperty('__v');
           expect(res.body.__v).not.toBeNull();
+
           return done();
         });
     });
@@ -310,6 +321,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Author(s) already exist(s)');
+
           return done();
         });
     });
@@ -335,6 +347,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.message).toBe('Validation Error: body: "firstName" is not allowed to be empty');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -361,6 +374,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "firstName" length must be at least 3 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -387,6 +401,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "firstName" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -442,6 +457,7 @@ describe('AUTHOR ROUTES', () => {
             expect(author).toHaveProperty('__v');
             expect(author.__v).not.toBeNull();
           });
+
           return done();
         });
     });
@@ -459,6 +475,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Author(s) already exist(s)');
+
           return done();
         });
     });
@@ -492,6 +509,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "authors[0].firstName" is not allowed to be empty');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -525,6 +543,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "authors[0].firstName" length must be at least 3 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -558,6 +577,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "authors[0].firstName" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -599,6 +619,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.deletedAuthor).toHaveProperty('dateOfDeath');
           expect(res.body.deletedAuthor.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
           expect(res.body.deletedAuthor).toHaveProperty('__v');
+
           return done();
         });
     });
@@ -614,6 +635,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find author with id ${_id}`);
+
           return done();
         });
     });
@@ -632,6 +654,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -680,6 +703,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.message).toBe('Deleted authors');
           expect(res.body).toHaveProperty('deletedCount');
           expect(res.body.deletedCount).toBe(ids.length);
+
           return done();
         });
     });
@@ -697,6 +721,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.code).toBe(404);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe(`Cannot find author(s) with id(s) ${ids.join()}`);
+
           return done();
         });
     });
@@ -717,6 +742,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "ids" must contain at least 1 items');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -751,6 +777,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Author(s) already exist(s)');
+
           return done();
         });
     });
@@ -775,6 +802,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('dateOfDeath');
           expect(res.body.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
           expect(res.body).not.toHaveProperty('listOfBooks');
+
           return done();
         });
     });
@@ -797,6 +825,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -817,6 +846,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find author with id ${notFoundId}`);
+
           return done();
         });
     });
@@ -863,6 +893,7 @@ describe('AUTHOR ROUTES', () => {
         .then(res => {
           expect(res.body).toHaveProperty('updateCount');
           expect(res.body.updateCount).toBe(0);
+
           return done();
         });
     });
@@ -882,6 +913,7 @@ describe('AUTHOR ROUTES', () => {
           });
           expect(res.body).toHaveProperty('updateCount');
           expect(res.body.updateCount).toBe(authors.length);
+
           return done();
         });
     });
@@ -902,6 +934,7 @@ describe('AUTHOR ROUTES', () => {
             .toBe('Validation Error: body: "authors" must contain at least 1 items');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -921,6 +954,7 @@ describe('AUTHOR ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find author(s) with id(s) ${_ids.join()}`);
+
           return done();
         });
     });

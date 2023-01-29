@@ -112,6 +112,7 @@ describe('BOOK ROUTES', () => {
             expect(books.at(i).isbn).toBe(isbn);
             expect(books.at(i).genre).toStrictEqual(genre);
           });
+
           return done();
         });
     });
@@ -131,6 +132,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.books[0].summary).toBe(books.at(0).summary);
           expect(res.body.books[0].isbn).toBe(books.at(0).isbn);
           expect(res.body.books[0].genre).toStrictEqual(books.at(0).genre);
+
           return done();
         });
     });
@@ -156,6 +158,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.books[1].summary).toBe(books.at(2).summary);
           expect(res.body.books[1].isbn).toBe(books.at(2).isbn);
           expect(res.body.books[1].genre).toStrictEqual(books.at(2).genre);
+
           return done();
         });
     });
@@ -180,6 +183,7 @@ describe('BOOK ROUTES', () => {
             expect(reversedBooks.at(i).isbn).toBe(isbn);
             expect(reversedBooks.at(i).genre).toStrictEqual(genre);
           });
+
           return done();
         });
     });
@@ -203,6 +207,7 @@ describe('BOOK ROUTES', () => {
             expect(book).not.toHaveProperty('genre');
             expect(book).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -226,6 +231,7 @@ describe('BOOK ROUTES', () => {
             expect(book).toHaveProperty('genre');
             expect(book).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -327,6 +333,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.book.summary).toBe(books.at(0).summary);
           expect(res.body.book.isbn).toBe(books.at(0).isbn);
           expect(res.body.book.genre).toStrictEqual(books.at(0).genre);
+
           return done();
         });
     });
@@ -349,6 +356,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.book.isbn).toBe(books.at(2).isbn);
           expect(res.body.book.genre).toBeInstanceOf(Object);
           expect(res.body.book.genre).toMatchObject([genres.at(0)]);
+
           return done();
         });
     });
@@ -370,6 +378,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.book).not.toHaveProperty('genre');
           expect(res.body.book).toHaveProperty('_id');
           expect(res.body.book).not.toHaveProperty('__v');
+
           return done();
         });
     });
@@ -391,6 +400,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.book).toHaveProperty('genre');
           expect(res.body.book).not.toHaveProperty('_id');
           expect(res.body.book).not.toHaveProperty('__v');
+
           return done();
         });
     });
@@ -450,6 +460,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body._id).not.toBeNull();
           expect(res.body).toHaveProperty('__v');
           expect(res.body.__v).not.toBeNull();
+
           return done();
         });
     });
@@ -512,6 +523,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Book(s) already exist(s)');
+
           return done();
         });
     });
@@ -540,6 +552,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body.message).toBe('Validation Error: body: "title" is not allowed to be empty');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -569,6 +582,7 @@ describe('BOOK ROUTES', () => {
             .toBe('Validation Error: body: "title" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -598,6 +612,7 @@ describe('BOOK ROUTES', () => {
             .toBe('Validation Error: body: "isbn" with value "xx" fails to match the required pattern: /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -705,6 +720,7 @@ describe('BOOK ROUTES', () => {
               })
             );
           });
+
           return done();
         });
     });
@@ -724,6 +740,7 @@ describe('BOOK ROUTES', () => {
               message: 'Book(s) already exist(s)'
             })
           );
+
           return done();
         });
     });
@@ -764,6 +781,7 @@ describe('BOOK ROUTES', () => {
               errors: 'Bad Request'
             })
           );
+
           return done();
         });
     });
@@ -804,6 +822,7 @@ describe('BOOK ROUTES', () => {
               errors: 'Bad Request'
             })
           );
+
           return done();
         });
     });
@@ -844,6 +863,7 @@ describe('BOOK ROUTES', () => {
               errors: 'Bad Request'
             })
           );
+
           return done();
         });
     });
@@ -906,6 +926,7 @@ describe('BOOK ROUTES', () => {
               __v: expect.any(Number)
             })
           );
+
           return done();
         });
     });
@@ -921,6 +942,7 @@ describe('BOOK ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find book with id ${bookId}`);
+
           return done();
         });
     });
@@ -939,6 +961,7 @@ describe('BOOK ROUTES', () => {
             .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -1043,6 +1066,7 @@ describe('BOOK ROUTES', () => {
               deletedCount: bookIds.length
             })
           );
+
           return done();
         });
     });
@@ -1062,6 +1086,7 @@ describe('BOOK ROUTES', () => {
               message: `Cannot find book(s) with id(s) ${bookIds.join()}`
             })
           );
+
           return done();
         });
     });
@@ -1082,6 +1107,7 @@ describe('BOOK ROUTES', () => {
               errors: 'Bad Request'
             })
           );
+
           return done();
         });
     });
@@ -1138,6 +1164,7 @@ describe('BOOK ROUTES', () => {
               message: 'Book(s) already exist(s)'
             })
           );
+
           return done();
         });
     });
@@ -1165,6 +1192,7 @@ describe('BOOK ROUTES', () => {
               __v: expect.any(Number)
             })
           );
+
           return done();
         });
     });
@@ -1187,6 +1215,7 @@ describe('BOOK ROUTES', () => {
               errors: 'Bad Request'
             })
           );
+
           return done();
         });
     });
@@ -1208,6 +1237,7 @@ describe('BOOK ROUTES', () => {
               message: `Cannot find book with id ${notFoundId}`
             })
           );
+
           return done();
         });
     });

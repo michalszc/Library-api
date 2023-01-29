@@ -35,6 +35,7 @@ const BookSchema = new mongoose.Schema({
 BookSchema.method({
   async saveIfNotExists() {
     await Book.checkExistence(this);
+
     return this.save();
   }
 });

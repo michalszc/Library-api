@@ -38,6 +38,7 @@ describe('GENRE ROUTES', () => {
           res.body.genres.forEach(({ name }, i) => {
             expect(name).toBe(genres.at(i).name);
           });
+
           return done();
         });
     });
@@ -53,6 +54,7 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res.body.genres).toHaveLength(1);
           expect(res.body.genres[0].name).toBe('Fantasy');
+
           return done();
         });
     });
@@ -70,6 +72,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.genres).toHaveLength(2);
           expect(res.body.genres[0].name).toBe('Horror');
           expect(res.body.genres[1].name).toBe('Thriller');
+
           return done();
         });
     });
@@ -90,6 +93,7 @@ describe('GENRE ROUTES', () => {
           res.body.genres.forEach(({ name }, i) => {
             expect(name).toBe(reversedGenres.at(i).name);
           });
+
           return done();
         });
     });
@@ -109,6 +113,7 @@ describe('GENRE ROUTES', () => {
             expect(genre).not.toHaveProperty('name');
             expect(genre).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -128,6 +133,7 @@ describe('GENRE ROUTES', () => {
             expect(genre).toHaveProperty('name');
             expect(genre).not.toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -155,6 +161,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body).toHaveProperty('genre');
           expect(res.body.genre).toHaveProperty('name');
           expect(res.body.genre.name).toBe(genreName);
+
           return done();
         });
     });
@@ -173,6 +180,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.genre.name).toBe(genreName);
           expect(res.body).toHaveProperty('listOfBooks');
           expect(res.body.listOfBooks).toStrictEqual([]);
+
           return done();
         });
     });
@@ -190,6 +198,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.genre).toHaveProperty('_id');
           expect(res.body.genre).not.toHaveProperty('name');
           expect(res.body.genre).not.toHaveProperty('__v');
+
           return done();
         });
     });
@@ -207,6 +216,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.genre).not.toHaveProperty('_id');
           expect(res.body.genre).toHaveProperty('name');
           expect(res.body.genre).not.toHaveProperty('__v');
+
           return done();
         });
     });
@@ -230,6 +240,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.name).toBe(name);
           expect(res.body).toHaveProperty('_id');
           expect(res.body).toHaveProperty('__v');
+
           return done();
         });
     });
@@ -248,6 +259,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Genre(s) with name(s) Fantasy already exist(s)');
+
           return done();
         });
     });
@@ -268,6 +280,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.message).toBe('Validation Error: body: "name" is not allowed to be empty');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -289,6 +302,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "name" length must be at least 3 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -310,6 +324,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "name" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -336,6 +351,7 @@ describe('GENRE ROUTES', () => {
             expect(genre).toHaveProperty('_id');
             expect(genre).toHaveProperty('__v');
           });
+
           return done();
         });
     });
@@ -354,6 +370,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe(`Genre(s) with name(s) ${names.join()} already exist(s)`);
+
           return done();
         });
     });
@@ -374,6 +391,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.message).toBe('Validation Error: body: "names" must contain at least 1 items');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -395,6 +413,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "names[0]" length must be at least 3 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -416,6 +435,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "names[0]" length must be less than or equal to 100 characters long');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -448,6 +468,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.deletedGenre).toHaveProperty('name');
           expect(res.body.deletedGenre.name).toBe(genreName);
           expect(res.body.deletedGenre).toHaveProperty('__v');
+
           return done();
         });
     });
@@ -463,6 +484,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find genre with id ${_id}`);
+
           return done();
         });
     });
@@ -481,6 +503,7 @@ describe('GENRE ROUTES', () => {
             .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -515,6 +538,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.message).toBe('Deleted genres');
           expect(res.body).toHaveProperty('deletedCount');
           expect(res.body.deletedCount).toBe(ids.length);
+
           return done();
         });
     });
@@ -532,6 +556,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.code).toBe(404);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe(`Cannot find genre(s) with id(s) ${ids.join()}`);
+
           return done();
         });
     });
@@ -552,6 +577,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "ids" must contain at least 1 items');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -583,6 +609,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body.code).toBe(400);
           expect(res.body).toHaveProperty('message');
           expect(res.body.message).toBe('Genre(s) with name(s) Fantasy already exist(s)');
+
           return done();
         });
     });
@@ -602,6 +629,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body).toHaveProperty('name');
           expect(res.body.name).toBe(name);
           expect(res.body).toHaveProperty('__v');
+
           return done();
         });
     });
@@ -624,6 +652,7 @@ describe('GENRE ROUTES', () => {
             .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -644,6 +673,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find genre with id ${notFoundId}`);
+
           return done();
         });
     });
@@ -676,6 +706,7 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res.body).toHaveProperty('updateCount');
           expect(res.body.updateCount).toBe(0);
+
           return done();
         });
     });
@@ -695,6 +726,7 @@ describe('GENRE ROUTES', () => {
           });
           expect(res.body).toHaveProperty('updateCount');
           expect(res.body.updateCount).toBe(ids.length);
+
           return done();
         });
     });
@@ -715,6 +747,7 @@ describe('GENRE ROUTES', () => {
             .toBe('Validation Error: body: "genres" must contain at least 1 items');
           expect(res.body).toHaveProperty('errors');
           expect(res.body.errors).toBe('Bad Request');
+
           return done();
         });
     });
@@ -736,6 +769,7 @@ describe('GENRE ROUTES', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body.message)
             .toBe(`Cannot find genre(s) with id(s) ${genres.map(({ id }) => id).join()}`);
+
           return done();
         });
     });

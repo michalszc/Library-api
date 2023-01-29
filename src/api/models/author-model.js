@@ -32,6 +32,7 @@ const AuthorSchema = new mongoose.Schema({
 AuthorSchema.method({
   async saveIfNotExists() {
     await Author.checkExistence(this);
+
     return this.save();
   }
 });

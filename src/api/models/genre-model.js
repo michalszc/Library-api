@@ -19,6 +19,7 @@ const GenreSchema = new mongoose.Schema({
 GenreSchema.method({
   async saveIfNotExists() {
     await Genre.checkExistence([this.name]);
+
     return this.save();
   }
 });

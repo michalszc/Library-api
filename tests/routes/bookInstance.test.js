@@ -1200,4 +1200,153 @@ describe('BOOKINSTANCE ROUTES', () => {
         });
     });
   });
+  describe('Update multiple book bookinstances', () => {
+    const bookInstanceIds = [];
+    let bookInstances;
+    beforeAll(async () => {
+      const _genre = new Genre({ name: 'Fantasy' });
+      await _genre.save();
+      const genreId = _genre._id.toString();
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
+      await _author.save();
+      const authorId = _author._id.toString();
+      const book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      const bookId = _book._id.toString();
+      bookInstances = [
+        {
+          book: bookId,
+          publisher: 'Publisher 1',
+          status: 'Available'
+        },
+        {
+          book: bookId,
+          publisher: 'Publisher 1',
+          status: 'Loaned',
+          back: new Date('2020-04-19').toISOString()
+        },
+        {
+          book: bookId,
+          publisher: 'Publisher 1',
+          status: 'Maintenance',
+          back: new Date('2020-04-23').toISOString()
+        },
+        {
+          book: bookId,
+          publisher: 'Publisher 1',
+          status: 'Reserved',
+          back: new Date('2020-04-19').toISOString()
+        }
+      ];
+      const _bookInstances = await BookInstance.insertMany(bookInstances);
+      _bookInstances.forEach(({ id }) => {
+        bookInstanceIds.push(id);
+      });
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await BookInstance.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should not update multiple book bookinstances', (done) => {
+      request
+        .patch('/bookinstances/multiple')
+        .send({
+          bookInstances: bookInstances
+            .map(({ publisher }, i) => ({ id: bookInstanceIds.at(i).toString(), publisher }))
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              updateCount: 0
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should properly update multiple book bookinstances', (done) => {
+      const _bookInstances = bookInstances
+        .map(({ publisher }, i) => ({ id: bookInstanceIds.at(i).toString(), publisher: publisher + '_' }));
+      request
+        .patch('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              bookInstances: _bookInstances,
+              updateCount: _bookInstances.length
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should not update multiple book bookinstances due to validation error ', (done) => {
+      request
+        .patch('/bookinstances/multiple')
+        .send({
+          bookInstances: []
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "bookInstances" must contain at least 1 items',
+              errors: 'Bad Request'
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should not update multiple book bookinstances because cannot find book bookinstances', (done) => {
+      const _ids = bookInstanceIds.map(_id => _id.toString().replace(/[a-c]/, 'd'));
+      const _bookInstances = bookInstances
+        .map(({ publisher }, i) => ({ id: _ids.at(i), publisher: publisher + '_' }));
+      request
+        .patch('/bookinstances/multiple')
+        .send({
+          bookInstances: _bookInstances
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find book instance(s) with id(s) ${_ids.join()}`
+            })
+          );
+
+          return done();
+        });
+    });
+  });
 });

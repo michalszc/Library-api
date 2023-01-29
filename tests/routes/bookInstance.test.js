@@ -1064,4 +1064,140 @@ describe('BOOKINSTANCE ROUTES', () => {
         });
     });
   });
+  describe('Update book instance', () => {
+    let bookInstance;
+    let bookInstanceId;
+    let book;
+    const author = {
+      firstName: 'Ben',
+      lastName: 'Bova',
+      dateOfBirth: '1932-11-07T23:00:00.000Z'
+    };
+    const genre = { name: 'Fantasy' };
+    beforeAll(async () => {
+      const _genre = new Genre(genre);
+      await _genre.save();
+      const genreId = _genre._id.toString();
+      const _author = new Author(author);
+      await _author.save();
+      const authorId = _author._id.toString();
+      book = {
+        title: 'title',
+        author: authorId,
+        summary: 'something 1',
+        isbn: '978-0-575-08244-1',
+        genre: [
+          genreId
+        ]
+      };
+      const _book = new Book(book);
+      await _book.save();
+      const bookId = _book._id.toString();
+      bookInstance = {
+        book: bookId,
+        publisher: 'Publisher',
+        status: 'Loaned',
+        back: new Date('2020-04-19').toISOString()
+      };
+      const _bookInstance = new BookInstance(bookInstance);
+      await _bookInstance.save();
+      bookInstanceId = _bookInstance._id.toString();
+    });
+    afterAll(async () => {
+      await Author.deleteMany({});
+      await Book.deleteMany({});
+      await BookInstance.deleteMany({});
+      await Genre.deleteMany({});
+    });
+    test('should not update book instance', (done) => {
+      request
+        .patch(`/bookinstances/${bookInstanceId}`)
+        .send({
+          publisher: bookInstance.publisher
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Book instance(s) already exist(s)'
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should properly update book instance', (done) => {
+      const newPublisher = 'newPublisher';
+      request
+        .patch(`/bookinstances/${bookInstanceId}`)
+        .send({
+          publisher: newPublisher
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              book: bookInstance.book,
+              publisher: newPublisher,
+              status: bookInstance.status,
+              back: bookInstance.back,
+              __v: expect.any(Number)
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should not update book instance due to validation error ', (done) => {
+      const invalidId = '62fd5e7e3037984b1b5effbg';
+      const newPublisher = 'newPublisher';
+      request
+        .patch(`/bookinstances/${invalidId}`)
+        .send({
+          publisher: newPublisher
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            })
+          );
+
+          return done();
+        });
+    });
+    test('should not update book instance because cannot find book instance', (done) => {
+      const notFoundId = '63091e5e4ec3fbc5c720db4c';
+      const newPublisher = 'newPublisher';
+      request
+        .patch(`/bookinstances/${notFoundId}`)
+        .send({
+          publisher: newPublisher
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
+        .then(res => {
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404, // eslint-disable-next-line max-len
+              message: `Cannot find book instance with id ${notFoundId}`
+            })
+          );
+
+          return done();
+        });
+    });
+  });
 });

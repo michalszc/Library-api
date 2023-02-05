@@ -1,5 +1,6 @@
 const winston = require('winston');
 const { env } = require('./vars');
+const { environments } = require('./constants');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -18,7 +19,7 @@ const logger = winston.createLogger({
 // If we're not in production then log to the `console` with the format:
 // `${log.timestamp} ${log.level}: ${log.message} `
 //
-if (env !== 'production') {
+if (env !== environments.PRODUCTION) {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),

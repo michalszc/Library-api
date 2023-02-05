@@ -48,15 +48,26 @@ describe('AUTHOR ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('authors');
+          expect(res.body.authors).toBeInstanceOf(Array);
           expect(res.body.authors).toHaveLength(authors.length);
-          res.body.authors.forEach(({ firstName, lastName, dateOfBirth, dateOfDeath }, i) => {
-            expect(authors.at(i).firstName).toBe(firstName);
-            expect(authors.at(i).lastName).toBe(lastName);
-            expect(authors.at(i).dateOfBirth).toBe(dateOfBirth);
-            if (dateOfDeath) {
-              expect(authors.at(i).dateOfDeath).toBe(dateOfDeath);
+          res.body.authors.forEach((author, i) => {
+            if (has(author, 'dateOfDeath')) {
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: authors.at(i).firstName,
+                lastName: authors.at(i).lastName,
+                dateOfBirth: authors.at(i).dateOfBirth,
+                dateOfDeath: authors.at(i).dateOfDeath,
+                __v: expect.any(Number)
+              });
             } else {
-              expect(authors.at(i)).not.toHaveProperty('dateOfDeath');
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: authors.at(i).firstName,
+                lastName: authors.at(i).lastName,
+                dateOfBirth: authors.at(i).dateOfBirth,
+                __v: expect.any(Number)
+              });
             }
           });
 
@@ -73,8 +84,17 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.authors).toHaveLength(1);
-          expect(res.body.authors[0].firstName).toBe('Ben');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              authors: [{
+                _id: expect.any(String),
+                firstName: 'Ben',
+                lastName: 'Bova',
+                dateOfBirth: '1932-11-07T23:00:00.000Z',
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -90,9 +110,25 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.authors).toHaveLength(2);
-          expect(res.body.authors[0].firstName).toBe(authors.at(1).firstName);
-          expect(res.body.authors[1].firstName).toBe(authors.at(2).firstName);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              authors: [{
+                _id: expect.any(String),
+                firstName: 'Isaac',
+                lastName: 'Asimov',
+                dateOfBirth: '1920-01-01T22:00:00.000Z',
+                dateOfDeath: '1992-04-05T22:00:00.000Z',
+                __v: expect.any(Number)
+              },
+              {
+                _id: expect.any(String),
+                firstName: 'Patrick',
+                lastName: 'Rothfuss',
+                dateOfBirth: '1973-06-05T23:00:00.000Z',
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -109,10 +145,29 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('authors');
+          expect(res.body.authors).toBeInstanceOf(Array);
           expect(res.body.authors).toHaveLength(authors.length);
           const reversedAuthors = authors.reverse();
-          res.body.authors.forEach(({ firstName }, i) => {
-            expect(firstName).toBe(reversedAuthors.at(i).firstName);
+          res.body.authors.forEach((author, i) => {
+            if (author?.dateOfDeath) {
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: reversedAuthors.at(i).firstName,
+                lastName: reversedAuthors.at(i).lastName,
+                dateOfBirth: reversedAuthors.at(i).dateOfBirth,
+                dateOfDeath: reversedAuthors.at(i).dateOfDeath,
+                __v: expect.any(Number)
+              });
+            } else {
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: reversedAuthors.at(i).firstName,
+                lastName: reversedAuthors.at(i).lastName,
+                dateOfBirth: reversedAuthors.at(i).dateOfBirth,
+                __v: expect.any(Number)
+              });
+            }
           });
 
           return done();
@@ -128,6 +183,8 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('authors');
+          expect(res.body.authors).toBeInstanceOf(Array);
           expect(res.body.authors).toHaveLength(authors.length);
           res.body.authors.forEach((author) => {
             expect(author).toHaveProperty('_id');
@@ -151,6 +208,8 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('authors');
+          expect(res.body.authors).toBeInstanceOf(Array);
           expect(res.body.authors).toHaveLength(authors.length);
           res.body.authors.forEach((author) => {
             expect(author).not.toHaveProperty('_id');
@@ -187,16 +246,15 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('author');
-          expect(res.body.author).toHaveProperty('firstName');
-          expect(res.body.author.firstName).toBe(author.firstName);
-          expect(res.body.author).toHaveProperty('lastName');
-          expect(res.body.author.lastName).toBe(author.lastName);
-          expect(res.body.author).toHaveProperty('dateOfBirth');
-          expect(res.body.author.dateOfBirth).toBe(author.dateOfBirth);
-          expect(res.body.author).toHaveProperty('dateOfDeath');
-          expect(res.body.author.dateOfDeath).toBe(author.dateOfDeath);
-          expect(res.body).not.toHaveProperty('listOfBooks');
+          expect(res).toHaveProperty('body.author',
+            expect.objectContaining({
+              _id: expect.any(String),
+              firstName: author.firstName,
+              lastName: author.lastName,
+              dateOfBirth: author.dateOfBirth,
+              dateOfDeath: author.dateOfDeath,
+              __v: expect.any(Number)
+            }));
 
           return done();
         });
@@ -211,9 +269,18 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('author');
-          expect(res.body).toHaveProperty('listOfBooks');
-          expect(res.body.listOfBooks).toStrictEqual([]);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              author: {
+                _id: expect.any(String),
+                firstName: author.firstName,
+                lastName: author.lastName,
+                dateOfBirth: author.dateOfBirth,
+                dateOfDeath: author.dateOfDeath,
+                __v: expect.any(Number)
+              },
+              listOfBooks: []
+            }));
 
           return done();
         });
@@ -285,18 +352,15 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toHaveProperty('firstName');
-          expect(res.body.firstName).toBe(author.firstName);
-          expect(res.body).toHaveProperty('lastName');
-          expect(res.body.lastName).toBe(author.lastName);
-          expect(res.body).toHaveProperty('dateOfBirth');
-          expect(res.body.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
-          expect(res.body).toHaveProperty('dateOfDeath');
-          expect(res.body.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
-          expect(res.body).toHaveProperty('_id');
-          expect(res.body._id).not.toBeNull();
-          expect(res.body).toHaveProperty('__v');
-          expect(res.body.__v).not.toBeNull();
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              firstName: author.firstName,
+              lastName: author.lastName,
+              dateOfBirth: new Date(author.dateOfBirth).toISOString(),
+              dateOfDeath: new Date(author.dateOfDeath).toISOString(),
+              __v: expect.any(Number)
+            }));
 
           return done();
         });
@@ -317,10 +381,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Author(s) already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Author(s) already exist(s)'
+            }));
 
           return done();
         });
@@ -341,12 +406,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Validation Error: body: "firstName" is not allowed to be empty');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "firstName" is not allowed to be empty',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -367,13 +432,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "firstName" length must be at least 3 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "firstName" length must be at least 3 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -394,13 +458,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "firstName" length must be less than or equal to 100 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "firstName" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -441,21 +504,26 @@ describe('AUTHOR ROUTES', () => {
         .then(res => {
           expect(res.body).toHaveProperty('authors');
           expect(res.body.authors).toBeInstanceOf(Array);
+          expect(res.body.authors).toHaveLength(authors.length);
           res.body.authors.forEach((author, i) => {
-            expect(author).toHaveProperty('firstName');
-            expect(author.firstName).toBe(authors.at(i).firstName);
-            expect(author).toHaveProperty('lastName');
-            expect(author.lastName).toBe(authors.at(i).lastName);
-            expect(author).toHaveProperty('dateOfBirth');
-            expect(author.dateOfBirth).toBe(new Date(authors.at(i).dateOfBirth).toISOString());
-            if (has(authors.at(i), 'dateOfDeath')) {
-              expect(author).toHaveProperty('dateOfDeath');
-              expect(author.dateOfDeath).toBe(new Date(authors.at(i).dateOfDeath).toISOString());
+            if (has(author, 'dateOfDeath')) {
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: authors.at(i).firstName,
+                lastName: authors.at(i).lastName,
+                dateOfBirth: new Date(authors.at(i).dateOfBirth).toISOString(),
+                dateOfDeath: new Date(authors.at(i).dateOfDeath).toISOString(),
+                __v: expect.any(Number)
+              });
+            } else {
+              expect(author).toMatchObject({
+                _id: expect.any(String),
+                firstName: authors.at(i).firstName,
+                lastName: authors.at(i).lastName,
+                dateOfBirth: new Date(authors.at(i).dateOfBirth).toISOString(),
+                __v: expect.any(Number)
+              });
             }
-            expect(author).toHaveProperty('_id');
-            expect(author._id).not.toBeNull();
-            expect(author).toHaveProperty('__v');
-            expect(author.__v).not.toBeNull();
           });
 
           return done();
@@ -471,10 +539,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Author(s) already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Author(s) already exist(s)'
+            }));
 
           return done();
         });
@@ -502,13 +571,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe('Validation Error: body: "authors[0].firstName" is not allowed to be empty');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "authors[0].firstName" is not allowed to be empty',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -536,13 +604,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "authors[0].firstName" length must be at least 3 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "authors[0].firstName" length must be at least 3 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -570,13 +637,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe('Validation Error: body: "authors[0].firstName" length must be less than or equal to 100 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "authors[0].firstName" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -605,20 +671,18 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Deleted author');
-          expect(res.body).toHaveProperty('deletedAuthor');
-          expect(res.body.deletedAuthor).toHaveProperty('_id');
-          expect(res.body.deletedAuthor._id).toBe(_id);
-          expect(res.body.deletedAuthor).toHaveProperty('firstName');
-          expect(res.body.deletedAuthor.firstName).toBe(author.firstName);
-          expect(res.body.deletedAuthor).toHaveProperty('lastName');
-          expect(res.body.deletedAuthor.lastName).toBe(author.lastName);
-          expect(res.body.deletedAuthor).toHaveProperty('dateOfBirth');
-          expect(res.body.deletedAuthor.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
-          expect(res.body.deletedAuthor).toHaveProperty('dateOfDeath');
-          expect(res.body.deletedAuthor.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
-          expect(res.body.deletedAuthor).toHaveProperty('__v');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              deletedAuthor: {
+                _id: expect.any(String),
+                firstName: author.firstName,
+                lastName: author.lastName,
+                dateOfBirth: new Date(author.dateOfBirth).toISOString(),
+                dateOfDeath: new Date(author.dateOfDeath).toISOString(),
+                __v: expect.any(Number)
+              },
+              message: 'Deleted author'
+            }));
 
           return done();
         });
@@ -630,11 +694,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find author with id ${_id}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find author with id ${_id}`
+            }));
 
           return done();
         });
@@ -647,13 +711,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -699,10 +762,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Deleted authors');
-          expect(res.body).toHaveProperty('deletedCount');
-          expect(res.body.deletedCount).toBe(ids.length);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              message: 'Deleted authors',
+              deletedCount: ids.length
+            }));
 
           return done();
         });
@@ -717,10 +781,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe(`Cannot find author(s) with id(s) ${ids.join()}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find author(s) with id(s) ${ids.join()}`
+            }));
 
           return done();
         });
@@ -735,13 +800,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "ids" must contain at least 1 items');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "ids" must contain at least 1 items',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -773,10 +837,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Author(s) already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Author(s) already exist(s)'
+            }));
 
           return done();
         });
@@ -792,16 +857,15 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('firstName');
-          expect(res.body.firstName).not.toBe(author.firstName);
-          expect(res.body.firstName).toBe(firstName);
-          expect(res.body).toHaveProperty('lastName');
-          expect(res.body.lastName).toBe(author.lastName);
-          expect(res.body).toHaveProperty('dateOfBirth');
-          expect(res.body.dateOfBirth).toBe(new Date(author.dateOfBirth).toISOString());
-          expect(res.body).toHaveProperty('dateOfDeath');
-          expect(res.body.dateOfDeath).toBe(new Date(author.dateOfDeath).toISOString());
-          expect(res.body).not.toHaveProperty('listOfBooks');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              firstName,
+              lastName: author.lastName,
+              dateOfBirth: new Date(author.dateOfBirth).toISOString(),
+              dateOfDeath: new Date(author.dateOfDeath).toISOString(),
+              __v: expect.any(Number)
+            }));
 
           return done();
         });
@@ -818,13 +882,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -841,11 +904,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find author with id ${notFoundId}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find author with id ${notFoundId}`
+            }));
 
           return done();
         });
@@ -891,28 +954,31 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(0);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              updateCount: 0
+            }));
 
           return done();
         });
     });
     test('should properly update multiple authors', (done) => {
+      const _authors = authors
+        .map(({ firstName }, i) => ({ id: ids.at(i).toString(), firstName: firstName + '_' }));
       request
         .patch('/authors/multiple')
         .send({
-          authors: authors.map(({ firstName }, i) => ({ id: ids.at(i).toString(), firstName: firstName + '_' }))
+          authors: _authors
         })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('authors');
-          res.body.authors.forEach(({ firstName }, i) => {
-            expect(firstName).toBe(authors.at(i).firstName + '_');
-          });
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(authors.length);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              authors: _authors,
+              updateCount: authors.length
+            }));
 
           return done();
         });
@@ -927,13 +993,12 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "authors" must contain at least 1 items');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "authors" must contain at least 1 items',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -949,11 +1014,11 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find author(s) with id(s) ${_ids.join()}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find author(s) with id(s) ${_ids.join()}`
+            }));
 
           return done();
         });

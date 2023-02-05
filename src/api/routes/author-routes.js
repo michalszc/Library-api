@@ -70,6 +70,7 @@ const validators = require('../validations/author-validation');
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -149,6 +150,7 @@ router.get('/', validate(validators.authorList), authorList);
  *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -212,6 +214,7 @@ router.get('/:id', validate(validators.authorDetail), getAuthor, authorDetail);
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or author existence
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -262,6 +265,7 @@ router.post('/multiple', validate(validators.authorCreateMany), authorCreateMany
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or author existence
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -303,6 +307,7 @@ router.post('/', validate(validators.authorCreate), authorCreate);
  *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -358,6 +363,7 @@ router.delete('/multiple', validate(validators.authorDeleteMany), checkExistence
  *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -419,6 +425,7 @@ router.delete('/:id', validate(validators.authorDelete), getAuthor, authorDelete
  *
  * @apiError BadRequest The server cannot process the request due to validation error
  * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request
@@ -476,6 +483,7 @@ router.patch('/multiple', validate(validators.authorUpdateMany), checkExistence,
  *
  * @apiError BadRequest The server cannot process the request due to validation error or incorrect dates
  * @apiError NotFound The server cannot process the request due to incorrect id
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
  * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
  * @apiErrorExample {json} Validation error response (example):
  *  HTTP/1.1 400 Bad Request

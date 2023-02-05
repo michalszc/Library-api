@@ -17,39 +17,37 @@ describe('BOOK ROUTES', () => {
     await mongodb.stop();
   });
   describe('List books', () => {
-    const authors = [
-      {
-        firstName: 'Ben',
-        lastName: 'Bova',
-        dateOfBirth: '1932-11-07T23:00:00.000Z'
-      },
-      {
-        firstName: 'Isaac',
-        lastName: 'Asimov',
-        dateOfBirth: '1920-01-01T22:00:00.000Z',
-        dateOfDeath: '1992-04-05T22:00:00.000Z'
-      },
-      {
-        firstName: 'Patrick',
-        lastName: 'Rothfuss',
-        dateOfBirth: '1973-06-05T23:00:00.000Z'
-      }
-    ];
-    const authorIds = [];
-    const genres = [
-      { name: 'Fantasy' },
-      { name: 'Horror' },
-      { name: 'Thriller' },
-      { name: 'Western' }
-    ];
-    const genreIds = [];
     let books;
     beforeAll(async () => {
-      const _genres = await Genre.insertMany(genres);
+      const _genres = await Genre.insertMany([
+        { name: 'Fantasy' },
+        { name: 'Horror' },
+        { name: 'Thriller' },
+        { name: 'Western' }
+      ]);
+      const genreIds = [];
       _genres.forEach(({ _id }) => {
         genreIds.push(_id.toString());
       });
-      const _authors = await Author.insertMany(authors);
+      const _authors = await Author.insertMany([
+        {
+          firstName: 'Ben',
+          lastName: 'Bova',
+          dateOfBirth: '1932-11-07T23:00:00.000Z'
+        },
+        {
+          firstName: 'Isaac',
+          lastName: 'Asimov',
+          dateOfBirth: '1920-01-01T22:00:00.000Z',
+          dateOfDeath: '1992-04-05T22:00:00.000Z'
+        },
+        {
+          firstName: 'Patrick',
+          lastName: 'Rothfuss',
+          dateOfBirth: '1973-06-05T23:00:00.000Z'
+        }
+      ]);
+      const authorIds = [];
       _authors.forEach(({ _id }) => {
         authorIds.push(_id.toString());
       });
@@ -104,13 +102,18 @@ describe('BOOK ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('books');
+          expect(res.body.books).toBeInstanceOf(Array);
           expect(res.body.books).toHaveLength(books.length);
-          res.body.books.forEach(({ title, author, summary, isbn, genre }, i) => {
-            expect(books.at(i).title).toBe(title);
-            expect(books.at(i).author).toBe(author);
-            expect(books.at(i).summary).toBe(summary);
-            expect(books.at(i).isbn).toBe(isbn);
-            expect(books.at(i).genre).toStrictEqual(genre);
+          res.body.books.forEach((book, i) => {
+            expect(book).toMatchObject({
+              _id: expect.any(String),
+              title: books.at(i).title,
+              author: books.at(i).author,
+              summary: books.at(i).summary,
+              isbn: books.at(i).isbn,
+              genre: books.at(i).genre,
+              __v: expect.any(Number)
+            });
           });
 
           return done();
@@ -126,12 +129,19 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.books).toHaveLength(1);
-          expect(res.body.books[0].title).toBe(books.at(0).title);
-          expect(res.body.books[0].author).toBe(books.at(0).author);
-          expect(res.body.books[0].summary).toBe(books.at(0).summary);
-          expect(res.body.books[0].isbn).toBe(books.at(0).isbn);
-          expect(res.body.books[0].genre).toStrictEqual(books.at(0).genre);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              books: [{
+                _id: expect.any(String),
+                title: books.at(0).title,
+                author: books.at(0).author,
+                summary: books.at(0).summary,
+                isbn: books.at(0).isbn,
+                genre: books.at(0).genre,
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -147,17 +157,19 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.books).toHaveLength(2);
-          expect(res.body.books[0].title).toBe(books.at(1).title);
-          expect(res.body.books[0].author).toBe(books.at(1).author);
-          expect(res.body.books[0].summary).toBe(books.at(1).summary);
-          expect(res.body.books[0].isbn).toBe(books.at(1).isbn);
-          expect(res.body.books[0].genre).toStrictEqual(books.at(1).genre);
-          expect(res.body.books[1].title).toBe(books.at(2).title);
-          expect(res.body.books[1].author).toBe(books.at(2).author);
-          expect(res.body.books[1].summary).toBe(books.at(2).summary);
-          expect(res.body.books[1].isbn).toBe(books.at(2).isbn);
-          expect(res.body.books[1].genre).toStrictEqual(books.at(2).genre);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              books: [{
+                _id: expect.any(String),
+                ...books.at(1),
+                __v: expect.any(Number)
+              }, {
+                _id: expect.any(String),
+                ...books.at(2),
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -174,14 +186,20 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('books');
+          expect(res.body.books).toBeInstanceOf(Array);
           expect(res.body.books).toHaveLength(books.length);
           const reversedBooks = books.reverse();
-          res.body.books.forEach(({ title, author, summary, isbn, genre }, i) => {
-            expect(reversedBooks.at(i).title).toBe(title);
-            expect(reversedBooks.at(i).author).toBe(author);
-            expect(reversedBooks.at(i).summary).toBe(summary);
-            expect(reversedBooks.at(i).isbn).toBe(isbn);
-            expect(reversedBooks.at(i).genre).toStrictEqual(genre);
+          res.body.books.forEach((book, i) => {
+            expect(book).toMatchObject({
+              _id: expect.any(String),
+              title: reversedBooks.at(i).title,
+              author: reversedBooks.at(i).author,
+              summary: reversedBooks.at(i).summary,
+              isbn: reversedBooks.at(i).isbn,
+              genre: reversedBooks.at(i).genre,
+              __v: expect.any(Number)
+            });
           });
 
           return done();
@@ -197,6 +215,8 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('books');
+          expect(res.body.books).toBeInstanceOf(Array);
           expect(res.body.books).toHaveLength(books.length);
           res.body.books.forEach((book) => {
             expect(book).toHaveProperty('_id');
@@ -221,6 +241,8 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('books');
+          expect(res.body.books).toBeInstanceOf(Array);
           expect(res.body.books).toHaveLength(books.length);
           res.body.books.forEach((book) => {
             expect(book).not.toHaveProperty('_id');
@@ -256,21 +278,21 @@ describe('BOOK ROUTES', () => {
         dateOfBirth: '1973-06-05T23:00:00.000Z'
       }
     ];
-    const authorIds = [];
     const genres = [
       { name: 'Fantasy' },
       { name: 'Horror' },
       { name: 'Thriller' },
       { name: 'Western' }
     ];
-    const genreIds = [];
     let books;
     beforeAll(async () => {
       const _genres = await Genre.insertMany(genres);
+      const genreIds = [];
       _genres.forEach(({ _id }) => {
         genreIds.push(_id.toString());
       });
       const _authors = await Author.insertMany(authors);
+      const authorIds = [];
       _authors.forEach(({ _id }) => {
         authorIds.push(_id.toString());
       });
@@ -327,12 +349,17 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('book');
-          expect(res.body.book.title).toBe(books.at(0).title);
-          expect(res.body.book.author).toBe(books.at(0).author);
-          expect(res.body.book.summary).toBe(books.at(0).summary);
-          expect(res.body.book.isbn).toBe(books.at(0).isbn);
-          expect(res.body.book.genre).toStrictEqual(books.at(0).genre);
+          expect(res).toHaveProperty('body.book',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: books.at(0).title,
+              author: books.at(0).author,
+              summary: books.at(0).summary,
+              isbn: books.at(0).isbn,
+              genre: books.at(0).genre,
+              __v: expect.any(Number)
+            })
+          );
 
           return done();
         });
@@ -348,14 +375,25 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('book');
-          expect(res.body.book.title).toBe(books.at(2).title);
-          expect(res.body.book.author).toBeInstanceOf(Object);
-          expect(res.body.book.author).toMatchObject(authors.at(2));
-          expect(res.body.book.summary).toBe(books.at(2).summary);
-          expect(res.body.book.isbn).toBe(books.at(2).isbn);
-          expect(res.body.book.genre).toBeInstanceOf(Object);
-          expect(res.body.book.genre).toMatchObject([genres.at(0)]);
+          expect(res).toHaveProperty('body.book',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: books.at(2).title,
+              author: {
+                _id: expect.any(String),
+                ...authors.at(2),
+                __v: expect.any(Number)
+              },
+              summary: books.at(2).summary,
+              isbn: books.at(2).isbn,
+              genre: [{
+                _id: expect.any(String),
+                ...genres.at(0),
+                __v: expect.any(Number)
+              }],
+              __v: expect.any(Number)
+            })
+          );
 
           return done();
         });
@@ -446,20 +484,17 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toHaveProperty('title');
-          expect(res.body.title).toBe(book.title);
-          expect(res.body).toHaveProperty('author');
-          expect(res.body.author).toBe(book.authorId);
-          expect(res.body).toHaveProperty('summary');
-          expect(res.body.summary).toBe(book.summary);
-          expect(res.body).toHaveProperty('isbn');
-          expect(res.body.isbn).toBe(book.isbn);
-          expect(res.body).toHaveProperty('genre');
-          expect(res.body.genre).toMatchObject(book.genreId);
-          expect(res.body).toHaveProperty('_id');
-          expect(res.body._id).not.toBeNull();
-          expect(res.body).toHaveProperty('__v');
-          expect(res.body.__v).not.toBeNull();
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: book.title,
+              author: book.authorId,
+              summary: book.summary,
+              isbn: book.isbn,
+              genre: book.genreId,
+              __v: expect.any(Number)
+            })
+          );
 
           return done();
         });
@@ -484,20 +519,17 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toHaveProperty('title');
-          expect(res.body.title).toBe(book.title);
-          expect(res.body).toHaveProperty('author');
-          expect(res.body.author).toBe(authorId);
-          expect(res.body).toHaveProperty('summary');
-          expect(res.body.summary).toBe(book.summary);
-          expect(res.body).toHaveProperty('isbn');
-          expect(res.body.isbn).toBe(book.isbn);
-          expect(res.body).toHaveProperty('genre');
-          expect(res.body.genre).toMatchObject([genreId]);
-          expect(res.body).toHaveProperty('_id');
-          expect(res.body._id).not.toBeNull();
-          expect(res.body).toHaveProperty('__v');
-          expect(res.body.__v).not.toBeNull();
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              title: book.title,
+              author: authorId,
+              summary: book.summary,
+              isbn: book.isbn,
+              genre: [genreId],
+              __v: expect.any(Number)
+            })
+          );
         });
     });
     test('should not create book because it already exists', (done) => {
@@ -519,10 +551,11 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Book(s) already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Book(s) already exist(s)'
+            }));
 
           return done();
         });
@@ -546,12 +579,12 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Validation Error: body: "title" is not allowed to be empty');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "title" is not allowed to be empty',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -575,13 +608,12 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "title" length must be less than or equal to 100 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "title" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -605,52 +637,49 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe('Validation Error: body: "isbn" with value "xx" fails to match the required pattern: /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "isbn" with value "xx" fails to match the required pattern: /^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
     });
   });
   describe('Create mulitple books', () => {
-    const authors = [
-      {
-        firstName: 'Ben',
-        lastName: 'Bova',
-        dateOfBirth: '1932-11-07T23:00:00.000Z'
-      },
-      {
-        firstName: 'Isaac',
-        lastName: 'Asimov',
-        dateOfBirth: '1920-01-01T22:00:00.000Z',
-        dateOfDeath: '1992-04-05T22:00:00.000Z'
-      },
-      {
-        firstName: 'Patrick',
-        lastName: 'Rothfuss',
-        dateOfBirth: '1973-06-05T23:00:00.000Z'
-      }
-    ];
-    const authorIds = [];
-    const genres = [
-      { name: 'Fantasy' },
-      { name: 'Horror' },
-      { name: 'Thriller' },
-      { name: 'Western' }
-    ];
-    const genreIds = [];
     let books;
+    const genreIds = [];
+    const authorIds = [];
     beforeAll(async () => {
-      const _genres = await Genre.insertMany(genres);
+      const _genres = await Genre.insertMany([
+        { name: 'Fantasy' },
+        { name: 'Horror' },
+        { name: 'Thriller' },
+        { name: 'Western' }
+      ]);
       _genres.forEach(({ _id }) => {
         genreIds.push(_id.toString());
       });
-      const _authors = await Author.insertMany(authors);
+      const _authors = await Author.insertMany([
+        {
+          firstName: 'Ben',
+          lastName: 'Bova',
+          dateOfBirth: '1932-11-07T23:00:00.000Z'
+        },
+        {
+          firstName: 'Isaac',
+          lastName: 'Asimov',
+          dateOfBirth: '1920-01-01T22:00:00.000Z',
+          dateOfDeath: '1992-04-05T22:00:00.000Z'
+        },
+        {
+          firstName: 'Patrick',
+          lastName: 'Rothfuss',
+          dateOfBirth: '1973-06-05T23:00:00.000Z'
+        }
+      ]);
       _authors.forEach(({ _id }) => {
         authorIds.push(_id.toString());
       });
@@ -707,6 +736,7 @@ describe('BOOK ROUTES', () => {
         .then(res => {
           expect(res.body).toHaveProperty('books');
           expect(res.body.books).toBeInstanceOf(Array);
+          expect(res.body.books).toHaveLength(books.length);
           res.body.books.forEach((book, i) => {
             expect(book).toStrictEqual(
               expect.objectContaining({
@@ -869,21 +899,19 @@ describe('BOOK ROUTES', () => {
     });
   });
   describe('Delete book', () => {
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
     let authorId;
-    const genre = { name: 'Fantasy' };
     let genreId;
     let book;
     let bookId;
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       authorId = _author._id.toString();
       book = {
@@ -911,19 +939,20 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Deleted book');
-          expect(res.body).toHaveProperty('deletedBook',
+          expect(res).toHaveProperty('body',
             expect.objectContaining({
-              _id: expect.any(String),
-              title: book.title,
-              author: authorId,
-              summary: book.summary,
-              isbn: book.isbn,
-              genre: [
-                genreId
-              ],
-              __v: expect.any(Number)
+              deletedBook: {
+                _id: expect.any(String),
+                title: book.title,
+                author: authorId,
+                summary: book.summary,
+                isbn: book.isbn,
+                genre: [
+                  genreId
+                ],
+                __v: expect.any(Number)
+              },
+              message: 'Deleted book'
             })
           );
 
@@ -937,11 +966,12 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find book with id ${bookId}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find book with id ${bookId}`
+            })
+          );
 
           return done();
         });
@@ -954,13 +984,13 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            })
+          );
 
           return done();
         });
@@ -968,43 +998,40 @@ describe('BOOK ROUTES', () => {
   });
   describe('Delete multiple books', () => {
     const bookIds = [];
-    const authors = [
-      {
-        firstName: 'Ben',
-        lastName: 'Bova',
-        dateOfBirth: '1932-11-07T23:00:00.000Z'
-      },
-      {
-        firstName: 'Isaac',
-        lastName: 'Asimov',
-        dateOfBirth: '1920-01-01T22:00:00.000Z',
-        dateOfDeath: '1992-04-05T22:00:00.000Z'
-      },
-      {
-        firstName: 'Patrick',
-        lastName: 'Rothfuss',
-        dateOfBirth: '1973-06-05T23:00:00.000Z'
-      }
-    ];
-    const authorIds = [];
-    const genres = [
-      { name: 'Fantasy' },
-      { name: 'Horror' },
-      { name: 'Thriller' },
-      { name: 'Western' }
-    ];
-    const genreIds = [];
-    let books;
     beforeAll(async () => {
-      const _genres = await Genre.insertMany(genres);
+      const _genres = await Genre.insertMany([
+        { name: 'Fantasy' },
+        { name: 'Horror' },
+        { name: 'Thriller' },
+        { name: 'Western' }
+      ]);
+      const genreIds = [];
       _genres.forEach(({ _id }) => {
         genreIds.push(_id.toString());
       });
-      const _authors = await Author.insertMany(authors);
+      const _authors = await Author.insertMany([
+        {
+          firstName: 'Ben',
+          lastName: 'Bova',
+          dateOfBirth: '1932-11-07T23:00:00.000Z'
+        },
+        {
+          firstName: 'Isaac',
+          lastName: 'Asimov',
+          dateOfBirth: '1920-01-01T22:00:00.000Z',
+          dateOfDeath: '1992-04-05T22:00:00.000Z'
+        },
+        {
+          firstName: 'Patrick',
+          lastName: 'Rothfuss',
+          dateOfBirth: '1973-06-05T23:00:00.000Z'
+        }
+      ]);
+      const authorIds = [];
       _authors.forEach(({ _id }) => {
         authorIds.push(_id.toString());
       });
-      books = [
+      const _books = await Book.insertMany([
         {
           title: 'title 1',
           author: authorIds[0],
@@ -1039,8 +1066,7 @@ describe('BOOK ROUTES', () => {
             genreIds[1], genreIds[2]
           ]
         }
-      ];
-      const _books = await Book.insertMany(books);
+      ]);
       _books.forEach(({ _id }) => {
         bookIds.push(_id.toString());
       });
@@ -1113,21 +1139,19 @@ describe('BOOK ROUTES', () => {
     });
   });
   describe('Update book', () => {
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
     let authorId;
-    const genre = { name: 'Fantasy' };
     let genreId;
     let book;
     let bookId;
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       authorId = _author._id.toString();
       book = {
@@ -1244,39 +1268,37 @@ describe('BOOK ROUTES', () => {
   });
   describe('Update multiple books', () => {
     const bookIds = [];
-    const authors = [
-      {
-        firstName: 'Ben',
-        lastName: 'Bova',
-        dateOfBirth: '1932-11-07T23:00:00.000Z'
-      },
-      {
-        firstName: 'Isaac',
-        lastName: 'Asimov',
-        dateOfBirth: '1920-01-01T22:00:00.000Z',
-        dateOfDeath: '1992-04-05T22:00:00.000Z'
-      },
-      {
-        firstName: 'Patrick',
-        lastName: 'Rothfuss',
-        dateOfBirth: '1973-06-05T23:00:00.000Z'
-      }
-    ];
-    const authorIds = [];
-    const genres = [
-      { name: 'Fantasy' },
-      { name: 'Horror' },
-      { name: 'Thriller' },
-      { name: 'Western' }
-    ];
-    const genreIds = [];
     let books;
     beforeAll(async () => {
-      const _genres = await Genre.insertMany(genres);
+      const _genres = await Genre.insertMany([
+        { name: 'Fantasy' },
+        { name: 'Horror' },
+        { name: 'Thriller' },
+        { name: 'Western' }
+      ]);
+      const genreIds = [];
       _genres.forEach(({ _id }) => {
         genreIds.push(_id.toString());
       });
-      const _authors = await Author.insertMany(authors);
+      const _authors = await Author.insertMany([
+        {
+          firstName: 'Ben',
+          lastName: 'Bova',
+          dateOfBirth: '1932-11-07T23:00:00.000Z'
+        },
+        {
+          firstName: 'Isaac',
+          lastName: 'Asimov',
+          dateOfBirth: '1920-01-01T22:00:00.000Z',
+          dateOfDeath: '1992-04-05T22:00:00.000Z'
+        },
+        {
+          firstName: 'Patrick',
+          lastName: 'Rothfuss',
+          dateOfBirth: '1973-06-05T23:00:00.000Z'
+        }
+      ]);
+      const authorIds = [];
       _authors.forEach(({ _id }) => {
         authorIds.push(_id.toString());
       });
@@ -1336,8 +1358,6 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(0);
           expect(res).toHaveProperty('body',
             expect.objectContaining({
               updateCount: 0
@@ -1348,21 +1368,23 @@ describe('BOOK ROUTES', () => {
         });
     });
     test('should properly update multiple books', (done) => {
+      const _books = books
+        .map(({ title }, i) => ({ id: bookIds.at(i).toString(), title: title + '_' }));
       request
         .patch('/books/multiple')
         .send({
-          books: books.map(({ title }, i) => ({ id: bookIds.at(i).toString(), title: title + '_' }))
+          books: _books
         })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('books');
-          res.body.books.forEach(({ title }, i) => {
-            expect(title).toBe(books.at(i).title + '_');
-          });
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(bookIds.length);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              books: _books,
+              updateCount: bookIds.length
+            })
+          );
 
           return done();
         });

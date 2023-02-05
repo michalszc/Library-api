@@ -6,7 +6,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const responseTime = require('response-time');
-const { logs } = require('./vars');
+const apicache = require('apicache');
+const status = require('http-status');
+const { logs, env } = require('./vars');
+const { environments } = require('./constants');
 const routes = require('../api/routes');
 const { handler, converter, notFound } = require('../api/middlewares/error');
 
@@ -42,6 +45,17 @@ app.use(cors());
 
 // adds a X-Response-Time header to responses
 app.use(responseTime());
+
+// enable route-caching
+app.use(apicache
+  .options({
+    enabled: env === environments.PRODUCTION
+  })
+  .middleware(
+    '15 minutes',
+    (req, res) => req.method === 'GET' && res.statusCode === status.OK
+  )
+);
 
 // mount api routes
 app.use('/', routes);

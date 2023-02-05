@@ -23,9 +23,9 @@
     "url": "https://github.com/michalszc/REST-API/issues"
   },
   "homepage": "https://github.com/michalszc/REST-API#readme",
-  "engines" : { 
-    "npm" : "~9.2.0",
-    "node" : "~16.13.0"
+  "engines": {
+    "npm": "~9.2.0",
+    "node": "~16.13.0"
   },
   "devDependencies": {
     "apidoc": "^0.53.0",
@@ -40,6 +40,7 @@
     "supertest": "^6.3.0"
   },
   "dependencies": {
+    "apicache": "^1.6.3",
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",

@@ -85,6 +85,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
           expect(res.body.bookInstances).toHaveLength(bookInstances.length);
           res.body.bookInstances.forEach((bookInstance, i) => {
             expect(bookInstance).toMatchObject({
@@ -111,6 +112,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
           expect(res.body.bookInstances).toHaveLength(1);
           expect(res.body.bookInstances[0]).toMatchObject({
             _id: expect.any(String),
@@ -136,6 +138,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
           expect(res.body.bookInstances).toHaveLength(2);
           res.body.bookInstances.forEach((bookInstance, i) => {
             expect(bookInstance).toMatchObject({
@@ -164,6 +167,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
           expect(res.body.bookInstances).toHaveLength(bookInstances.length);
           const sortedBookInstances = bookInstances.slice().sort((a, b) => {
             const backA = a.back ?? new Date().toISOString();
@@ -196,6 +200,8 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
+          expect(res.body.bookInstances).toHaveLength(bookInstances.length);
           res.body.bookInstances.forEach((bookInstance) => {
             expect(bookInstance).toHaveProperty('_id');
             expect(bookInstance).not.toHaveProperty('book');
@@ -219,6 +225,8 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect(200)
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
+          expect(res.body.bookInstances).toBeInstanceOf(Array);
+          expect(res.body.bookInstances).toHaveLength(bookInstances.length);
           res.body.bookInstances.forEach((bookInstance) => {
             expect(bookInstance).not.toHaveProperty('_id');
             expect(bookInstance).toHaveProperty('book');
@@ -417,22 +425,20 @@ describe('BOOKINSTANCE ROUTES', () => {
   describe('Create book instance', () => {
     let bookId;
     let book;
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
-    const genre = { name: 'Fantasy' };
     const bookInstance = {
       publisher: 'Publisher',
       status: 'Loaned',
       back: addDays(new Date(), 10).toISOString()
     };
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       const genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       const authorId = _author._id.toString();
       book = {
@@ -623,23 +629,19 @@ describe('BOOKINSTANCE ROUTES', () => {
     });
   });
   describe('Create mulitple book instances', () => {
-    let bookId;
-    let book;
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
-    const genre = { name: 'Fantasy' };
     const bookInstances = [];
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       const genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       const authorId = _author._id.toString();
-      book = {
+      const _book = new Book({
         title: 'title',
         author: authorId,
         summary: 'something 1',
@@ -647,10 +649,9 @@ describe('BOOKINSTANCE ROUTES', () => {
         genre: [
           genreId
         ]
-      };
-      const _book = new Book(book);
+      });
       await _book.save();
-      bookId = _book._id.toString();
+      const bookId = _book._id.toString();
       bookInstances.push({
         bookId,
         publisher: 'Publisher',
@@ -694,6 +695,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .then(res => {
           expect(res.body).toHaveProperty('bookInstances');
           expect(res.body.bookInstances).toBeInstanceOf(Array);
+          expect(res.body.bookInstances).toHaveLength(bookInstances.length);
           res.body.bookInstances.forEach((bookInstance, i) => {
             expect(bookInstance).toStrictEqual(
               expect.objectContaining({
@@ -844,21 +846,18 @@ describe('BOOKINSTANCE ROUTES', () => {
   describe('Delete book instance', () => {
     let bookInstance;
     let bookInstanceId;
-    let book;
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
-    const genre = { name: 'Fantasy' };
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       const genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       const authorId = _author._id.toString();
-      book = {
+      const _book = new Book({
         title: 'title',
         author: authorId,
         summary: 'something 1',
@@ -866,8 +865,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         genre: [
           genreId
         ]
-      };
-      const _book = new Book(book);
+      });
       await _book.save();
       const bookId = _book._id.toString();
       bookInstance = {
@@ -1067,21 +1065,18 @@ describe('BOOKINSTANCE ROUTES', () => {
   describe('Update book instance', () => {
     let bookInstance;
     let bookInstanceId;
-    let book;
-    const author = {
-      firstName: 'Ben',
-      lastName: 'Bova',
-      dateOfBirth: '1932-11-07T23:00:00.000Z'
-    };
-    const genre = { name: 'Fantasy' };
     beforeAll(async () => {
-      const _genre = new Genre(genre);
+      const _genre = new Genre({ name: 'Fantasy' });
       await _genre.save();
       const genreId = _genre._id.toString();
-      const _author = new Author(author);
+      const _author = new Author({
+        firstName: 'Ben',
+        lastName: 'Bova',
+        dateOfBirth: '1932-11-07T23:00:00.000Z'
+      });
       await _author.save();
       const authorId = _author._id.toString();
-      book = {
+      const _book = new Book({
         title: 'title',
         author: authorId,
         summary: 'something 1',
@@ -1089,8 +1084,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         genre: [
           genreId
         ]
-      };
-      const _book = new Book(book);
+      });
       await _book.save();
       const bookId = _book._id.toString();
       bookInstance = {

@@ -34,9 +34,15 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('genres');
+          expect(res.body.genres).toBeInstanceOf(Array);
           expect(res.body.genres).toHaveLength(genres.length);
-          res.body.genres.forEach(({ name }, i) => {
-            expect(name).toBe(genres.at(i).name);
+          res.body.genres.forEach((genre, i) => {
+            expect(genre).toMatchObject({
+              _id: expect.any(String),
+              name: genres.at(i).name,
+              __v: expect.any(Number)
+            });
           });
 
           return done();
@@ -52,8 +58,15 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.genres).toHaveLength(1);
-          expect(res.body.genres[0].name).toBe('Fantasy');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              genres: [{
+                _id: expect.any(String),
+                name: 'Fantasy',
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -69,9 +82,19 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body.genres).toHaveLength(2);
-          expect(res.body.genres[0].name).toBe('Horror');
-          expect(res.body.genres[1].name).toBe('Thriller');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              genres: [{
+                _id: expect.any(String),
+                name: 'Horror',
+                __v: expect.any(Number)
+              }, {
+                _id: expect.any(String),
+                name: 'Thriller',
+                __v: expect.any(Number)
+              }]
+            })
+          );
 
           return done();
         });
@@ -88,10 +111,16 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('genres');
+          expect(res.body.genres).toBeInstanceOf(Array);
           expect(res.body.genres).toHaveLength(genres.length);
           const reversedGenres = genres.reverse();
-          res.body.genres.forEach(({ name }, i) => {
-            expect(name).toBe(reversedGenres.at(i).name);
+          res.body.genres.forEach((genre, i) => {
+            expect(genre).toMatchObject({
+              _id: expect.any(String),
+              name: reversedGenres.at(i).name,
+              __v: expect.any(Number)
+            });
           });
 
           return done();
@@ -107,6 +136,8 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('genres');
+          expect(res.body.genres).toBeInstanceOf(Array);
           expect(res.body.genres).toHaveLength(genres.length);
           res.body.genres.forEach((genre) => {
             expect(genre).toHaveProperty('_id');
@@ -127,6 +158,8 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
+          expect(res.body).toHaveProperty('genres');
+          expect(res.body.genres).toBeInstanceOf(Array);
           expect(res.body.genres).toHaveLength(genres.length);
           res.body.genres.forEach((genre) => {
             expect(genre).not.toHaveProperty('_id');
@@ -158,9 +191,13 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('genre');
-          expect(res.body.genre).toHaveProperty('name');
-          expect(res.body.genre.name).toBe(genreName);
+          expect(res).toHaveProperty('body.genre',
+            expect.objectContaining({
+              _id: expect.any(String),
+              name: genreName,
+              __v: expect.any(Number)
+            })
+          );
 
           return done();
         });
@@ -175,11 +212,16 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('genre');
-          expect(res.body.genre).toHaveProperty('name');
-          expect(res.body.genre.name).toBe(genreName);
-          expect(res.body).toHaveProperty('listOfBooks');
-          expect(res.body.listOfBooks).toStrictEqual([]);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              genre: {
+                _id: expect.any(String),
+                name: genreName,
+                __v: expect.any(Number)
+              },
+              listOfBooks: []
+            })
+          );
 
           return done();
         });
@@ -236,10 +278,13 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toHaveProperty('name');
-          expect(res.body.name).toBe(name);
-          expect(res.body).toHaveProperty('_id');
-          expect(res.body).toHaveProperty('__v');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id: expect.any(String),
+              name,
+              __v: expect.any(Number)
+            })
+          );
 
           return done();
         });
@@ -255,10 +300,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Genre(s) with name(s) Fantasy already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: `Genre(s) with name(s) ${name} already exist(s)`
+            }));
 
           return done();
         });
@@ -274,12 +320,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Validation Error: body: "name" is not allowed to be empty');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "name" is not allowed to be empty',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -295,13 +341,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "name" length must be at least 3 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "name" length must be at least 3 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -317,13 +362,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "name" length must be less than or equal to 100 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "name" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -346,10 +390,11 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res.body).toBeInstanceOf(Array);
           res.body.forEach((genre, i) => {
-            expect(genre).toHaveProperty('name');
-            expect(genre.name).toBe(names[i]);
-            expect(genre).toHaveProperty('_id');
-            expect(genre).toHaveProperty('__v');
+            expect(genre).toMatchObject({
+              _id: expect.any(String),
+              name: names[i],
+              __v: expect.any(Number)
+            });
           });
 
           return done();
@@ -366,10 +411,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe(`Genre(s) with name(s) ${names.join()} already exist(s)`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: `Genre(s) with name(s) ${names.join()} already exist(s)`
+            }));
 
           return done();
         });
@@ -385,12 +431,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Validation Error: body: "names" must contain at least 1 items');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "names" must contain at least 1 items',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -406,13 +452,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "names[0]" length must be at least 3 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "names[0]" length must be at least 3 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -428,13 +473,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "names[0]" length must be less than or equal to 100 characters long');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: 'Validation Error: body: "names[0]" length must be less than or equal to 100 characters long',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -460,14 +504,15 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Deleted genre');
-          expect(res.body).toHaveProperty('deletedGenre');
-          expect(res.body.deletedGenre).toHaveProperty('_id');
-          expect(res.body.deletedGenre._id).toBe(_id);
-          expect(res.body.deletedGenre).toHaveProperty('name');
-          expect(res.body.deletedGenre.name).toBe(genreName);
-          expect(res.body.deletedGenre).toHaveProperty('__v');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              deletedGenre: {
+                _id,
+                name: genreName,
+                __v: expect.any(Number)
+              },
+              message: 'Deleted genre'
+            }));
 
           return done();
         });
@@ -479,11 +524,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find genre with id ${_id}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find genre with id ${_id}`
+            }));
 
           return done();
         });
@@ -496,13 +541,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -534,10 +578,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Deleted genres');
-          expect(res.body).toHaveProperty('deletedCount');
-          expect(res.body.deletedCount).toBe(ids.length);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              message: 'Deleted genres',
+              deletedCount: ids.length
+            }));
 
           return done();
         });
@@ -552,10 +597,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe(`Cannot find genre(s) with id(s) ${ids.join()}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find genre(s) with id(s) ${ids.join()}`
+            }));
 
           return done();
         });
@@ -570,13 +616,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "ids" must contain at least 1 items');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "ids" must contain at least 1 items',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -605,10 +650,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message).toBe('Genre(s) with name(s) Fantasy already exist(s)');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Genre(s) with name(s) Fantasy already exist(s)'
+            }));
 
           return done();
         });
@@ -624,11 +670,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('_id');
-          expect(res.body._id).toBe(_id);
-          expect(res.body).toHaveProperty('name');
-          expect(res.body.name).toBe(name);
-          expect(res.body).toHaveProperty('__v');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              _id,
+              name,
+              __v: expect.any(Number)
+            }));
 
           return done();
         });
@@ -645,13 +692,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message) // eslint-disable-next-line max-len
-            .toBe(`Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`);
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400, // eslint-disable-next-line max-len
+              message: `Validation Error: params: "id" with value "${invalidId}" fails to match the required pattern: /^[a-fA-F0-9]{24}$/`,
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -668,11 +714,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find genre with id ${notFoundId}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find genre with id ${notFoundId}`
+            }));
 
           return done();
         });
@@ -704,28 +750,31 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(0);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              updateCount: 0
+            }));
 
           return done();
         });
     });
     test('should properly update multiple genres', (done) => {
+      const _genres = ids
+        .map(({ _id, name }) => ({ id: _id.toString(), name: name + '_' }));
       request
         .patch('/genres/multiple')
         .send({
-          genres: ids.map(({ _id, name }) => ({ id: _id, name: name + '_' }))
+          genres: _genres
         })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res.body).toHaveProperty('genres');
-          res.body.genres.forEach(({ name }, i) => {
-            expect(name).not.toBe(ids[i].name);
-          });
-          expect(res.body).toHaveProperty('updateCount');
-          expect(res.body.updateCount).toBe(ids.length);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              genres: _genres,
+              updateCount: ids.length
+            }));
 
           return done();
         });
@@ -740,13 +789,12 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(400);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe('Validation Error: body: "genres" must contain at least 1 items');
-          expect(res.body).toHaveProperty('errors');
-          expect(res.body.errors).toBe('Bad Request');
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 400,
+              message: 'Validation Error: body: "genres" must contain at least 1 items',
+              errors: 'Bad Request'
+            }));
 
           return done();
         });
@@ -764,11 +812,11 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(404)
         .then(res => {
-          expect(res.body).toHaveProperty('code');
-          expect(res.body.code).toBe(404);
-          expect(res.body).toHaveProperty('message');
-          expect(res.body.message)
-            .toBe(`Cannot find genre(s) with id(s) ${genres.map(({ id }) => id).join()}`);
+          expect(res).toHaveProperty('body',
+            expect.objectContaining({
+              code: 404,
+              message: `Cannot find genre(s) with id(s) ${genres.map(({ id }) => id).join()}`
+            }));
 
           return done();
         });

@@ -484,7 +484,7 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.book',
             expect.objectContaining({
               _id: expect.any(String),
               title: book.title,
@@ -519,7 +519,7 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.book',
             expect.objectContaining({
               _id: expect.any(String),
               title: book.title,
@@ -941,7 +941,7 @@ describe('BOOK ROUTES', () => {
         .then(res => {
           expect(res).toHaveProperty('body',
             expect.objectContaining({
-              deletedBook: {
+              book: {
                 _id: expect.any(String),
                 title: book.title,
                 author: authorId,
@@ -1203,7 +1203,7 @@ describe('BOOK ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.book',
             expect.objectContaining({
               _id: expect.any(String),
               title: newTitle,

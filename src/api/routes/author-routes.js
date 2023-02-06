@@ -257,11 +257,13 @@ router.post('/multiple', validate(validators.authorCreateMany), authorCreateMany
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
+ *    "author": {
  *      "firstName": "Andrzej",
  *      "lastName": "Sapkowski",
  *      "dateOfBirth": "1948-06-20T22:00:00.000Z",
  *      "_id": "63111ec1d2c560f45b865478",
  *      "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or author existence
@@ -352,7 +354,7 @@ router.delete('/multiple', validate(validators.authorDeleteMany), checkExistence
  *  HTTP/1.1 200 OK
  *  {
  *    "message": "Deleted author",
- *    "deletedAuthor": {
+ *    "author": {
  *      "_id": "63111d41a21bf378dcc80c1b",
  *      "firstName": "Andrzej",
  *      "lastName": "Sapkowski",
@@ -474,11 +476,13 @@ router.patch('/multiple', validate(validators.authorUpdateMany), checkExistence,
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *      "firstName": "Andrzej",
- *      "lastName": "Sapkowski",
- *      "dateOfBirth": "1948-06-20T22:00:00.000Z",
- *      "_id": "63111ec1d2c560f45b865478",
- *      "__v": 0
+ *      "author": {
+ *        "firstName": "Andrzej",
+ *        "lastName": "Sapkowski",
+ *        "dateOfBirth": "1948-06-20T22:00:00.000Z",
+ *        "_id": "63111ec1d2c560f45b865478",
+ *        "__v": 0
+ *      }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or incorrect dates

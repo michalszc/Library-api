@@ -55,7 +55,24 @@ const validators = require('../validations/bookInstance-validation');
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *    "bookInstances": []
+ *    "bookInstances": [
+ *        {
+ *          "_id": "63387a22c9e5146eae30c150",
+ *          "book": "6330168f90a882c473195243",
+ *          "publisher": "Orbit",
+ *          "status": "Available",
+ *          "back": "2022-10-01T17:34:26.282Z",
+ *          "__v": 0
+ *        },
+ *        {
+ *          "_id": "6339ac152607dc57ba02a822",
+ *          "book": "63237c1c3c5be131031920f1",
+ *          "publisher": "Orbit",
+ *          "status": "Available",
+ *          "back": "2022-10-02T15:19:49.457Z",
+ *          "__v": 0
+ *        }
+ *    ]
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error
@@ -225,12 +242,14 @@ router.post('/multiple', validate(validators.bookInstanceCreateMany), getBookMul
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
+ *    "bookInstance": {
  *     "book": "6330168f90a882c473195243",
  *     "publisher": "Orbit",
  *     "status": "Available",
  *     "back": "2022-10-01T17:34:26.282Z",
  *     "_id": "63387a22c9e5146eae30c150",
  *     "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or book instance existence
@@ -321,7 +340,7 @@ router.delete('/multiple', validate(validators.bookInstanceDeleteMany), checkExi
  *  HTTP/1.1 200 OK
  *  {
  *    "message": "Deleted book instance",
- *    "deletedBookInstance": {
+ *    "bookInstance": {
  *      "_id": "63387a22c9e5146eae30c150",
  *      "book": "6330168f90a882c473195243",
  *      "publisher": "Orbit",
@@ -444,12 +463,14 @@ router.patch('/multiple', validate(validators.bookInstanceUpdateMany), checkExis
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
+ *    "bookInstance": {
  *     "book": "6330168f90a882c473195243",
  *     "publisher": "Orbit",
  *     "status": "Available",
  *     "back": "2022-10-01T17:34:26.282Z",
  *     "_id": "63387a22c9e5146eae30c150",
  *     "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error

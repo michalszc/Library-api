@@ -127,7 +127,7 @@ exports.authorCreate = async function (req, res, next) {
   });
   try {
     const newAuthor = await author.saveIfNotExists();
-    res.status(status.CREATED).json(newAuthor);
+    res.status(status.CREATED).json({ author: newAuthor });
   } catch (error) {
     if (error.message === 'Author(s) already exist(s)') {
       next(new APIError({
@@ -161,7 +161,7 @@ exports.authorDeleteMany = async function (req, res, next) {
 exports.authorDelete = async function (req, res, next) {
   try {
     const deletedAuthor = await res.author.remove();
-    res.json({ message: 'Deleted author', deletedAuthor });
+    res.json({ message: 'Deleted author', author: deletedAuthor });
   } catch (error) {
     next(error);
   }
@@ -216,7 +216,7 @@ exports.authorUpdate = async function (req, res, next) {
       throw Error(`Incorrect dates: date of death (${dateOfDeath}) is before date of birth (${dateOfBirth})`);
     }
     const updatedAuthor = await res.author.saveIfNotExists();
-    res.json(updatedAuthor);
+    res.json({ author: updatedAuthor });
   } catch (error) {
     next(new APIError({
       message: error.message,

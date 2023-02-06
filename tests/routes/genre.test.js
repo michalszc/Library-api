@@ -278,7 +278,7 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.genre',
             expect.objectContaining({
               _id: expect.any(String),
               name,
@@ -388,8 +388,9 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toBeInstanceOf(Array);
-          res.body.forEach((genre, i) => {
+          expect(res).toHaveProperty('body.genres');
+          expect(res.body.genres).toBeInstanceOf(Array);
+          res.body.genres.forEach((genre, i) => {
             expect(genre).toMatchObject({
               _id: expect.any(String),
               name: names[i],
@@ -506,7 +507,7 @@ describe('GENRE ROUTES', () => {
         .then(res => {
           expect(res).toHaveProperty('body',
             expect.objectContaining({
-              deletedGenre: {
+              genre: {
                 _id,
                 name: genreName,
                 __v: expect.any(Number)
@@ -670,7 +671,7 @@ describe('GENRE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.genre',
             expect.objectContaining({
               _id,
               name,

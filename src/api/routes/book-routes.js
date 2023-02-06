@@ -262,15 +262,17 @@ router.post('/multiple', validate(validators.bookCreateMany), getAuthorAndGenreM
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 201 Created
  *  {
- *  "title": "The Witcher: The Last Wish",
- *  "author": "63111ec1d2c560f45b865478",
- *  "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
- *  "isbn": "978-0-575-08244-1",
- *  "genre": [
- *      "62fd5e7e3037984b1b5effb2"
- *  ],
- *  "_id": "631cb452ba13a425d94af3f5",
- *  "__v": 0
+ *     "book": {
+ *      "title": "The Witcher: The Last Wish",
+ *      "author": "63111ec1d2c560f45b865478",
+ *      "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *      "isbn": "978-0-575-08244-1",
+ *      "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *      ],
+ *      "_id": "631cb452ba13a425d94af3f5",
+ *      "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error or book existence
@@ -362,7 +364,7 @@ router.delete('/multiple', validate(validators.bookDeleteMany), checkExistence, 
  *  HTTP/1.1 200 OK
  *  {
  *    "message": "Deleted book",
- *    "deletedBook": {
+ *    "book": {
  *        "_id": "631cb452ba13a425d94af3f5",
  *        "title": "The Witcher: The Last Wish",
  *        "author": "63111ec1d2c560f45b865478",
@@ -491,15 +493,17 @@ router.patch('/multiple', validate(validators.bookUpdateMany), checkExistence, b
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *    "title": "The Witcher: The Last Wish",
- *    "author": "63111ec1d2c560f45b865478",
- *    "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
- *    "isbn": "978-0-575-08244-1",
- *    "genre": [
- *        "62fd5e7e3037984b1b5effb2"
- *    ],
- *    "_id": "631cb452ba13a425d94af3f5",
- *    "__v": 0
+ *    "book": {
+ *      "title": "The Witcher: The Last Wish",
+ *      "author": "63111ec1d2c560f45b865478",
+ *      "summary": "Geralt of Rivia is a Witcher, a man whose magic powers and lifelong training have made him a brilliant fighter and a merciless assassin. Yet he is no ordinary killer: he hunts the vile fiends that ravage the land and attack the innocent. But not everything monstrous-looking is evil; not everything fair is good . . . and in every fairy tale there is a grain of truth.",
+ *      "isbn": "978-0-575-08244-1",
+ *      "genre": [
+ *          "62fd5e7e3037984b1b5effb2"
+ *      ],
+ *      "_id": "631cb452ba13a425d94af3f5",
+ *      "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error

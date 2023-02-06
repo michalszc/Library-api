@@ -352,7 +352,7 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.author',
             expect.objectContaining({
               _id: expect.any(String),
               firstName: author.firstName,
@@ -673,7 +673,7 @@ describe('AUTHOR ROUTES', () => {
         .then(res => {
           expect(res).toHaveProperty('body',
             expect.objectContaining({
-              deletedAuthor: {
+              author: {
                 _id: expect.any(String),
                 firstName: author.firstName,
                 lastName: author.lastName,
@@ -857,7 +857,7 @@ describe('AUTHOR ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.author',
             expect.objectContaining({
               _id: expect.any(String),
               firstName,

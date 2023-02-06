@@ -116,7 +116,7 @@ exports.bookInstanceCreate = async function (req, res, next) {
   });
   try {
     const newBookInstance = await bookInstance.saveIfNotExists();
-    res.status(status.CREATED).json(newBookInstance);
+    res.status(status.CREATED).json({ bookInstance: newBookInstance });
   } catch (error) {
     if (error.message === 'Book instance(s) already exist(s)') {
       next(new APIError({
@@ -150,7 +150,7 @@ exports.bookInstanceDeleteMany = async function (req, res, next) {
 exports.bookInstanceDelete = async function (req, res, next) {
   try {
     const deletedBookInstance = await res.bookInstance.remove();
-    res.json({ message: 'Deleted book instance', deletedBookInstance });
+    res.json({ message: 'Deleted book instance', bookInstance: deletedBookInstance });
   } catch (error) {
     next(error);
   }
@@ -203,7 +203,7 @@ exports.bookInstanceUpdate = async function (req, res, next) {
   }
   try {
     const updatedBookInstance = await bookInstance.saveIfNotExists();
-    res.json(updatedBookInstance);
+    res.json({ bookInstance: updatedBookInstance });
   } catch (error) {
     next(new APIError({
       message: error.message,

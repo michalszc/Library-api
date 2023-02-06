@@ -471,7 +471,8 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toMatchObject({
+          expect(res).toHaveProperty('body.bookInstance');
+          expect(res.body.bookInstance).toMatchObject({
             _id: expect.any(String),
             book: bookInstance.bookId,
             publisher: bookInstance.publisher,
@@ -505,7 +506,8 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(201)
         .then(res => {
-          expect(res.body).toMatchObject({
+          expect(res).toHaveProperty('body.bookInstance');
+          expect(res.body.bookInstance).toMatchObject({
             _id: expect.any(String),
             book: bookId,
             publisher: bookInstance.publisher,
@@ -893,7 +895,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .then(res => {
           expect(res.body).toMatchObject({
             message: 'Deleted book instance',
-            deletedBookInstance: {
+            bookInstance: {
               _id: expect.any(String),
               book: bookInstance.book,
               publisher: bookInstance.publisher,
@@ -1134,7 +1136,7 @@ describe('BOOKINSTANCE ROUTES', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(res => {
-          expect(res).toHaveProperty('body',
+          expect(res).toHaveProperty('body.bookInstance',
             expect.objectContaining({
               _id: expect.any(String),
               book: bookInstance.book,

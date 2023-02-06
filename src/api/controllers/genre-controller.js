@@ -69,7 +69,7 @@ exports.genreCreate = async function (req, res, next) {
   });
   try {
     const newGenre = await genre.saveIfNotExists();
-    res.status(status.CREATED).json(newGenre);
+    res.status(status.CREATED).json({ genre: newGenre });
   } catch (error) {
     if (error.message.startsWith('Genre(s) with name(s)')) {
       next(new APIError({
@@ -92,7 +92,7 @@ exports.genreCreateMany = async function (req, res, next) {
     await Genre.checkExistence(req.body.names);
     const arr = req.body.names.map(name => ({ name }));
     const newGenres = await Genre.insertMany(arr);
-    res.status(status.CREATED).json(newGenres);
+    res.status(status.CREATED).json({ genres: newGenres });
   } catch (error) {
     if (error.message.startsWith('Genre(s) with name(s)')) {
       next(new APIError({
@@ -113,7 +113,7 @@ exports.genreCreateMany = async function (req, res, next) {
 exports.genreDelete = async function (req, res, next) {
   try {
     const deletedGenre = await res.genre.remove();
-    res.json({ message: 'Deleted genre', deletedGenre });
+    res.json({ message: 'Deleted genre', genre: deletedGenre });
   } catch (error) {
     next(error);
   }
@@ -142,7 +142,7 @@ exports.genreUpdate = async function (req, res, next) {
   }
   try {
     const updatedGenre = await res.genre.saveIfNotExists();
-    res.json(updatedGenre);
+    res.json({ genre: updatedGenre });
   } catch (error) {
     next(new APIError({
       message: error.message,

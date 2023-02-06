@@ -179,7 +179,7 @@ exports.bookCreate = async function (req, res, next) {
   });
   try {
     const newBook = await book.saveIfNotExists();
-    res.status(status.CREATED).json(newBook);
+    res.status(status.CREATED).json({ book: newBook });
   } catch (error) {
     if (error.message === 'Book(s) already exist(s)') {
       next(new APIError({
@@ -213,7 +213,7 @@ exports.bookDeleteMany = async function (req, res, next) {
 exports.bookDelete = async function (req, res, next) {
   try {
     const deletedBook = await res.book.remove();
-    res.json({ message: 'Deleted book', deletedBook });
+    res.json({ message: 'Deleted book', book: deletedBook });
   } catch (error) {
     next(error);
   }
@@ -269,7 +269,7 @@ exports.bookUpdate = async function (req, res, next) {
   }
   try {
     const updatedBook = await book.saveIfNotExists();
-    res.json(updatedBook);
+    res.json({ book: updatedBook });
   } catch (error) {
     next(new APIError({
       message: error.message,

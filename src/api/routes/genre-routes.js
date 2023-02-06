@@ -81,100 +81,6 @@ const validators = require('../validations/genre-validation');
 router.get('/', validate(validators.genreList), genreList);
 
 /**
- * @api {POST} /genres/multiple Create multiple genres
- * @apiDescription Request for creating multiple genres
- * @apiVersion 1.0.0
- * @apiName CreateManyGenres
- * @apiGroup Genres
- *
- * @apiHeader {String} Content-Type=application/json
- * @apiBody {String[]} names Genres names
- *
- * @apiSuccess {Object[]} genres Created genres
- * @apiSuccess {String} genres[_id] Id of created genre
- * @apiSuccess {String} genres[name] Name of created genre
- * @apiSuccess {Number} genres[__v] versionKey
- *
- * @apiSuccessExample {json} Success response (example):
- *  HTTP/1.1 201 Created
- *  [
- *    {
- *      "name": "Fantasy",
- *      "_id": "6307cd8fc79812e636963da7",
- *      "__v": 0
- *    },
- *    {
- *      "name": "Western",
- *      "_id": "6307cd8fc79812e636963da8",
- *      "__v": 0
- *    }
- *  ]
- *
- * @apiError BadRequest The server cannot process the request due to validation error or genre existence
- * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
- * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
- * @apiErrorExample {json} Validation error response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Validation Error: body: \"names\" must contain at least 1 items",
- *    "errors": "Bad Request"
- *  }
- * @apiErrorExample {json} Genre existence response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Genre(s) with name(s) Fantasy, Western already exist(s)"
- *  }
- * @apiErrorExample {json} Internal Server Error response (example):
- *  HTTP/1.1 500 Internal Server Error
- */
-router.post('/multiple', validate(validators.genreCreateMany), genreCreateMany);
-
-/**
- * @api {POST} /genres Create a genre
- * @apiDescription Request for creating a genre
- * @apiVersion 1.0.0
- * @apiName CreateGenre
- * @apiGroup Genres
- *
- * @apiHeader {String} Content-Type=application/json
- * @apiBody {String{3.100}} name=Fantasy Genre name
- *
- * @apiSuccess {String} name Name of created genre
- * @apiSuccess {String} _id Id of created genre
- * @apiSuccess {Number} __v versionKey
- *
- * @apiSuccessExample {json} Success response (example):
- *  HTTP/1.1 201 Created
- *  {
- *    "name": "Fantasy",
- *    "_id": "6303e5462019452162263dfa",
- *    "__v": 0
- *  }
- *
- * @apiError BadRequest The server cannot process the request due to validation error or genre existence
- * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
- * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
- * @apiErrorExample {json} Validation error response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Validation Error: body: \"name\" is not allowed to be empty",
- *    "errors": "Bad Request"
- *  }
- * @apiErrorExample {json} Genre existence response (example):
- *  HTTP/1.1 400 Bad Request
- *  {
- *    "code": 400,
- *    "message": "Genre(s) with name(s) Fantasy already exist(s)"
- *  }
- * @apiErrorExample {json} Internal Server Error response (example):
- *  HTTP/1.1 500 Internal Server Error
- */
-router.post('/', validate(validators.genreCreate), genreCreate);
-
-/**
  * @api {GET} /genres/:id Get genre
  * @apiDescription Request for one specific genre
  * @apiVersion 1.0.0
@@ -245,6 +151,104 @@ router.post('/', validate(validators.genreCreate), genreCreate);
 router.get('/:id', validate(validators.genreDetail), getGenre, genreDetail);
 
 /**
+ * @api {POST} /genres/multiple Create multiple genres
+ * @apiDescription Request for creating multiple genres
+ * @apiVersion 1.0.0
+ * @apiName CreateManyGenres
+ * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String[]} names Genres names
+ *
+ * @apiSuccess {Object[]} genres Created genres
+ * @apiSuccess {String} genres[_id] Id of created genre
+ * @apiSuccess {String} genres[name] Name of created genre
+ * @apiSuccess {Number} genres[__v] versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *    "genres": [
+ *      {
+ *        "name": "Fantasy",
+ *        "_id": "6307cd8fc79812e636963da7",
+ *        "__v": 0
+ *      },
+ *      {
+ *        "name": "Western",
+ *        "_id": "6307cd8fc79812e636963da8",
+ *        "__v": 0
+ *      }
+ *    ]
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or genre existence
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"names\" must contain at least 1 items",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Genre existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Genre(s) with name(s) Fantasy, Western already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/multiple', validate(validators.genreCreateMany), genreCreateMany);
+
+/**
+ * @api {POST} /genres Create a genre
+ * @apiDescription Request for creating a genre
+ * @apiVersion 1.0.0
+ * @apiName CreateGenre
+ * @apiGroup Genres
+ *
+ * @apiHeader {String} Content-Type=application/json
+ * @apiBody {String{3.100}} name=Fantasy Genre name
+ *
+ * @apiSuccess {String} name Name of created genre
+ * @apiSuccess {String} _id Id of created genre
+ * @apiSuccess {Number} __v versionKey
+ *
+ * @apiSuccessExample {json} Success response (example):
+ *  HTTP/1.1 201 Created
+ *  {
+ *    "genre": {
+ *      "name": "Fantasy",
+ *      "_id": "6303e5462019452162263dfa",
+ *      "__v": 0
+ *    }
+ *  }
+ *
+ * @apiError BadRequest The server cannot process the request due to validation error or genre existence
+ * @apiError TooManyRequests the user has sent too many requests in one hour (> 100)
+ * @apiError (500 Internal Server Error) InternalServerError The server encountered an internal error
+ * @apiErrorExample {json} Validation error response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Validation Error: body: \"name\" is not allowed to be empty",
+ *    "errors": "Bad Request"
+ *  }
+ * @apiErrorExample {json} Genre existence response (example):
+ *  HTTP/1.1 400 Bad Request
+ *  {
+ *    "code": 400,
+ *    "message": "Genre(s) with name(s) Fantasy already exist(s)"
+ *  }
+ * @apiErrorExample {json} Internal Server Error response (example):
+ *  HTTP/1.1 500 Internal Server Error
+ */
+router.post('/', validate(validators.genreCreate), genreCreate);
+
+/**
  * @api {DELETE} /genres/multiple Delete multiple genres
  * @apiDescription Request to delete multiple genres
  * @apiVersion 1.0.0
@@ -308,7 +312,7 @@ router.delete('/multiple', validate(validators.genreDeleteMany), checkExistence,
  *  HTTP/1.1 200 OK
  *  {
  *    "message": "Deleted genre",
- *    "deletedGenre": {
+ *    "genre": {
  *      "_id": "62fd5e7e3037984b1b5effb2",
  *      "name": "Fantasy",
  *      "__v": 0
@@ -415,9 +419,11 @@ router.patch('/multiple', validate(validators.genreUpdateMany), checkExistence, 
  * @apiSuccessExample {json} Success response (example):
  *  HTTP/1.1 200 OK
  *  {
- *    "name": "Fantasy",
- *    "_id": "6303e5462019452162263dfa",
- *    "__v": 0
+ *    "genre": {
+ *      "name": "Fantasy",
+ *      "_id": "6303e5462019452162263dfa",
+ *      "__v": 0
+ *    }
  *  }
  *
  * @apiError BadRequest The server cannot process the request due to validation error

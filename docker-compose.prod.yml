@@ -1,0 +1,6 @@
+version: "2"
+services:
+  library-api:
+    command: npm run docker:start
+    environment:
+      - NODE_ENV=production

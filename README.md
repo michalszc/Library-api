@@ -12,7 +12,7 @@ List of available endpoints is described [HERE]()
 #### Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/QuizlyTeam/ContentApi.git
+git clone https://github.com/michalszc/Library-api.git
 cd Library-api
 npm install
 ```

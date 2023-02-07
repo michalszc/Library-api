@@ -3,6 +3,12 @@
 
 **Library-api** is a REST API that provides endpoints for querying database.
 
+## Database Diagram
+
+<p align="center">
+  <img src="../assets/diagram.PNG?raw=true" alt="diagram" />
+</p>
+
 ## Documentation
 
 List of available endpoints is described [HERE](https://michalszc.github.io/Library-api/).

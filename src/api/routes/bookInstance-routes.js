@@ -46,7 +46,7 @@ const validators = require('../validations/bookInstance-validation');
  * @apiBody {Boolean} [showGenre] This field allows you to show the genre object. It also set showBook to true. If this field is not passed or the value is false, it only shows the genre ID.
  *
  * @apiSuccess {Object[]} bookInstances List of book instances
- * @apiSuccess {String{24}|Object} bookInstances[book] ID of the book or book object
+ * @apiSuccess {String|Object} bookInstances[book] ID of the book or book object
  * @apiSuccess {String{3.100}} bookInstances[publisher] Publisher of the book
  * @apiSuccess {String} bookInstances[status] Status of the book
  * @apiSuccess {String} bookInstances[back] Date when the book will be available again
@@ -111,7 +111,7 @@ router.get('/', validate(validators.bookInstanceList), getBook, bookInstanceList
  *  }
  *
  * @apiSuccess {Object} bookInstance Requested book instance
- * @apiSuccess {String{24}|Object} bookInstances[book] ID of the book or book object
+ * @apiSuccess {String|Object} bookInstances[book] ID of the book or book object
  * @apiSuccess {String{3.100}} bookInstances[publisher] Publisher of the book
  * @apiSuccess {String} bookInstances[status] Status of the book
  * @apiSuccess {String} bookInstances[back] Date when the book will be available again

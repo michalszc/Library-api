@@ -1,11 +1,11 @@
-# LIBRARY-API
+# Library-api
 [![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com/)[![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)[![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)](https://eslint.org/)[![Lodash](https://img.shields.io/badge/Lodash-fff?style=for-the-badge&logo=Lodash)](https://lodash.com/)[![.ENV](https://img.shields.io/badge/.ENV-22272e?style=for-the-badge&logo=.env)](https://github.com/motdotla/dotenv#readme)[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-**LIBRARY API** is a REST API that provides endpoints for querying database.
+**Library-api** is a REST API that provides endpoints for querying database.
 
 ## Documentation
 
-List of available endpoints is described [HERE]()
+List of available endpoints is described [HERE](https://michalszc.github.io/Library-api/).
 
 ## Installation
 
